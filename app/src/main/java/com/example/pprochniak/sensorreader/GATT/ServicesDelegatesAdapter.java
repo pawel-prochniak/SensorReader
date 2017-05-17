@@ -1,5 +1,6 @@
 package com.example.pprochniak.sensorreader.GATT;
 
+import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -12,6 +13,7 @@ import com.example.pprochniak.sensorreader.GATT.adapters.ServiceListItem;
 import com.example.pprochniak.sensorreader.ble.BluetoothLeService;
 import com.example.pprochniak.sensorreader.utils.Logger;
 import com.example.pprochniak.sensorreader.utils.UUIDDatabase;
+import com.example.pprochniak.sensorreader.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,11 +38,10 @@ public class ServicesDelegatesAdapter extends RecyclerView.Adapter<RecyclerView.
                 final String action = intent.getAction();
                 // GATT Data available
                 if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
-                    Logger.i("Data Available");
+//                    Logger.i("Data Available");
                     for (ServiceListItem listener : gattListeners) {
                         listener.updateItem(intent);
                     }
-
                 }
 //            if (action.equals(BluetoothDevice.ACTION_BOND_STATE_CHANGED)) {
 //                final int state = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR);
@@ -93,6 +94,20 @@ public class ServicesDelegatesAdapter extends RecyclerView.Adapter<RecyclerView.
             }
         }
         notifyDataSetChanged();
+    }
+
+    /**
+     * Preparing Broadcast receiver to broadcast notify characteristics
+     *
+     * @param gattCharacteristic
+     */
+    void prepareBroadcastDataNotify(
+            BluetoothGattCharacteristic gattCharacteristic) {
+        Logger.i("Notify called");
+        if (Utils.checkCharacteristicsPropertyPresence(gattCharacteristic.getProperties(),
+                BluetoothGattCharacteristic.PROPERTY_NOTIFY)) {
+
+        }
     }
 
 

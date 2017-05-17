@@ -39,14 +39,12 @@ import java.util.UUID;
  */
 public class UUIDDatabase {
     /**
-     * Heart rate related UUID
+     * Sensor read related UUID
      */
-    public final static UUID UUID_HEART_RATE_SERVICE = UUID
-            .fromString(GattAttributes.HEART_RATE_SERVICE);
-    public final static UUID UUID_HEART_RATE_MEASUREMENT = UUID
-            .fromString(GattAttributes.HEART_RATE_MEASUREMENT);
-    public final static UUID UUID_BODY_SENSOR_LOCATION = UUID
-            .fromString(GattAttributes.BODY_SENSOR_LOCATION);
+    public static final UUID UUID_SENSOR_READ_SERVICE = UUID
+            .fromString(GattAttributes.SENSOR_READ_SERVICE);
+    public static final UUID UUID_SENSOR_READ = UUID.fromString(GattAttributes.SENSOR_READ);
+
     /**
      * Device information related UUID
      */
@@ -71,15 +69,6 @@ public class UUIDDatabase {
     public static final UUID UUID_IEEE = UUID
             .fromString(GattAttributes.IEEE);
 
-    /**
-     * Health thermometer related UUID
-     */
-    public final static UUID UUID_HEALTH_THERMOMETER_SERVICE = UUID
-            .fromString(GattAttributes.HEALTH_THERMOMETER_SERVICE);
-    public final static UUID UUID_HEALTH_THERMOMETER = UUID
-            .fromString(GattAttributes.HEALTH_TEMP_MEASUREMENT);
-    public final static UUID UUID_HEALTH_THERMOMETER_SENSOR_LOCATION = UUID
-            .fromString(GattAttributes.TEMPERATURE_TYPE);
     /**
      * Battery Level related uuid
      */
@@ -134,45 +123,6 @@ public class UUIDDatabase {
             .fromString(GattAttributes.RGB_LED_CUSTOM);
 
     /**
-     * GlucoseService related uuid
-     */
-    public final static UUID UUID_GLUCOSE_MEASUREMENT = UUID
-            .fromString(GattAttributes.GLUCOSE_MEASUREMENT);
-    public final static UUID UUID_GLUCOSE_SERVICE = UUID
-            .fromString(GattAttributes.GLUCOSE_SERVICE);
-    public final static UUID UUID_GLUCOSE_MEASUREMENT_CONTEXT = UUID
-            .fromString(GattAttributes.GLUCOSE_MEASUREMENT_CONTEXT);
-    public final static UUID UUID_GLUCOSE_FEATURE = UUID
-            .fromString(GattAttributes.GLUCOSE_FEATURE);
-    public final static UUID UUID_RECORD_ACCESS_CONTROL_POINT = UUID
-            .fromString(GattAttributes.RECORD_ACCESS_CONTROL_POINT);
-    /**
-     * Blood pressure related uuid
-     */
-    public final static UUID UUID_BLOOD_PRESSURE_SERVICE = UUID
-            .fromString(GattAttributes.BLOOD_PRESSURE_SERVICE);
-    public final static UUID UUID_BLOOD_PRESSURE_MEASUREMENT = UUID
-            .fromString(GattAttributes.BLOOD_PRESSURE_MEASUREMENT);
-    public final static UUID UUID_BLOOD_INTERMEDIATE_CUFF_PRESSURE = UUID
-            .fromString(GattAttributes.BLOOD_INTERMEDIATE_CUFF_PRESSURE);
-    public final static UUID UUID_BLOOD_PRESSURE_FEATURE = UUID
-            .fromString(GattAttributes.BLOOD_PRESSURE_FEATURE);
-    /**
-     * Running Speed & Cadence related uuid
-     */
-    public final static UUID UUID_RSC_MEASURE = UUID
-            .fromString(GattAttributes.RSC_MEASUREMENT);
-    public final static UUID UUID_RSC_SERVICE = UUID
-            .fromString(GattAttributes.RSC_SERVICE);
-    public final static UUID UUID_RSC_FEATURE = UUID
-            .fromString(GattAttributes.RSC_FEATURE);
-    public final static UUID UUID_SC_CONTROL_POINT = UUID
-            .fromString(GattAttributes.SC_CONTROL_POINT);
-    public final static UUID UUID_SC_SENSOR_LOCATION = UUID
-            .fromString(GattAttributes.SC_SENSOR_LOCATION);
-
-
-    /**
      * Cycling Speed & Cadence related uuid
      */
     public final static UUID UUID_CSC_SERVICE = UUID
@@ -181,22 +131,6 @@ public class UUIDDatabase {
             .fromString(GattAttributes.CSC_MEASUREMENT);
     public final static UUID UUID_CSC_FEATURE = UUID
             .fromString(GattAttributes.CSC_FEATURE);
-
-    /**
-     * Barometer related uuid
-     */
-    public final static UUID UUID_BAROMETER_SERVICE = UUID
-            .fromString(GattAttributes.BAROMETER_SERVICE);
-    public final static UUID UUID_BAROMETER_DIGITAL_SENSOR = UUID
-            .fromString(GattAttributes.BAROMETER_DIGITAL_SENSOR);
-    public final static UUID UUID_BAROMETER_SENSOR_SCAN_INTERVAL = UUID
-            .fromString(GattAttributes.BAROMETER_SENSOR_SCAN_INTERVAL);
-    public final static UUID UUID_BAROMETER_THRESHOLD_FOR_INDICATION = UUID
-            .fromString(GattAttributes.BAROMETER_THRESHOLD_FOR_INDICATION);
-    public final static UUID UUID_BAROMETER_DATA_ACCUMULATION = UUID
-            .fromString(GattAttributes.BAROMETER_DATA_ACCUMULATION);
-    public final static UUID UUID_BAROMETER_READING = UUID
-            .fromString(GattAttributes.BAROMETER_READING);
     /**
      * Accelerometer related uuid
      */
@@ -293,192 +227,7 @@ public class UUIDDatabase {
      */
     public final static UUID UUID_ALERT_NOTIFICATION_SERVICE = UUID
             .fromString(GattAttributes.ALERT_NOTIFICATION_SERVICE);
-    /**
-     * Unused Service UUID's
-     */
-    public final static UUID UUID_BODY_COMPOSITION_SERVICE = UUID
-            .fromString(GattAttributes.BODY_COMPOSITION_SERVICE);
-    public final static UUID UUID_BOND_MANAGEMENT_SERVICE = UUID
-            .fromString(GattAttributes.BOND_MANAGEMENT_SERVICE);
-    public final static UUID UUID_CONTINUOUS_GLUCOSE_MONITORING_SERVICE = UUID
-            .fromString(GattAttributes.CONTINUOUS_GLUCOSE_MONITORING_SERVICE);
-    public final static UUID UUID_CURRENT_TIME_SERVICE = UUID
-            .fromString(GattAttributes.CURRENT_TIME_SERVICE);
-    public final static UUID UUID_CYCLING_POWER_SERVICE = UUID
-            .fromString(GattAttributes.CYCLING_POWER_SERVICE);
-    public final static UUID UUID_ENVIRONMENTAL_SENSING_SERVICE = UUID
-            .fromString(GattAttributes.ENVIRONMENTAL_SENSING_SERVICE);
-    public final static UUID UUID_LOCATION_NAVIGATION_SERVICE = UUID
-            .fromString(GattAttributes.LOCATION_NAVIGATION_SERVICE);
-    public final static UUID UUID_NEXT_DST_CHANGE_SERVICE = UUID
-            .fromString(GattAttributes.NEXT_DST_CHANGE_SERVICE);
-    public final static UUID UUID_PHONE_ALERT_STATUS_SERVICE = UUID
-            .fromString(GattAttributes.PHONE_ALERT_STATUS_SERVICE);
-    public final static UUID UUID_REFERENCE_TIME_UPDATE_SERVICE = UUID
-            .fromString(GattAttributes.REFERENCE_TIME_UPDATE_SERVICE);
-    public final static UUID UUID_SCAN_PARAMETERS_SERVICE = UUID
-            .fromString(GattAttributes.SCAN_PARAMETERS_SERVICE);
-    public final static UUID UUID_USER_DATA_SERVICE = UUID
-            .fromString(GattAttributes.USER_DATA_SERVICE);
-    public final static UUID UUID_WEIGHT_SCALE_SERVICE = UUID
-            .fromString(GattAttributes.WEIGHT_SCALE_SERVICE);
-    public final static UUID UUID_HEART_RATE_CONTROL_POINT = UUID
-            .fromString(GattAttributes.HEART_RATE_CONTROL_POINT);
-    public final static UUID UUID_TEMPERATURE_INTERMEDIATE = UUID
-            .fromString(GattAttributes.TEMPERATURE_INTERMEDIATE);
-    public final static UUID UUID_TEMPERATURE_MEASUREMENT_INTERVAL = UUID
-            .fromString(GattAttributes.TEMPERATURE_MEASUREMENT_INTERVAL);
 
-
-    /**
-     * Unused Characteristic UUID's
-     */
-    public final static UUID UUID_AEROBIC_HEART_RATE_LOWER_LIMIT = UUID
-            .fromString(GattAttributes.AEROBIC_HEART_RATE_LOWER_LIMIT);
-    public final static UUID UUID_AEROBIC_HEART_RATE_UPPER_LIMIT = UUID
-            .fromString(GattAttributes.AEROBIC_HEART_RATE_UPPER_LIMIT);
-    public final static UUID UUID_AGE = UUID
-            .fromString(GattAttributes.AGE);
-    public final static UUID UUID_ALERT_CATEGORY_ID = UUID
-            .fromString(GattAttributes.ALERT_CATEGORY_ID);
-    public final static UUID UUID_ALERT_CATEGORY_ID_BIT_MASK = UUID
-            .fromString(GattAttributes.ALERT_CATEGORY_ID_BIT_MASK);
-    public final static UUID UUID_ALERT_STATUS = UUID
-            .fromString(GattAttributes.ALERT_STATUS);
-    public final static UUID UUID_ANAEROBIC_HEART_RATE_LOWER_LIMIT = UUID
-            .fromString(GattAttributes.ANAEROBIC_HEART_RATE_LOWER_LIMIT);
-    public final static UUID UUID_ANAEROBIC_HEART_RATE_UPPER_LIMIT = UUID
-            .fromString(GattAttributes.ANAEROBIC_HEART_RATE_UPPER_LIMIT);
-    public final static UUID UUID_ANAEROBIC_THRESHOLD = UUID
-            .fromString(GattAttributes.ANAEROBIC_THRESHOLD);
-    public final static UUID UUID_APPARENT_WIND_DIRECTION = UUID
-            .fromString(GattAttributes.APPARENT_WIND_DIRECTION);
-    public final static UUID UUID_APPARENT_WIND_SPEED = UUID
-            .fromString(GattAttributes.APPARENT_WIND_SPEED);
-    public final static UUID UUID_APPEARANCE = UUID
-            .fromString(GattAttributes.APPEARANCE);
-    public final static UUID UUID_BAROMETRIC_PRESSURE_TREND = UUID
-            .fromString(GattAttributes.BAROMETRIC_PRESSURE_TREND);
-    public final static UUID UUID_BODY_COMPOSITION_FEATURE = UUID
-            .fromString(GattAttributes.BODY_COMPOSITION_FEATURE);
-    public final static UUID UUID_BODY_COMPOSITION_MEASUREMENT = UUID
-            .fromString(GattAttributes.BODY_COMPOSITION_MEASUREMENT);
-    public final static UUID UUID_BOND_MANAGEMENT_CONTROL_POINT = UUID
-            .fromString(GattAttributes.BOND_MANAGEMENT_CONTROL_POINT);
-    public final static UUID UUID_BOND_MANAGEMENT_FEATURE = UUID
-            .fromString(GattAttributes.BOND_MANAGEMENT_FEATURE);
-    public final static UUID UUID_CGM_FEATURE = UUID
-            .fromString(GattAttributes.CGM_FEATURE);
-    public final static UUID UUID_CENTRAL_ADDRESS_RESOLUTION = UUID
-            .fromString(GattAttributes.CENTRAL_ADDRESS_RESOLUTION);
-    public final static UUID UUID_FIRSTNAME = UUID
-            .fromString(GattAttributes.FIRSTNAME);
-    public final static UUID UUID_GUST_FACTOR = UUID
-            .fromString(GattAttributes.GUST_FACTOR);
-    public final static UUID UUID_CGM_MEASUREMENT = UUID
-            .fromString(GattAttributes.CGM_MEASUREMENT);
-    public final static UUID UUID_CGM_SESSION_RUN_TIME = UUID
-            .fromString(GattAttributes.CGM_SESSION_RUN_TIME);
-    public final static UUID UUID_CGM_SESSION_START_TIME = UUID
-            .fromString(GattAttributes.CGM_SESSION_START_TIME);
-    public final static UUID UUID_CGM_SPECIFIC_OPS_CONTROL_POINT = UUID
-            .fromString(GattAttributes.CGM_SPECIFIC_OPS_CONTROL_POINT);
-    public final static UUID UUID_CGM_STATUS = UUID
-            .fromString(GattAttributes.CGM_STATUS);
-    public final static UUID UUID_CYCLING_POWER_CONTROL_POINT = UUID
-            .fromString(GattAttributes.CYCLING_POWER_CONTROL_POINT);
-    public final static UUID UUID_CYCLING_POWER_VECTOR = UUID
-            .fromString(GattAttributes.CYCLING_POWER_VECTOR);
-    public final static UUID UUID_CYCLING_POWER_FEATURE = UUID
-            .fromString(GattAttributes.CYCLING_POWER_FEATURE);
-    public final static UUID UUID_CYCLING_POWER_MEASUREMENT = UUID
-            .fromString(GattAttributes.CYCLING_POWER_MEASUREMENT);
-    public final static UUID UUID_DATABASE_CHANGE_INCREMENT = UUID
-            .fromString(GattAttributes.DATABASE_CHANGE_INCREMENT);
-    public final static UUID UUID_DATE_OF_BIRTH = UUID
-            .fromString(GattAttributes.DATE_OF_BIRTH);
-    public final static UUID UUID_DATE_OF_THRESHOLD_ASSESSMENT = UUID
-            .fromString(GattAttributes.DATE_OF_THRESHOLD_ASSESSMENT);
-    public final static UUID UUID_DATE_TIME = UUID
-            .fromString(GattAttributes.DATE_TIME);
-    public final static UUID UUID_DAY_DATE_TIME = UUID
-            .fromString(GattAttributes.DAY_DATE_TIME);
-    public final static UUID UUID_DAY_OF_WEEK = UUID
-            .fromString(GattAttributes.DAY_OF_WEEK);
-    public final static UUID UUID_DESCRIPTOR_VALUE_CHANGED = UUID
-            .fromString(GattAttributes.DESCRIPTOR_VALUE_CHANGED);
-    public final static UUID UUID_DEVICE_NAME = UUID
-            .fromString(GattAttributes.DEVICE_NAME);
-    public final static UUID UUID_DEW_POINT = UUID
-            .fromString(GattAttributes.DEW_POINT);
-    public final static UUID UUID_DST_OFFSET = UUID
-            .fromString(GattAttributes.DST_OFFSET);
-    public final static UUID UUID_ELEVATION = UUID
-            .fromString(GattAttributes.ELEVATION);
-    public final static UUID UUID_EMAIL_ADDRESS = UUID
-            .fromString(GattAttributes.EMAIL_ADDRESS);
-    public final static UUID UUID_EXACT_TIME_256 = UUID
-            .fromString(GattAttributes.EXACT_TIME_256);
-    public final static UUID UUID_FAT_BURN_HEART_RATE_LOWER_LIMIT = UUID
-            .fromString(GattAttributes.FAT_BURN_HEART_RATE_LOWER_LIMIT);
-    public final static UUID UUID_FAT_BURN_HEART_RATE_UPPER_LIMIT = UUID
-            .fromString(GattAttributes.FAT_BURN_HEART_RATE_UPPER_LIMIT);
-    public final static UUID UUID_FIVE_ZONE_HEART_RATE_LIMITS = UUID
-            .fromString(GattAttributes.FIVE_ZONE_HEART_RATE_LIMITS);
-    public final static UUID UUID_GENDER = UUID
-            .fromString(GattAttributes.GENDER);
-    public final static UUID UUID_HEART_RATE_MAX = UUID
-            .fromString(GattAttributes.HEART_RATE_MAX);
-    public final static UUID UUID_HEAT_INDEX = UUID
-            .fromString(GattAttributes.HEAT_INDEX);
-    public final static UUID UUID_HEIGHT = UUID
-            .fromString(GattAttributes.HEIGHT);
-    public final static UUID UUID_HIP_CIRCUMFERENCE = UUID
-            .fromString(GattAttributes.HIP_CIRCUMFERENCE);
-    public final static UUID UUID_HUMIDITY = UUID
-            .fromString(GattAttributes.HUMIDITY);
-    public final static UUID UUID_INTERMEDIATE_CUFF_PRESSURE = UUID
-            .fromString(GattAttributes.INTERMEDIATE_CUFF_PRESSURE);
-    public final static UUID UUID_INTERMEDIATE_TEMPERATURE = UUID
-            .fromString(GattAttributes.INTERMEDIATE_TEMPERATURE);
-    public final static UUID UUID_IRRADIANCE = UUID
-            .fromString(GattAttributes.IRRADIANCE);
-    public final static UUID UUID_LANGUAGE = UUID
-            .fromString(GattAttributes.LANGUAGE);
-    public final static UUID UUID_LAST_NAME = UUID
-            .fromString(GattAttributes.LAST_NAME);
-    public final static UUID UUID_LN_CONTROL_POINT = UUID
-            .fromString(GattAttributes.LN_CONTROL_POINT);
-    public final static UUID UUID_LN_FEATURE = UUID
-            .fromString(GattAttributes.LN_FEATURE);
-    public final static UUID UUID_LOCAL_TIME_INFORMATION = UUID
-            .fromString(GattAttributes.LOCAL_TIME_INFORMATION);
-    public final static UUID UUID_LOCATION_AND_SPEED = UUID
-            .fromString(GattAttributes.LOCATION_AND_SPEED);
-    public final static UUID UUID_MAGNETIC_DECLINATION = UUID
-            .fromString(GattAttributes.MAGNETIC_DECLINATION);
-    public final static UUID UUID_MAGNETIC_FLUX_DENSITY_2D = UUID
-            .fromString(GattAttributes.MAGNETIC_FLUX_DENSITY_2D);
-    public final static UUID UUID_MAGNETIC_FLUX_DENSITY_3D = UUID
-            .fromString(GattAttributes.MAGNETIC_FLUX_DENSITY_3D);
-    public final static UUID UUID_MAXIMUM_RECOMMENDED_HEART_RATE = UUID
-            .fromString(GattAttributes.MAXIMUM_RECOMMENDED_HEART_RATE);
-    public final static UUID UUID_MEASUREMENT_INTERVAL = UUID
-            .fromString(GattAttributes.MEASUREMENT_INTERVAL);
-    public final static UUID UUID_NEW_ALERT = UUID
-            .fromString(GattAttributes.NEW_ALERT);
-    public final static UUID UUID_NAVIGATION = UUID
-            .fromString(GattAttributes.NAVIGATION);
-    public final static UUID UUID_PERIPHERAL_PREFERRED_CONNECTION_PARAMETERS = UUID
-            .fromString(GattAttributes.PERIPHERAL_PREFERRED_CONNECTION_PARAMETERS);
-    public final static UUID UUID_PERIPHERAL_PRIVACY_FLAG = UUID
-            .fromString(GattAttributes.PERIPHERAL_PRIVACY_FLAG);
-    public final static UUID UUID_POLLEN_CONCENTRATION = UUID
-            .fromString(GattAttributes.POLLEN_CONCENTRATION);
-    public final static UUID UUID_POSITION_QUALITY = UUID
-            .fromString(GattAttributes.POSITION_QUALITY);
-    public final static UUID UUID_PRESSURE = UUID
-            .fromString(GattAttributes.PRESSURE);
 
     // Descriptors UUID's
     public final static UUID UUID_CHARACTERISTIC_AGGREGATE_FORMAT = UUID

@@ -26,22 +26,22 @@ android {
 }
 
 def AAVersion = '4.3.0'
+def SupportVersion = '25.3.0'
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:25.3.0'
-    compile 'com.android.support:recyclerview-v7:25.3.0'
-    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile "com.android.support:appcompat-v7:$SupportVersion"
+    compile "com.android.support:recyclerview-v7:$SupportVersion"
+    compile "com.android.support.constraint:constraint-layout:1.0.2"
     testCompile 'junit:junit:4.12'
     compile 'com.jakewharton:butterknife:8.5.1'
     apt 'com.jakewharton:butterknife-compiler:8.5.1'
 
     compile "org.androidannotations:androidannotations-api:$AAVersion"
     apt "org.androidannotations:androidannotations:$AAVersion"
-
-
+    compile 'com.jjoe64:graphview:4.2.1'
 
 }

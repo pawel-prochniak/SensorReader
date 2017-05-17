@@ -153,6 +153,11 @@ public class Utils {
         return hardware_revision_name_string;
     }
 
+    public static int getSensorReadValue(BluetoothGattCharacteristic characteristic) {
+        return characteristic.getIntValue(
+                BluetoothGattCharacteristic.FORMAT_UINT16, 0);
+    }
+
     /**
      * Returns the PNP ID from the given characteristic
      *
@@ -601,6 +606,12 @@ public class Utils {
         }
 
     }
+
+    public static boolean checkCharacteristicsPropertyPresence(int characteristics,
+                                                 int characteristicsSearch) {
+        return (characteristics & characteristicsSearch) == characteristicsSearch;
+    }
+
 
     /**
      * Method to detect whether the device is phone or tablet

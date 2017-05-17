@@ -19,15 +19,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.pprochniak.sensorreader.GATT.adapters.ServiceListItem;
 import com.example.pprochniak.sensorreader.R;
 import com.example.pprochniak.sensorreader.ble.BluetoothLeService;
+import com.example.pprochniak.sensorreader.utils.Constants;
 import com.example.pprochniak.sensorreader.utils.Logger;
 import com.example.pprochniak.sensorreader.utils.UUIDDatabase;
 import com.example.pprochniak.sensorreader.utils.Utils;
+import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.series.DataPoint;
+import com.jjoe64.graphview.series.LineGraphSeries;
 
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
 
+import java.text.Format;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -53,12 +59,6 @@ public class ServicesFragment extends Fragment {
     private static final long SERVICE_DISCOVERY_TIMEOUT = 10000;
     static ArrayList<HashMap<String, BluetoothGattService>> mGattServiceData =
             new ArrayList<HashMap<String, BluetoothGattService>>();
-    static ArrayList<HashMap<String, BluetoothGattService>> mGattServiceFindMeData =
-            new ArrayList<HashMap<String, BluetoothGattService>>();
-    static ArrayList<HashMap<String, BluetoothGattService>> mGattServiceProximityData =
-            new ArrayList<HashMap<String, BluetoothGattService>>();
-    static ArrayList<HashMap<String, BluetoothGattService>> mGattServiceSensorHubData =
-            new ArrayList<HashMap<String, BluetoothGattService>>();
     private static ArrayList<HashMap<String, BluetoothGattService>> mGattdbServiceData =
             new ArrayList<HashMap<String, BluetoothGattService>>();
     private static ArrayList<HashMap<String, BluetoothGattService>> mGattServiceMasterData =
@@ -67,11 +67,48 @@ public class ServicesFragment extends Fragment {
     @Bean GattController gattController;
     private ServicesDelegatesAdapter recyclerAdapter;
     private BroadcastReceiver gattListener;
-    private Timer mTimer;
+    LineGraphSeries<DataPoint> series1 = new LineGraphSeries<>();
+    LineGraphSeries<DataPoint> series2 = new LineGraphSeries<>();
+    int seriesSwitch = 0;
+    int xCounter = 0;
 
     // View bindings
     @BindView(R.id.services_not_found) TextView servicesNotFound;
     @BindView(R.id.services_recycler_view) RecyclerView servicesRecyclerView;
+    @BindView(R.id.graph) GraphView graphView;
+
+    private final BroadcastReceiver mGattUpdateListener = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+            Bundle extras = intent.getExtras();
+            int receivedValue;
+            LineGraphSeries<DataPoint> series;
+            switch (seriesSwitch) {
+                case 0:
+                    series = series1;
+                    break;
+                case 1:
+                    series = series2;
+                    break;
+                default:
+                    return;
+            }
+
+            // GATT Data available
+            if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
+                if (extras.containsKey(Constants.EXTRA_SENSOR_VALUE) && xCounter < 1000) {
+                    receivedValue = extras.getInt(Constants.EXTRA_SENSOR_VALUE);
+                    Log.d(TAG, "onReceive: appending point: "+xCounter+","+receivedValue);
+                    series.appendData(new DataPoint(xCounter++, receivedValue), true, 1000);
+                } else {
+                    Log.d(TAG, "onReceive: adding series to graph");
+                    graphView.addSeries(series);
+                    xCounter = 0;
+                }
+            }
+        }
+    };
 
     private final BroadcastReceiver mServiceDiscoveryListener = new BroadcastReceiver() {
         @Override
@@ -80,8 +117,6 @@ public class ServicesFragment extends Fragment {
             if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED
                     .equals(action)) {
                 Logger.e("Service discovered");
-                if (mTimer != null)
-                    mTimer.cancel();
                 prepareGattServices(BluetoothLeService.getSupportedGattServices());
 
                 /*
@@ -92,8 +127,6 @@ public class ServicesFragment extends Fragment {
                 }
             } else if (BluetoothLeService.ACTION_GATT_SERVICE_DISCOVERY_UNSUCCESSFUL
                     .equals(action)) {
-                if (mTimer != null)
-                    mTimer.cancel();
                 showNoServiceDiscoverAlert();
             }
         }
@@ -105,6 +138,7 @@ public class ServicesFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.services_fragment, container, false);
         ButterKnife.bind(this, rootView);
         setAdapter();
+        setSeriesProperties();
         Logger.d(TAG, "Created views of ServicesFragment");
         Handler delayHandler = new Handler();
         delayHandler.postDelayed(() -> {
@@ -113,6 +147,10 @@ public class ServicesFragment extends Fragment {
                 BluetoothLeService.discoverServices();
         }, DELAY_PERIOD);
         return rootView;
+    }
+
+    private void setSeriesProperties() {
+        series2.setBackgroundColor(R.color.colorAccent);
     }
 
     @Override
@@ -132,6 +170,7 @@ public class ServicesFragment extends Fragment {
     public void onPause() {
         isInFragment = false;
         getActivity().unregisterReceiver(mServiceDiscoveryListener);
+        getActivity().unregisterReceiver(mGattUpdateListener);
         if (gattListener != null) {
             getActivity().unregisterReceiver(gattListener);
         }
@@ -164,14 +203,10 @@ public class ServicesFragment extends Fragment {
      * @param gattServices
      */
     private void prepareData(List<BluetoothGattService> gattServices) {
-        boolean mFindmeSet = false;
-        boolean mProximitySet = false;
-        boolean mGattSet = false;
         if (gattServices == null)
             return;
         // Clear all array list before entering values.
         mGattServiceData.clear();
-        mGattServiceFindMeData.clear();
         mGattServiceMasterData.clear();
         if (recyclerAdapter != null) recyclerAdapter.clearList();
 
@@ -179,118 +214,36 @@ public class ServicesFragment extends Fragment {
         for (BluetoothGattService gattService : gattServices) {
             HashMap<String, BluetoothGattService> currentServiceData = new HashMap<String, BluetoothGattService>();
             UUID uuid = gattService.getUuid();
-            // Optimization code for FindMe Profile
-            if (uuid.equals(UUIDDatabase.UUID_IMMEDIATE_ALERT_SERVICE)) {
-                currentServiceData.put(LIST_UUID, gattService);
-                mGattServiceMasterData.add(currentServiceData);
-                if (!mGattServiceFindMeData.contains(currentServiceData)) {
-                    mGattServiceFindMeData.add(currentServiceData);
+            if (UUIDDatabase.UUID_SENSOR_READ_SERVICE.equals(uuid)) {
+                // Auto set notify as TRUE
+                for (BluetoothGattCharacteristic gattCharacteristic : gattService.getCharacteristics()) {
+                    if (Utils.checkCharacteristicsPropertyPresence(gattCharacteristic.getProperties(), BluetoothGattCharacteristic.PROPERTY_NOTIFY)) {
+                        BluetoothLeService.setCharacteristicNotification(gattCharacteristic, true);
+                    }
                 }
-                if (!mFindmeSet) {
-                    mFindmeSet = true;
-                    mGattServiceData.add(currentServiceData);
-                }
-
             }
-            // Optimization code for Proximity Profile
-            else if (uuid.equals(UUIDDatabase.UUID_LINK_LOSS_SERVICE)
-                    || uuid.equals(UUIDDatabase.UUID_TRANSMISSION_POWER_SERVICE)) {
-                currentServiceData.put(LIST_UUID, gattService);
-                mGattServiceMasterData.add(currentServiceData);
-                if (!mGattServiceProximityData.contains(currentServiceData)) {
-                    mGattServiceProximityData.add(currentServiceData);
-                }
-                if (!mProximitySet) {
-                    mProximitySet = true;
-                    mGattServiceData.add(currentServiceData);
-                }
 
-            }// Optimization code for GATTDB
-            else if (uuid.equals(UUIDDatabase.UUID_GENERIC_ACCESS_SERVICE)
-                    || uuid.equals(UUIDDatabase.UUID_GENERIC_ATTRIBUTE_SERVICE)) {
-                currentServiceData.put(LIST_UUID, gattService);
-                mGattdbServiceData.add(currentServiceData);
-                if (!mGattSet) {
-                    mGattSet = true;
-                    mGattServiceData.add(currentServiceData);
-                }
-
-            } //Optimization code for HID
-            else if (uuid.equals(UUIDDatabase.UUID_HID_SERVICE)) {
-                /**
-                 * Special handling for KITKAT devices
-                 */
-                if (android.os.Build.VERSION.SDK_INT < 21) {
-                    Logger.e("Kitkat RDK device found");
-                    List<BluetoothGattCharacteristic> allCharacteristics =
-                            gattService.getCharacteristics();
-                    List<BluetoothGattCharacteristic> RDKCharacteristics = new
-                            ArrayList<BluetoothGattCharacteristic>();
-                    List<BluetoothGattDescriptor> RDKDescriptors = new
-                            ArrayList<BluetoothGattDescriptor>();
-
-
-                    //Find all Report characteristics
-                    for (BluetoothGattCharacteristic characteristic : allCharacteristics) {
-                        if (characteristic.getUuid().equals(UUIDDatabase.UUID_REP0RT)) {
-                            RDKCharacteristics.add(characteristic);
-                        }
-                    }
-
-                    //Find all Report descriptors
-                    for (BluetoothGattCharacteristic rdkcharacteristic : RDKCharacteristics) {
-                        List<BluetoothGattDescriptor> descriptors = rdkcharacteristic.
-                                getDescriptors();
-                        for (BluetoothGattDescriptor descriptor : descriptors) {
-                            RDKDescriptors.add(descriptor);
-                        }
-                    }
-                    /**
-                     * Wait for all  descriptors to receive
-                     */
-                    if (RDKDescriptors.size() == RDKCharacteristics.size() * 2) {
-
-                        for (int pos = 0, descPos = 0; descPos < RDKCharacteristics.size(); pos++, descPos++) {
-                            BluetoothGattCharacteristic rdkcharacteristic =
-                                    RDKCharacteristics.get(descPos);
-                            //Mapping the characteristic and descriptors
-                            Logger.e("Pos-->" + pos);
-                            Logger.e("Pos+1-->" + (pos + 1));
-                            BluetoothGattDescriptor clientdescriptor = RDKDescriptors.get(pos);
-                            BluetoothGattDescriptor reportdescriptor = RDKDescriptors.get(pos + 1);
-                            if (!rdkcharacteristic.getDescriptors().contains(clientdescriptor))
-                                rdkcharacteristic.addDescriptor(clientdescriptor);
-                            if (!rdkcharacteristic.getDescriptors().contains(reportdescriptor))
-                                rdkcharacteristic.addDescriptor(reportdescriptor);
-                            pos++;
-                        }
-                    }
-                    currentServiceData.put(LIST_UUID, gattService);
-                    mGattServiceMasterData.add(currentServiceData);
-                    mGattServiceData.add(currentServiceData);
-                } else {
-                    currentServiceData.put(LIST_UUID, gattService);
-                    mGattServiceMasterData.add(currentServiceData);
-                    mGattServiceData.add(currentServiceData);
-                }
-
-            } else {
-                currentServiceData.put(LIST_UUID, gattService);
-                mGattServiceMasterData.add(currentServiceData);
-                mGattServiceData.add(currentServiceData);
-            }
+            currentServiceData.put(LIST_UUID, gattService);
+            mGattServiceMasterData.add(currentServiceData);
+            mGattServiceData.add(currentServiceData);
 
         }
         gattController.setGattServiceMasterData(mGattServiceMasterData);
-        if (mGattdbServiceData.size() > 0) {
-            displayAllGattData();
+        if (mGattServiceData.size() > 0) {
+            subscribeToGattUpdates();
         } else {
             showNoServiceDiscoverAlert();
         }
     }
 
+
     private void displayAllGattData() {
-        recyclerAdapter.notifyServiceListChanged();
+        if (mGattdbServiceData.contains(UUIDDatabase.UUID_SENSOR_READ_SERVICE.toString()))
+            recyclerAdapter.notifyServiceListChanged();
+    }
+
+    private void subscribeToGattUpdates() {
+        getActivity().registerReceiver(mGattUpdateListener, Utils.makeGattUpdateIntentFilter());
     }
 
 }

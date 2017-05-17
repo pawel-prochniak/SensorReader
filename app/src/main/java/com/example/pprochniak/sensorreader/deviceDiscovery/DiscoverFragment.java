@@ -220,7 +220,6 @@ public class DiscoverFragment extends Fragment {
             if (enable) {
                 if (!scanningInProgress) {
                     Logger.d(TAG, "Starting BLE scan");
-                    startScanTimer();
                     scanningInProgress = true;
                     if (Build.VERSION.SDK_INT < 21) bluetoothAdapter.startLeScan(mLeScanCallback);
                     else bleScanner.startScan(scanFilters,scanSettings,scanCallbackAPI21);
@@ -404,6 +403,9 @@ public class DiscoverFragment extends Fragment {
                                 deviceListAdapter.notifyDataSetChanged();
                             } catch (Exception e) {
                                 e.printStackTrace();
+                            }
+                            if (deviceListAdapter.deviceList.size() == 1) {
+                                startScanTimer();
                             }
                         }
                     }

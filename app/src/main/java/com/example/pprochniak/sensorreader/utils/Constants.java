@@ -40,36 +40,7 @@ public class Constants {
     /**
      * Extras Constants
      */
-    public static final String EXTRA_HRM_EEVALUE = "com.cypress.cysmart.backgroundservices." +
-            "EXTRA_HRM_EEVALUE";
-    public static final String EXTRA_HRM_RRVALUE = "com.cypress.cysmart.backgroundservices." +
-            "EXTRA_HRM_RRVALUE";
-    public static final String EXTRA_HRM_VALUE = "com.cypress.cysmart.backgroundservices." +
-            "EXTRA_HRM_VALUE";
-    public static final String EXTRA_BSL_VALUE = "com.cypress.cysmart.backgroundservices." +
-            "EXTRA_BSL_VALUE";
-    public static final String EXTRA_MNS_VALUE = "com.cypress.cysmart.backgroundservices." +
-            "EXTRA_MNS_VALUE";
-    public static final String EXTRA_MONS_VALUE = "com.cypress.cysmart.backgroundservices." +
-            "EXTRA_MONS_VALUE";
-    public static final String EXTRA_SNS_VALUE = "com.cypress.cysmart.backgroundservices." +
-            "EXTRA_SNS_VALUE";
-    public static final String EXTRA_HRS_VALUE = "com.cypress.cysmart.backgroundservices." +
-            "EXTRA_HRS_VALUE";
-    public static final String EXTRA_FRS_VALUE = "com.cypress.cysmart.backgroundservices." +
-            "EXTRA_FRS_VALUE";
-    public static final String EXTRA_SRS_VALUE = "com.cypress.cysmart.backgroundservices." +
-            "EXTRA_SRS_VALUE";
-    public static final String EXTRA_PNP_VALUE = "com.cypress.cysmart.backgroundservices." +
-            "EXTRA_PNP_VALUE";
-    public static final String EXTRA_SID_VALUE = "com.cypress.cysmart.backgroundservices." +
-            "EXTRA_SID_VALUE";
-    public static final String EXTRA_RCDL_VALUE = "com.cypress.cysmart.backgroundservices." +
-            "EXTRA_RCDL_VALUE";
-    public static final String EXTRA_HTM_VALUE = "com.cypress.cysmart.backgroundservices." +
-            "EXTRA_HTM_VALUE";
-    public static final String EXTRA_HSL_VALUE = "com.cypress.cysmart.backgroundservices." +
-            "EXTRA_HSL_VALUE";
+    public static final String EXTRA_SENSOR_VALUE = "EXTRA_SENSOR_READ_VALUE";
     public static final String EXTRA_BTL_VALUE = "com.cypress.cysmart.backgroundservices." +
             "EXTRA_BTL_VALUE";
     public static final String EXTRA_CAPPROX_VALUE = "com.cypress.cysmart.backgroundservices." +
@@ -154,13 +125,7 @@ public class Constants {
             "EXTRA_DESCRIPTOR_REPORT_REFERENCE_TYPE";
     public static final String EXTRA_CHARACTERISTIC_ERROR_MESSAGE = "com.cypress.cysmart.backgroundservices." +
             "EXTRA_CHARACTERISTIC_ERROR_MESSAGE";
-    /**
-     * Links
-     */
-    public static final String LINK_CONTACT_US = "http://www.cypress.com/contactus/";
-    public static final String LINK_BLE_PRODUCTS = "http://www.cypress.com/ble";
-    public static final String LINK_CYPRESS_HOME = "http://www.cypress.com/";
-    public static final String LINK_CYSMART_MOBILE = "http://www.cypress.com/cysmartmobile/";
+
 
     /**
      * Descriptor constants
@@ -196,16 +161,6 @@ public class Constants {
     public static final String PREF_PROGRAM_ROW_NO = "PREF_PROGRAM_ROW_NO";
     public static final String PREF_PROGRAM_ROW_START_POS = "PREF_PROGRAM_ROW_START_POS";
     public static final String PREF_ARRAY_ID = "PREF_EXTRA_ARRAY_ID";
-    /**
-     * OTA File Selection Extras
-     */
-    public static final String REQ_FILE_COUNT = "REQ_FILE_COUNT";
-    public static final String SELECTION_FLAG = "SELECTION_FLAG";
-    public static final String ARRAYLIST_SELECTED_FILE_PATHS = "ARRAYLIST_SELECTED_FILE_PATHS";
-    public static final String ARRAYLIST_SELECTED_FILE_NAMES = "ARRAYLIST_SELECTED_FILE_NAMES";
-    public static final String REQ_FILE_COUNT_STATE = "REQ_FILE_COUNT_STATE";
-    public static final String OTA_OPTION = "OTA_OPTION";
-    public static final String OTA_OPTION_SELCETED = "OTA_OPTION_SELCETED";
     /**
      * Shared Prefernce Status File State
      */
@@ -251,12 +206,6 @@ public class Constants {
      */
     public static final int FIRST_BITMASK = 0x01;
     /**
-     * OTA and RDK Disable flags
-     */
-    public static final boolean OTA_ENABLED = true;
-    public static final boolean RDK_ENABLED = true;
-    public static final boolean GMS_ENABLED = true;
-    /**
      * Fragment Tags
      */
     public static String DEVICE_DISCOVERY_FRAGMENT_TAG = "Discover devices";
@@ -267,21 +216,5 @@ public class Constants {
      */
     public static String DATA_LOGGER_FILE_NAAME = "file name";
     public static String DATA_LOGGER_FLAG = "Data Logger Flag";
-
-    /**
-     * Glucose Bundle constants
-     */
-    public static String GLS_SEQ_NO = "Sequence no";
-    public static String GLS_CARB_ID = "Carbohydrate id";
-    public static String GLS_CARB_UNITS = "Carbohydrate units";
-    public static String GLS_MEAL = "Meal";
-    public static String GLS_TESTER = "Tester";
-    public static String GLS_HEALTH = "Health";
-    public static String GLS_EXERCISE_DURATION = "Exercise Duration";
-    public static String GLS_EXERCISE_INTENSITY = "Exercise intensity";
-    public static String GLS_MEDICATION_ID = "Medication id";
-    public static String GLS_MEDICATION_QUANTITY = "Medication quantity";
-    public static String GLS_MEDICATION_UNIT = "Medication unit";
-    public static String GLS_HBA1C = "hba1c";
 
 }
