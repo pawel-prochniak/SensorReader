@@ -111,11 +111,11 @@ public class DiscoverFragment extends Fragment {
     @AfterInject
     public void afterInject() {
         servicesFragment = new ServicesFragment_();
-        checkBleSupportAndInitialize();
     }
 
     @AfterViews
     public void afterViews() {
+        checkBleSupportAndInitialize();
         setRecyclerWithAdapter();
         Logger.createDataLoggerFile(getActivity());
         scanButton.setOnClickListener((view) -> {
@@ -146,7 +146,6 @@ public class DiscoverFragment extends Fragment {
                 scanSettings = new ScanSettings.Builder()
                         .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
             }
-            scanLeDevice(true);
         }
         Logger.e("Registering receiver in Profile scannng");
         getActivity().registerReceiver(mGattConnectReceiver,
@@ -216,6 +215,7 @@ public class DiscoverFragment extends Fragment {
      * @param enable
      */
     private void scanLeDevice(final boolean enable) {
+        if (bluetoothAdapter == null || bleScanner == null) checkBleSupportAndInitialize();
         if (isInFragment) {
             if (enable) {
                 if (!scanningInProgress) {
@@ -297,6 +297,7 @@ public class DiscoverFragment extends Fragment {
                             Toast.makeText(getActivity(),
                                     R.string.profile_cannot_connect_message,
                                     Toast.LENGTH_SHORT).show();
+                        progressDialog.hide();
                             if (deviceListAdapter != null)
                                 deviceListAdapter.clear();
                             try {
@@ -417,6 +418,31 @@ public class DiscoverFragment extends Fragment {
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction().remove(this).commit();
         fragmentManager.beginTransaction().replace(R.id.main_container,servicesFragment).commit();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // User chose not to enable BlueTooth.
+        if (requestCode == REQUEST_ENABLE_BT
+                && resultCode == Activity.RESULT_CANCELED) {
+            getActivity().finish();
+        } else {
+            // Check which request we're responding to
+            if (requestCode == REQUEST_ENABLE_BT) {
+
+                // Make sure the request was successful
+                if (resultCode == Activity.RESULT_OK) {
+                    Toast.makeText(
+                            getActivity(),
+                            getResources().getString(
+                                    R.string.device_bluetooth_on),
+                            Toast.LENGTH_SHORT).show();
+                    scanLeDevice(true);
+                } else {
+                    getActivity().finish();
+                }
+            }
+        }
     }
 
 

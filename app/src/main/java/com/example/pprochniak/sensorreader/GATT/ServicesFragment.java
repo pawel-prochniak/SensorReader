@@ -1,15 +1,16 @@
 package com.example.pprochniak.sensorreader.GATT;
 
 import android.bluetooth.BluetoothGattCharacteristic;
-import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.constraint.solver.widgets.ConstraintAnchor;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,7 +20,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.pprochniak.sensorreader.GATT.adapters.ServiceListItem;
 import com.example.pprochniak.sensorreader.R;
 import com.example.pprochniak.sensorreader.ble.BluetoothLeService;
 import com.example.pprochniak.sensorreader.utils.Constants;
@@ -27,17 +27,16 @@ import com.example.pprochniak.sensorreader.utils.Logger;
 import com.example.pprochniak.sensorreader.utils.UUIDDatabase;
 import com.example.pprochniak.sensorreader.utils.Utils;
 import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.LegendRenderer;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
 
-import java.text.Format;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Timer;
 import java.util.UUID;
 
 import butterknife.BindView;
@@ -54,9 +53,9 @@ public class ServicesFragment extends Fragment {
     public static boolean isInFragment = false;
 
     private static final String LIST_UUID = "UUID";
-    // Stops scanning after 2 seconds.
     private static final long DELAY_PERIOD = 500;
     private static final long SERVICE_DISCOVERY_TIMEOUT = 10000;
+    private static final int SERIES_LENGTH = 500; // how many data points will be collected for each axis
     static ArrayList<HashMap<String, BluetoothGattService>> mGattServiceData =
             new ArrayList<HashMap<String, BluetoothGattService>>();
     private static ArrayList<HashMap<String, BluetoothGattService>> mGattdbServiceData =
@@ -67,45 +66,34 @@ public class ServicesFragment extends Fragment {
     @Bean GattController gattController;
     private ServicesDelegatesAdapter recyclerAdapter;
     private BroadcastReceiver gattListener;
-    LineGraphSeries<DataPoint> series1 = new LineGraphSeries<>();
-    LineGraphSeries<DataPoint> series2 = new LineGraphSeries<>();
-    int seriesSwitch = 0;
+    LineGraphSeries<DataPoint> seriesX = new LineGraphSeries<>();
+    LineGraphSeries<DataPoint> seriesY = new LineGraphSeries<>();
+    LineGraphSeries<DataPoint> seriesZ = new LineGraphSeries<>();
     int xCounter = 0;
+    int yCounter = 0;
+    int zCounter = 0;
+    long xTimestamp, yTimestamp, zTimestamp;
+
+    boolean appendingCompleted = false;
 
     // View bindings
     @BindView(R.id.services_not_found) TextView servicesNotFound;
-    @BindView(R.id.services_recycler_view) RecyclerView servicesRecyclerView;
     @BindView(R.id.graph) GraphView graphView;
+    @BindView(R.id.x_speed) TextView xSpeedView;
+    @BindView(R.id.y_speed) TextView ySpeedView;
+    @BindView(R.id.z_speed) TextView zSpeedView;
+    @BindView(R.id.total_time) TextView totalTimeView;
+
 
     private final BroadcastReceiver mGattUpdateListener = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
             Bundle extras = intent.getExtras();
-            int receivedValue;
-            LineGraphSeries<DataPoint> series;
-            switch (seriesSwitch) {
-                case 0:
-                    series = series1;
-                    break;
-                case 1:
-                    series = series2;
-                    break;
-                default:
-                    return;
-            }
 
             // GATT Data available
             if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
-                if (extras.containsKey(Constants.EXTRA_SENSOR_VALUE) && xCounter < 1000) {
-                    receivedValue = extras.getInt(Constants.EXTRA_SENSOR_VALUE);
-                    Log.d(TAG, "onReceive: appending point: "+xCounter+","+receivedValue);
-                    series.appendData(new DataPoint(xCounter++, receivedValue), true, 1000);
-                } else {
-                    Log.d(TAG, "onReceive: adding series to graph");
-                    graphView.addSeries(series);
-                    xCounter = 0;
-                }
+                receiveValueAndAppendPoint(extras);
             }
         }
     };
@@ -137,8 +125,7 @@ public class ServicesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.services_fragment, container, false);
         ButterKnife.bind(this, rootView);
-        setAdapter();
-        setSeriesProperties();
+        setGraphProperties();
         Logger.d(TAG, "Created views of ServicesFragment");
         Handler delayHandler = new Handler();
         delayHandler.postDelayed(() -> {
@@ -149,8 +136,21 @@ public class ServicesFragment extends Fragment {
         return rootView;
     }
 
-    private void setSeriesProperties() {
-        series2.setBackgroundColor(R.color.colorAccent);
+    private void setGraphProperties() {
+        graphView.getGridLabelRenderer().setLabelVerticalWidth(100);
+        seriesX.setTitle("X");
+        seriesY.setTitle("Y");
+        seriesZ.setTitle("Z");
+        seriesY.setColor(Color.rgb(255, 0, 0));
+        seriesZ.setColor(Color.rgb(0, 255, 0));
+        graphView.getViewport().setXAxisBoundsManual(true);
+        graphView.getViewport().setMinX(0);
+        graphView.getViewport().setMaxX(SERIES_LENGTH);
+        graphView.addSeries(seriesX);
+        graphView.addSeries(seriesY);
+        graphView.addSeries(seriesZ);
+        graphView.getLegendRenderer().setVisible(true);
+        graphView.getLegendRenderer().setAlign(LegendRenderer.LegendAlign.TOP);
     }
 
     @Override
@@ -179,13 +179,71 @@ public class ServicesFragment extends Fragment {
 
     private void setAdapter() {
         recyclerAdapter = new ServicesDelegatesAdapter();
-        servicesRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        servicesRecyclerView.setAdapter(recyclerAdapter);
         gattListener = recyclerAdapter.getGattUpdateReceiver();
     }
 
     private void showNoServiceDiscoverAlert() {
         servicesNotFound.setVisibility(View.VISIBLE);
+    }
+
+    private void receiveValueAndAppendPoint(Bundle extras) {
+        int receivedValue;
+        int counter;
+        LineGraphSeries<DataPoint> series;
+
+        if (extras.containsKey(Constants.EXTRA_ACC_X_VALUE) && xCounter < SERIES_LENGTH) {
+            if (xCounter == 0) xTimestamp = System.currentTimeMillis();
+            series = seriesX;
+            counter = xCounter++;
+            receivedValue = extras.getInt(Constants.EXTRA_ACC_X_VALUE);
+            if (xCounter == SERIES_LENGTH) {
+                Log.d(TAG, "receiveValueAndAppendPoint: x series finished");
+                float speed = SERIES_LENGTH * 1000 / (System.currentTimeMillis() - xTimestamp);
+                xSpeedView.setText(String.valueOf(speed));
+            }
+        }
+        else if (extras.containsKey(Constants.EXTRA_ACC_Y_VALUE) && yCounter < SERIES_LENGTH) {
+            if (yCounter == 0) yTimestamp = System.currentTimeMillis();
+            series = seriesY;
+            counter = yCounter++;
+            receivedValue = extras.getInt(Constants.EXTRA_ACC_Y_VALUE);
+            if (yCounter == SERIES_LENGTH) {
+                Log.d(TAG, "receiveValueAndAppendPoint: y series finished");
+                float speed = SERIES_LENGTH * 1000 / (System.currentTimeMillis() - yTimestamp);
+                ySpeedView.setText(String.valueOf(speed));
+            }
+        }
+        else if (extras.containsKey(Constants.EXTRA_ACC_Z_VALUE) && zCounter < SERIES_LENGTH) {
+            if (zCounter == 0) zTimestamp = System.currentTimeMillis();
+            series = seriesZ;
+            counter = zCounter++;
+            receivedValue = extras.getInt(Constants.EXTRA_ACC_Z_VALUE);
+            if (zCounter == SERIES_LENGTH) {
+                Log.d(TAG, "receiveValueAndAppendPoint: z series finished");
+                float speed = SERIES_LENGTH * 1000 / (System.currentTimeMillis() - zTimestamp);
+                zSpeedView.setText(String.valueOf(speed));
+            }
+        }
+        else return; // unknown data received
+
+        // calculate total time if all series ended
+        if (xCounter == SERIES_LENGTH && yCounter == SERIES_LENGTH && zCounter == SERIES_LENGTH) {
+            long least;
+            // Find earliest timestamp
+            if (xTimestamp - yTimestamp < 0) {
+                least = xTimestamp;
+            } else least = yTimestamp;
+            if (least - zTimestamp > 0) least = zTimestamp;
+
+            long totalTime = (System.currentTimeMillis() - least) / 1000;
+            Log.d(TAG, "receiveValueAndAppendPoint: total time: "+String.valueOf(totalTime));
+            totalTimeView.setText(String.valueOf(totalTime));
+        }
+
+        if (counter <= SERIES_LENGTH) {
+            series.appendData(new DataPoint(counter, receivedValue), true, SERIES_LENGTH);
+        }
+
     }
 
     /**
@@ -208,7 +266,6 @@ public class ServicesFragment extends Fragment {
         // Clear all array list before entering values.
         mGattServiceData.clear();
         mGattServiceMasterData.clear();
-        if (recyclerAdapter != null) recyclerAdapter.clearList();
 
         // Loops through available GATT Services.
         for (BluetoothGattService gattService : gattServices) {

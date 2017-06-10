@@ -54,7 +54,9 @@ public class GattAttributes {
     /**
      * Sensor read characteristics
      */
-    public static final String SENSOR_READ = "0000A102-0000-1000-8000-00805f9b34fb";
+    public static final String ACC_X = "0000A102-0000-1000-8000-00805f9b34fb";
+    public static final String ACC_Y = "0000A102-0000-1000-8000-00805f9b34fc";
+    public static final String ACC_Z = "0000A102-0000-1000-8000-00805f9b34fd";
 
     /**
      * Unused service UUIDS
@@ -345,17 +347,13 @@ public class GattAttributes {
         attributesUUID.put(UUIDDatabase.UUID_ACCELEROMETER_SERVICE, "Accelerometer Service");
         attributesUUID
                 .put(UUIDDatabase.UUID_ANALOG_TEMPERATURE_SERVICE, "Analog Temperature Service");
-        attributesUUID.put(UUIDDatabase.UUID_CSC_SERVICE, "Cycling Speed & Cadence Service");
         attributesUUID.put(UUIDDatabase.UUID_SENSOR_READ_SERVICE, "Sensor Read Service");
 
         // Sensor Read Characteristics
-        attributesUUID.put(UUIDDatabase.UUID_SENSOR_READ, "Sensor read");
+        attributesUUID.put(UUIDDatabase.UUID_ACC_X, "Accelerometer X read");
+        attributesUUID.put(UUIDDatabase.UUID_ACC_Y, "Accelerometer Y read");
+        attributesUUID.put(UUIDDatabase.UUID_ACC_Z, "Accelerometer Z read");
 
-        // Unused Services
-        attributesUUID
-                .put(UUIDDatabase.UUID_ALERT_NOTIFICATION_SERVICE, "Alert notification Service");
-        attributesUUID.put(UUIDDatabase.UUID_HID_SERVICE,
-                "Human Interface Device Service");
 
         // Device Information Characteristics
         attributesUUID.put(UUIDDatabase.UUID_SYSTEM_ID, "System ID");
@@ -389,39 +387,17 @@ public class GattAttributes {
         attributesUUID.put(UUIDDatabase.UUID_RGB_LED_CUSTOM, "RGB LED");
 
 
-        // Cycling Speed Characteristics
-        attributesUUID.put(UUIDDatabase.UUID_CSC_MEASURE, "Cycling Speed and Cadence Measurement");
-        attributesUUID.put(UUIDDatabase.UUID_CSC_FEATURE, "Cycling Speed and Cadence Feature");
-
-
         // SensorHub Characteristics
         attributesUUID.put(UUIDDatabase.UUID_ACCELEROMETER_ANALOG_SENSOR,
                 "Accelerometer Analog Sensor");
         attributesUUID.put(UUIDDatabase.UUID_ACCELEROMETER_DATA_ACCUMULATION,
                 "Accelerometer Data Accumulation");
-        attributesUUID.put(UUIDDatabase.UUID_ACCELEROMETER_READING_X, "Accelerometer X Reading");
-        attributesUUID.put(UUIDDatabase.UUID_ACCELEROMETER_READING_Y, "Accelerometer Y Reading");
-        attributesUUID.put(UUIDDatabase.UUID_ACCELEROMETER_READING_Z, "Accelerometer Z Reading");
         attributesUUID.put(UUIDDatabase.UUID_ACCELEROMETER_SENSOR_SCAN_INTERVAL,
                 "Accelerometer Sensor Scan Interval");
         attributesUUID.put(UUIDDatabase.UUID_TEMPERATURE_ANALOG_SENSOR, "Temperature Analog Sensor");
         attributesUUID.put(UUIDDatabase.UUID_TEMPERATURE_READING, "Temperature Reading");
         attributesUUID.put(UUIDDatabase.UUID_TEMPERATURE_SENSOR_SCAN_INTERVAL,
                 "Temperature Sensor Scan Interval");
-
-        //HID Characteristics
-        attributesUUID.put(UUIDDatabase.UUID_PROTOCOL_MODE, "Protocol Mode");
-        attributesUUID.put(UUIDDatabase.UUID_REP0RT, "Report");
-        attributesUUID.put(UUIDDatabase.UUID_REPORT_MAP, "Report Map");
-        attributesUUID.put(UUIDDatabase.UUID_BOOT_KEYBOARD_INPUT_REPORT, "Boot Keyboard Input Report");
-        attributesUUID.put(UUIDDatabase.UUID_BOOT_KEYBOARD_OUTPUT_REPORT, "Boot Keyboard Output Report");
-        attributesUUID.put(UUIDDatabase.UUID_BOOT_MOUSE_INPUT_REPORT, "Boot Mouse Input Report");
-        attributesUUID.put(UUIDDatabase.UUID_HID_CONTROL_POINT, "HID Control Point");
-        attributesUUID.put(UUIDDatabase.UUID_HID_INFORMATION, "HID Information");
-
-        //OTA Characteristics
-        attributesUUID.put(UUIDDatabase.UUID_OTA_UPDATE_SERVICE, "Bootloader Service");
-        attributesUUID.put(UUIDDatabase.UUID_OTA_CHARACTERISTIC, "Bootloader Data Characteristic");
 
         // Unused Characteristics
         attributesUUID.put(UUIDDatabase.UUID_FIRMWARE_REVISION_STRING, "Firmware Revision String");

@@ -64,7 +64,7 @@ public class Logger {
 
     public static void datalog(String message) {
         // show(Log.INFO, mLogTag, message);
-        saveLogData(message);
+        // saveLogData(message);
 
     }
 

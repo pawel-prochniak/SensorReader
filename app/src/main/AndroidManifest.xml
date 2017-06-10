@@ -35,7 +35,8 @@
         </receiver>
 
         <activity android:name=".MainActivity_"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:screenOrientation="landscape">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

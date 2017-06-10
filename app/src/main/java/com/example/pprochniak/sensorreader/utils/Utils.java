@@ -64,6 +64,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Class for commonly used methods in the project
@@ -619,46 +620,6 @@ public class Utils {
     public static boolean isTablet(Context context) {
         return (context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_LARGE;
     }
-
-//    /**
-//     * Alert dialog to display when the GATT Server is disconnected from the
-//     * client
-//     *
-//     * @param context
-//     */
-//
-//    public static void connectionLostalertbox(final Activity context) {
-//        if(BluetoothLeService.getConnectionState()==0){
-//            //Disconnected
-//            AlertDialog alert;
-//            AlertDialog.Builder builder = new AlertDialog.Builder(context);
-//            builder.setMessage(
-//                    context.getResources().getString(
-//                            R.string.alert_message_reconnect))
-//                    .setCancelable(false)
-//                    .setTitle(context.getResources().getString(R.string.app_name))
-//                    .setPositiveButton(
-//                            context.getResources().getString(
-//                                    R.string.alert_message_exit_ok),
-//                            new DialogInterface.OnClickListener() {
-//                                public void onClick(DialogInterface dialog, int id) {
-//                                    Intent intentActivity = context.getIntent();
-//                                    context.finish();
-//                                    context.overridePendingTransition(
-//                                            R.anim.slide_left, R.anim.push_left);
-//                                    context.startActivity(intentActivity);
-//                                    context.overridePendingTransition(
-//                                            R.anim.slide_right, R.anim.push_right);
-//                                }
-//                            });
-//            alert = builder.create();
-//            alert.setCanceledOnTouchOutside(false);
-//            if (!context.isDestroyed()&&context!=null)
-//                alert.show();
-//
-//
-//        }
-//    }
 
     public static void bondingProgressDialog(final Activity context, ProgressDialog pDialog,
                                              boolean status) {

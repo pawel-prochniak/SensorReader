@@ -40,7 +40,10 @@ public class Constants {
     /**
      * Extras Constants
      */
-    public static final String EXTRA_SENSOR_VALUE = "EXTRA_SENSOR_READ_VALUE";
+    public static final String EXTRA_ACC_X_VALUE = "EXTRA_ACC_X_READ_VALUE";
+    public static final String EXTRA_ACC_Y_VALUE = "EXTRA_ACC_Y_READ_VALUE";
+    public static final String EXTRA_ACC_Z_VALUE = "EXTRA_ACC_Z_READ_VALUE";
+
     public static final String EXTRA_BTL_VALUE = "com.cypress.cysmart.backgroundservices." +
             "EXTRA_BTL_VALUE";
     public static final String EXTRA_CAPPROX_VALUE = "com.cypress.cysmart.backgroundservices." +

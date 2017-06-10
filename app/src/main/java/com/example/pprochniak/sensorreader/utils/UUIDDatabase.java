@@ -43,7 +43,9 @@ public class UUIDDatabase {
      */
     public static final UUID UUID_SENSOR_READ_SERVICE = UUID
             .fromString(GattAttributes.SENSOR_READ_SERVICE);
-    public static final UUID UUID_SENSOR_READ = UUID.fromString(GattAttributes.SENSOR_READ);
+    public static final UUID UUID_ACC_X = UUID.fromString(GattAttributes.ACC_X);
+    public static final UUID UUID_ACC_Y = UUID.fromString(GattAttributes.ACC_Y);
+    public static final UUID UUID_ACC_Z = UUID.fromString(GattAttributes.ACC_Z);
 
     /**
      * Device information related UUID
@@ -123,15 +125,6 @@ public class UUIDDatabase {
             .fromString(GattAttributes.RGB_LED_CUSTOM);
 
     /**
-     * Cycling Speed & Cadence related uuid
-     */
-    public final static UUID UUID_CSC_SERVICE = UUID
-            .fromString(GattAttributes.CSC_SERVICE);
-    public final static UUID UUID_CSC_MEASURE = UUID
-            .fromString(GattAttributes.CSC_MEASUREMENT);
-    public final static UUID UUID_CSC_FEATURE = UUID
-            .fromString(GattAttributes.CSC_FEATURE);
-    /**
      * Accelerometer related uuid
      */
     public final static UUID UUID_ACCELEROMETER_SERVICE = UUID
@@ -140,12 +133,6 @@ public class UUIDDatabase {
             .fromString(GattAttributes.ACCELEROMETER_ANALOG_SENSOR);
     public final static UUID UUID_ACCELEROMETER_DATA_ACCUMULATION = UUID
             .fromString(GattAttributes.ACCELEROMETER_DATA_ACCUMULATION);
-    public final static UUID UUID_ACCELEROMETER_READING_X = UUID
-            .fromString(GattAttributes.ACCELEROMETER_READING_X);
-    public final static UUID UUID_ACCELEROMETER_READING_Y = UUID
-            .fromString(GattAttributes.ACCELEROMETER_READING_Y);
-    public final static UUID UUID_ACCELEROMETER_READING_Z = UUID
-            .fromString(GattAttributes.ACCELEROMETER_READING_Z);
     public final static UUID UUID_ACCELEROMETER_SENSOR_SCAN_INTERVAL = UUID
             .fromString(GattAttributes.ACCELEROMETER_SENSOR_SCAN_INTERVAL);
     /**
@@ -197,36 +184,6 @@ public class UUIDDatabase {
             .fromString(GattAttributes.GENERIC_ACCESS_SERVICE);
     public final static UUID UUID_GENERIC_ATTRIBUTE_SERVICE = UUID
             .fromString(GattAttributes.GENERIC_ATTRIBUTE_SERVICE);
-
-    /**
-     * HID UUID
-     */
-    public final static UUID UUID_HID_SERVICE = UUID
-            .fromString(GattAttributes.HUMAN_INTERFACE_DEVICE_SERVICE);
-    public final static UUID UUID_PROTOCOL_MODE = UUID
-            .fromString(GattAttributes.PROTOCOL_MODE);
-    public final static UUID UUID_REPORT = UUID
-            .fromString(GattAttributes.REP0RT);
-    public final static UUID UUID_REPORT_MAP = UUID
-            .fromString(GattAttributes.REPORT_MAP);
-    public final static UUID UUID_BOOT_KEYBOARD_INPUT_REPORT = UUID
-            .fromString(GattAttributes.BOOT_KEYBOARD_INPUT_REPORT);
-    public final static UUID UUID_BOOT_KEYBOARD_OUTPUT_REPORT = UUID
-            .fromString(GattAttributes.BOOT_KEYBOARD_OUTPUT_REPORT);
-    public final static UUID UUID_BOOT_MOUSE_INPUT_REPORT = UUID
-            .fromString(GattAttributes.BOOT_MOUSE_INPUT_REPORT);
-    public final static UUID UUID_HID_CONTROL_POINT = UUID
-            .fromString(GattAttributes.HID_CONTROL_POINT);
-    public final static UUID UUID_HID_INFORMATION = UUID
-            .fromString(GattAttributes.HID_INFORMATION);
-    public final static UUID UUID_OTA_CHARACTERISTIC = UUID
-            .fromString(GattAttributes.OTA_CHARACTERISTIC);
-
-    /**
-     * Alert Notification UUID
-     */
-    public final static UUID UUID_ALERT_NOTIFICATION_SERVICE = UUID
-            .fromString(GattAttributes.ALERT_NOTIFICATION_SERVICE);
 
 
     // Descriptors UUID's
