@@ -16,18 +16,23 @@ import android.os.Build;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.pprochniak.sensorreader.GATT.ServicesFragment;
 import com.example.pprochniak.sensorreader.ble.BluetoothLeService;
-import com.example.pprochniak.sensorreader.deviceDiscovery.DiscoverFragment;
-import com.example.pprochniak.sensorreader.deviceDiscovery.DiscoverFragment_;
+import com.example.pprochniak.sensorreader.deviceDiscovery.DevicesFragment;
+import com.example.pprochniak.sensorreader.deviceDiscovery.DevicesFragment_;
 import com.example.pprochniak.sensorreader.utils.Constants;
+import com.example.pprochniak.sensorreader.utils.DrawerController;
 import com.example.pprochniak.sensorreader.utils.Logger;
 import com.example.pprochniak.sensorreader.utils.Utils;
 
+import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EActivity;
 
 import java.io.File;
@@ -38,24 +43,35 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 @EActivity
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
     public static boolean isAppInBackground = false;
 
-    String attachmentFileName = "attachment.cyacd";
+    String attachmentFileName = "attachment.sensorread";
     //Upgrade file catch
     private InputStream attachment = null;
 
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
     private static final int PERMISSIONS_REQUEST_STORAGE = 2;
 
+    @BindView(R.id.drawer_layout) DrawerLayout drawerLayout;
+    @BindView(R.id.drawer) ListView drawerList;
+    @Bean DrawerController drawerController;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        DiscoverFragment discoverFragment = new DiscoverFragment_();
+        ButterKnife.bind(this);
+
+        setupDrawer();
+
+        DevicesFragment devicesFragment = new DevicesFragment_();
 
         // start BLE service
         Intent gattServiceIntent = new Intent(getApplicationContext(),
@@ -63,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
         startService(gattServiceIntent);
 
         // set start fragment
-        setFragment(discoverFragment, Constants.DEVICE_DISCOVERY_FRAGMENT_TAG);
+        drawerController.setFragment(DrawerController.DEVICES_FRAGMENT);
 
         checkPermissions();
 
@@ -95,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
         // Getting the current active fragment
         Fragment currentFragment = getSupportFragmentManager()
                 .findFragmentById(R.id.main_container);
-        if (currentFragment instanceof DiscoverFragment) {
+        if (currentFragment instanceof DevicesFragment) {
             Intent gattServiceIntent = new Intent(getApplicationContext(),
                     BluetoothLeService.class);
             stopService(gattServiceIntent);
@@ -103,6 +119,11 @@ public class MainActivity extends AppCompatActivity {
         unregisterReceiver(mBondStateReceiver);
         isAppInBackground = true;
         super.onPause();
+    }
+
+    @Override
+    public void setTitle(CharSequence title) {
+        super.setTitle(title);
     }
 
     @Override
@@ -156,7 +177,10 @@ public class MainActivity extends AppCompatActivity {
                 );
             }
         }
+    }
 
+    private void setupDrawer() {
+        drawerController.setupDrawer(drawerLayout, drawerList);
     }
 
     /**
@@ -176,8 +200,8 @@ public class MainActivity extends AppCompatActivity {
                 if (state == BluetoothDevice.BOND_BONDING) {
                     // Bonding...
                     String dataLog2 = getResources().getString(R.string.dl_commaseparator)
-                            + "[" + DiscoverFragment.mDeviceName + "|"
-                            + DiscoverFragment.mDeviceAddress + "] " +
+                            + "[" + DevicesFragment.mDeviceName + "|"
+                            + DevicesFragment.mDeviceAddress + "] " +
                             getResources().getString(R.string.dl_connection_pairing_request);
                     Logger.datalog(dataLog2);
 
@@ -187,8 +211,8 @@ public class MainActivity extends AppCompatActivity {
                     // Bonded...
 
                     String dataLog = getResources().getString(R.string.dl_commaseparator)
-                            + "[" + DiscoverFragment.mDeviceName + "|"
-                            + DiscoverFragment.mDeviceAddress + "] " +
+                            + "[" + DevicesFragment.mDeviceName + "|"
+                            + DevicesFragment.mDeviceAddress + "] " +
                             getResources().getString(R.string.dl_connection_paired);
                     Logger.datalog(dataLog);
 
@@ -198,8 +222,8 @@ public class MainActivity extends AppCompatActivity {
                     Utils.stopDialogTimer();
 
                     String dataLog = getResources().getString(R.string.dl_commaseparator)
-                            + "[" + DiscoverFragment.mDeviceName + "|"
-                            + DiscoverFragment.mDeviceAddress + "] " +
+                            + "[" + DevicesFragment.mDeviceName + "|"
+                            + DevicesFragment.mDeviceAddress + "] " +
                             getResources().getString(R.string.dl_connection_pairing_unsupported);
                     Logger.datalog(dataLog);
                 } else {
@@ -227,13 +251,7 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    public void setFragment(Fragment fragment, String tag) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager
-                .beginTransaction()
-                .add(R.id.main_container, fragment, tag)
-                .commit();
-    }
+
 
     // Get intent, action and MIME type
     private void catchUpgradeFile() throws IOException, NullPointerException {

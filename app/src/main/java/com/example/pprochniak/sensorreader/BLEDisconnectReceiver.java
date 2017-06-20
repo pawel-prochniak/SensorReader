@@ -39,7 +39,7 @@ import android.widget.Toast;
 
 import com.example.pprochniak.sensorreader.GATT.ServicesFragment;
 import com.example.pprochniak.sensorreader.ble.BluetoothLeService;
-import com.example.pprochniak.sensorreader.deviceDiscovery.DiscoverFragment;
+import com.example.pprochniak.sensorreader.deviceDiscovery.DevicesFragment;
 import com.example.pprochniak.sensorreader.utils.Logger;
 
 
@@ -60,7 +60,7 @@ public class BLEDisconnectReceiver extends BroadcastReceiver {
                 Toast.makeText(context,
                         context.getResources().getString(R.string.alert_message_bluetooth_disconnect),
                         Toast.LENGTH_SHORT).show();
-                if (!DiscoverFragment.isInFragment && !ServicesFragment.isInFragment) {
+                if (!DevicesFragment.isInFragment && !ServicesFragment.isInFragment) {
                     Logger.e("Not in PSF and SCF");
                     if (BluetoothLeService.getConnectionState() == BluetoothLeService.STATE_DISCONNECTED) {
                         Toast.makeText(context,

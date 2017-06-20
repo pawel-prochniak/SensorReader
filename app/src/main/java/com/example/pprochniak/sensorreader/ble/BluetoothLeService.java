@@ -136,7 +136,7 @@ public class BluetoothLeService extends Service {
     private static int readingCharacteristicCount = 0;
 
     private static int mConnectionState = STATE_DISCONNECTED;
-    private static boolean mOtaExitBootloaderCmdInProgress = false;
+
     /**
      * Device address
      */
@@ -807,67 +807,6 @@ public class BluetoothLeService extends Service {
         }
     }
 
-    public static void writeOTABootLoaderCommand(
-            BluetoothGattCharacteristic characteristic,
-            byte[] value,
-            boolean isExitBootloaderCmd) {
-        synchronized (mGattCallback) {
-            writeOTABootLoaderCommand(characteristic, value);
-            if (isExitBootloaderCmd)
-                mOtaExitBootloaderCmdInProgress = true;
-        }
-    }
-
-    public static void writeOTABootLoaderCommand(
-            BluetoothGattCharacteristic characteristic, byte[] value) {
-        String serviceUUID = characteristic.getService().getUuid().toString();
-        String serviceName = GattAttributes.lookupUUID(characteristic.getService().getUuid(), serviceUUID);
-
-        String characteristicUUID = characteristic.getUuid().toString();
-        String characteristicName = GattAttributes.lookupUUID(characteristic.getUuid(), characteristicUUID);
-
-        String characteristicValue = Utils.ByteArraytoHex(value);
-        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
-            return;
-        } else {
-            byte[] valueByte = value;
-            characteristic.setValue(valueByte);
-            int counter = 20;
-            boolean status;
-            do {
-                int i = 0;
-                characteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT);
-                status = mBluetoothGatt.writeCharacteristic(characteristic);
-                if (!status) {
-                    Log.v("CYSMART", "writeCharacteristic() status: False");
-                    try {
-                        Log.v("CYSMART OTA SLEEP>>>>", "" + i);
-                        i++;
-                        Thread.sleep(100, 0);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            } while (!status && (counter-- > 0));
-
-
-            if (status) {
-                String dataLog = mContext.getResources().getString(R.string.dl_commaseparator) +
-                        "[" + serviceName + "|" + characteristicName + "] " +
-                        mContext.getResources().getString(R.string.dl_characteristic_write_request) +
-                        mContext.getResources().getString(R.string.dl_commaseparator) +
-                        "[ " + characteristicValue + " ]";
-                Logger.datalog(dataLog);
-                Log.v("CYSMART", dataLog);
-
-                //timeStamp("OTA WRITE TIMESTAMP ");
-
-            } else {
-                Log.v("CYSMART", "writeOTABootLoaderCommand failed!");
-            }
-        }
-
-    }
 
     private static String getHexValue(byte[] array) {
         StringBuffer sb = new StringBuffer();

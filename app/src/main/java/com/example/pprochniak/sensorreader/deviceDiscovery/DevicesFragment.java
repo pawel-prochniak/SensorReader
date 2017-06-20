@@ -56,8 +56,8 @@ import butterknife.ButterKnife;
  */
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 @EFragment(R.layout.discover_device_fragment)
-public class DiscoverFragment extends Fragment {
-    private static final String TAG = "DiscoverFragment";
+public class DevicesFragment extends Fragment {
+    private static final String TAG = "DevicesFragment";
 
     public static boolean isInFragment = false;
 
