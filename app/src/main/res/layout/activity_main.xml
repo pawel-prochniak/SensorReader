@@ -13,9 +13,10 @@
     </FrameLayout>
 
     <ListView android:id="@+id/drawer"
-              android:layout_width="120dp"
+              android:layout_width="240dp"
               android:layout_height="match_parent"
               android:layout_gravity="start"
+              android:background="@color/white"
               android:choiceMode="singleChoice"
               android:divider="@android:color/transparent"
               android:dividerHeight="0dp"/>
