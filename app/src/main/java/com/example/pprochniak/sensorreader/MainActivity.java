@@ -86,6 +86,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter) {
+        return super.registerReceiver(receiver, filter);
+    }
+
+    @Override
     protected void onResume() {
         try {
             catchUpgradeFile();

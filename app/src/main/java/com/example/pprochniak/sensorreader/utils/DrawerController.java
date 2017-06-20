@@ -1,6 +1,5 @@
 package com.example.pprochniak.sensorreader.utils;
 
-import android.os.Bundle;
 import android.support.annotation.StringDef;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -13,12 +12,10 @@ import android.widget.ListView;
 import com.example.pprochniak.sensorreader.GATT.ServicesFragment_;
 import com.example.pprochniak.sensorreader.MainActivity;
 import com.example.pprochniak.sensorreader.R;
-import com.example.pprochniak.sensorreader.deviceDiscovery.DevicesFragment;
 import com.example.pprochniak.sensorreader.deviceDiscovery.DevicesFragment_;
 
 import org.androidannotations.annotations.EBean;
 import org.androidannotations.annotations.RootContext;
-import org.androidannotations.annotations.res.StringArrayRes;
 
 import java.lang.annotation.Retention;
 import java.util.ArrayList;
@@ -72,7 +69,7 @@ public class DrawerController implements ListView.OnItemClickListener {
         FragmentManager fragmentManager = activity.getSupportFragmentManager();
         fragmentManager
                 .beginTransaction()
-                .add(R.id.main_container, fragment, tag)
+                .replace(R.id.main_container, fragment, tag)
                 .commit();
     }
 
