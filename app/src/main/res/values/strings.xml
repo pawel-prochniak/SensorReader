@@ -99,7 +99,7 @@
     <string name="alert_message_try_again">Please try again.</string>
     <string name="alert_message_hid_warning">HID service related access may be restricted by the OS. Accessing the associated characteristics and descriptor may cause the app to crash</string>
     <string name="alert_message_file_copy">A cyacd file with the same name exists in CySmart folder! Do you want to replace the existing cyacd file?</string>
-    <string name="alert_message_service_undiscovered">No services found</string>
+    <string name="alert_message_service_undiscovered">No services found for one or more devices</string>
     <string name="progress_tile_service_discovering">Service Discovery</string>
     <string name="progress_message_service_discovering">Discovering services. Please wait.</string>
     <string name="progress_message_reconnect"> Reconnecting to device. Please wait.</string>
@@ -436,8 +436,8 @@
     <string name="description">Description</string>
 
     <string name="exchange_mtu">"Exchange GATT MTU"</string>
-    <string name="exchange_mtu_request">"[%1$s | %2$s] %3$s request, MTU: %4$d, Status: %5$d"</string>
-    <string name="exchange_mtu_rsp">"[%1$s | %2$s] %3$s request completed, MTU: %4$d, Status: %5$d"</string>
+    <string name="exchange_mtu_request">"[%1$s] %2$s request, MTU: %3$d, Status: %4$d"</string>
+    <string name="exchange_mtu_rsp">"[%1$s] %2$s request completed, MTU: %3$d, Status: %4$d"</string>
 
     <!---->
     <!--Logger-->

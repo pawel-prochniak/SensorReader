@@ -72,7 +72,7 @@ public class DrawerController implements ListView.OnItemClickListener {
         FragmentManager fragmentManager = activity.getSupportFragmentManager();
         fragmentManager
                 .beginTransaction()
-                .add(R.id.main_container, fragment, tag)
+                .replace(R.id.main_container, fragment, tag)
                 .commit();
     }
 

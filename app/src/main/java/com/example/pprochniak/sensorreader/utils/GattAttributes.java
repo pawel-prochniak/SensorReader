@@ -40,8 +40,6 @@ import java.util.UUID;
  */
 public class GattAttributes {
 
-    public static final HashMap<UUID, Integer> attributesImageMap = new HashMap<UUID, Integer>();
-    public static final HashMap<UUID, Integer> attributesCapSenseImageMap = new HashMap<UUID, Integer>();
     public static final HashMap<UUID, String> attributesCapSense = new HashMap<UUID, String>();
     private static HashMap<String, String> descriptorAttributes = new HashMap<String, String>();
     private static HashMap<UUID, String> attributesUUID = new HashMap<UUID, String>();
@@ -61,26 +59,19 @@ public class GattAttributes {
     /**
      * Unused service UUIDS
      */
-    public static final String ALERT_NOTIFICATION_SERVICE = "00001811-0000-1000-8000-00805f9b34fb";
     public static final String RGB_LED_SERVICE = "0000cbbb-0000-1000-8000-00805f9b34fb";
     public static final String RGB_LED_SERVICE_CUSTOM = "0003cbbb-0000-1000-8000-00805f9b0131";
     public static final String LINK_LOSS_SERVICE = "00001803-0000-1000-8000-00805f9b34fb";
     public static final String TRANSMISSION_POWER_SERVICE = "00001804-0000-1000-8000-00805f9b34fb";
     public static final String ACCELEROMETER_SERVICE = "00040020-0000-1000-8000-00805f9b0131";
     public static final String ANALOG_TEMPERATURE_SERVICE = "00040030-0000-1000-8000-00805f9b0131";
-    public static final String CSC_SERVICE = "00001816-0000-1000-8000-00805f9b34fb";
-    public static final String HUMAN_INTERFACE_DEVICE_SERVICE = "00001812-0000-1000-8000-00805f9b34fb";
     public static final String SCAN_PARAMETERS_SERVICE = "00001813-0000-1000-8000-00805f9b34fb";
     public static final String IMMEDIATE_ALERT_SERVICE = "00001802-0000-1000-8000-00805f9b34fb";
     public static final String CAPSENSE_SERVICE = "0000cab5-0000-1000-8000-00805f9b34fb";
     public static final String CAPSENSE_SERVICE_CUSTOM = "0003cab5-0000-1000-8000-00805f9b0131";
     public static final String DEVICE_INFORMATION_SERVICE = "0000180a-0000-1000-8000-00805f9b34fb";
     public static final String OTA_UPDATE_SERVICE = "00060000-f8ce-11e4-abf4-0002a5d5c51b";
-    /**
-     * Heart rate characteristics
-     */
-    public static final String HEART_RATE_MEASUREMENT = "00002a37-0000-1000-8000-00805f9b34fb";
-    public static final String BODY_SENSOR_LOCATION = "00002a38-0000-1000-8000-00805f9b34fb";
+
     /**
      * Device information characteristics
      */
@@ -99,11 +90,6 @@ public class GattAttributes {
      * Battery characteristics
      */
     public static final String BATTERY_LEVEL = "00002a19-0000-1000-8000-00805f9b34fb";
-    /**
-     * Health Thermometer characteristics
-     */
-    public static final String HEALTH_TEMP_MEASUREMENT = "00002a1c-0000-1000-8000-00805f9b34fb";
-    public static final String TEMPERATURE_TYPE = "00002a1d-0000-1000-8000-00805f9b34fb";
     /**
      * Gatt services
      */
@@ -129,30 +115,6 @@ public class GattAttributes {
     public static final String RGB_LED = "0000cbb1-0000-1000-8000-00805f9b34fb";
     public static final String RGB_LED_CUSTOM = "0003cbb1-0000-1000-8000-00805f9b0131";
     /**
-     * Glucose Measurement characteristics
-     */
-    public static final String GLUCOSE_MEASUREMENT = "00002a18-0000-1000-8000-00805f9b34fb";
-    /**
-     * Blood Pressure service Characteristics
-     */
-    public static final String BLOOD_PRESSURE_MEASUREMENT = "00002a35-0000-1000-8000-00805f9b34fb";
-    /**
-     * Running Speed & Cadence Characteristics
-     */
-    public static final String RSC_MEASUREMENT = "00002a53-0000-1000-8000-00805f9b34fb";
-    /**
-     * Cycling Speed & Cadence Characteristics
-     */
-    public static final String CSC_MEASUREMENT = "00002a5b-0000-1000-8000-00805f9b34fb";
-    /**
-     * Barometer service characteristics
-     */
-    public static final String BAROMETER_DIGITAL_SENSOR = "00040002-0000-1000-8000-00805f9b0131";
-    public static final String BAROMETER_SENSOR_SCAN_INTERVAL = "00040004-0000-1000-8000-00805f9b0131";
-    public static final String BAROMETER_DATA_ACCUMULATION = "00040007-0000-1000-8000-00805f9b0131";
-    public static final String BAROMETER_READING = "00040009-0000-1000-8000-00805f9b0131";
-    public static final String BAROMETER_THRESHOLD_FOR_INDICATION = "0004000d-0000-1000-8000-00805f9b0131";
-    /**
      * Accelerometer service characteristics
      */
     public static final String ACCELEROMETER_ANALOG_SENSOR = "00040021-0000-1000-8000-00805f9b0131";
@@ -168,22 +130,6 @@ public class GattAttributes {
     public static final String TEMPERATURE_SENSOR_SCAN_INTERVAL = "00040032-0000-1000-8000-00805f9b0131";
     public static final String TEMPERATURE_READING = "00040033-0000-1000-8000-00805f9b0131";
     /**
-     * HID Characteristics
-     */
-    public static final String PROTOCOL_MODE = "00002a4e-0000-1000-8000-00805f9b34fb";
-    public static final String REP0RT = "00002a4d-0000-1000-8000-00805f9b34fb";
-    public static final String REPORT_MAP = "00002a4b-0000-1000-8000-00805f9b34fb";
-    public static final String BOOT_KEYBOARD_INPUT_REPORT = "00002a22-0000-1000-8000-00805f9b34fb";
-    public static final String BOOT_KEYBOARD_OUTPUT_REPORT = "00002a32-0000-1000-8000-00805f9b34fb";
-    public static final String BOOT_MOUSE_INPUT_REPORT = "00002a33-0000-1000-8000-00805f9b34fb";
-    public static final String HID_CONTROL_POINT = "00002a4c-0000-1000-8000-00805f9b34fb";
-    public static final String HID_INFORMATION = "00002a4a-0000-1000-8000-00805f9b34fb";
-    /**
-     * OTA Characteristic
-     */
-    //public static final String OTA_CHARACTERISTIC = "00060001-0000-1000-8000-00805F9B34fb";
-    public static final String OTA_CHARACTERISTIC = "00060001-f8ce-11e4-abf4-0002a5d5c51b";
-    /**
      * Descriptor UUID's
      */
     public static final String CHARACTERISTIC_EXTENDED_PROPERTIES = "00002900-0000-1000-8000-00805f9b34fb";
@@ -198,136 +144,6 @@ public class GattAttributes {
     public static final String ENVIRONMENTAL_SENSING_CONFIGURATION = "0000290B-0000-1000-8000-00805f9b34fb";
     public static final String ENVIRONMENTAL_SENSING_MEASUREMENT = "0000290C-0000-1000-8000-00805f9b34fb";
     public static final String ENVIRONMENTAL_SENSING_TRIGGER_SETTING = "0000290D-0000-1000-8000-00805f9b34fb";
-    public static final String HEALTH_THERMO_SERVICE = "00001809-0000-1000-8000-00805f9b34fb";
-    public static final String BOND_MANAGEMENT_SERVICE = "0000181e-0000-1000-8000-00805f9b34fb";
-    public static final String HEART_RATE_CONTROL_POINT = "00002a39-0000-1000-8000-00805f9b34fb";
-    public static final String TEMPERATURE_INTERMEDIATE = "00002a1e-0000-1000-8000-00805f9b34fb";
-    public static final String TEMPERATURE_MEASUREMENT_INTERVAL = "00002a21-0000-1000-8000-00805f9b34fb";
-    public static final String GLUCOSE_MEASUREMENT_CONTEXT = "00002a34-0000-1000-8000-00805f9b34fb";
-    public static final String GLUCOSE_FEATURE = "00002a51-0000-1000-8000-00805f9b34fb";
-    public static final String RECORD_ACCESS_CONTROL_POINT = "00002a52-0000-1000-8000-00805f9b34fb";
-    public static final String BLOOD_INTERMEDIATE_CUFF_PRESSURE = "00002a36-0000-1000-8000-00805f9b34fb";
-    public static final String BLOOD_PRESSURE_FEATURE = "00002a49-0000-1000-8000-00805f9b34fb";
-    public static final String RSC_FEATURE = "00002a54-0000-1000-8000-00805f9b34fb";
-    public static final String SC_SENSOR_LOCATION = "00002a5d-0000-1000-8000-00805f9b34fb";
-    public static final String SC_CONTROL_POINT = "00002a55-0000-1000-8000-00805f9b34fb";
-    public static final String CSC_FEATURE = "00002a5c-0000-1000-8000-00805f9b34fb";
-    public static final String SENSOR_SIGNAL = "2902";
-
-    /**
-     * Unused Service characteristics
-     */
-    public static final String AEROBIC_HEART_RATE_LOWER_LIMIT = "00002a7e-0000-1000-8000-00805f9b34fb";
-    public static final String AEROBIC_HEART_RATE_UPPER_LIMIT = "00002a84-0000-1000-8000-00805f9b34fb";
-    public static final String AEROBIC_THRESHOLD = "00002a7f-0000-1000-8000-00805f9b34fb";
-    public static final String AGE = "00002a80-0000-1000-8000-00805f9b34fb";
-    public static final String ALERT_CATEGORY_ID = "00002a43-0000-1000-8000-00805f9b34fb";
-    public static final String ALERT_CATEGORY_ID_BIT_MASK = "00002a42-0000-1000-8000-00805f9b34fb";
-    public static final String ALERT_STATUS = "00002a3F-0000-1000-8000-00805f9b34fb";
-    public static final String ANAEROBIC_HEART_RATE_LOWER_LIMIT = "00002a81-0000-1000-8000-00805f9b34fb";
-    public static final String ANAEROBIC_HEART_RATE_UPPER_LIMIT = "00002a82-0000-1000-8000-00805f9b34fb";
-    public static final String ANAEROBIC_THRESHOLD = "00002aA83-0000-1000-8000-00805f9b34fb";
-    public static final String APPARENT_WIND_DIRECTION = "00002a73-0000-1000-8000-00805f9b34fb";
-    public static final String APPARENT_WIND_SPEED = "00002a72-0000-1000-8000-00805f9b34fb";
-    public static final String APPEARANCE = "00002a01-0000-1000-8000-00805f9b34fb";
-    public static final String BAROMETRIC_PRESSURE_TREND = "00002aa3-0000-1000-8000-00805f9b34fb";
-    public static final String BODY_COMPOSITION_FEATURE = "00002a9B-0000-1000-8000-00805f9b34fb";
-    public static final String BODY_COMPOSITION_MEASUREMENT = "00002a9C-0000-1000-8000-00805f9b34fb";
-    public static final String BOND_MANAGEMENT_CONTROL_POINT = "00002aa4-0000-1000-8000-00805f9b34fb";
-    public static final String BOND_MANAGEMENT_FEATURE = "00002aa5-0000-1000-8000-00805f9b34fb";
-    public static final String CENTRAL_ADDRESS_RESOLUTION = "00002aa6-0000-1000-8000-00805f9b34fb";
-    public static final String CGM_FEATURE = "00002aa8-0000-1000-8000-00805f9b34fb";
-    public static final String CGM_MEASUREMENT = "00002aa7-0000-1000-8000-00805f9b34fb";
-    public static final String CGM_SESSION_RUN_TIME = "00002aab-0000-1000-8000-00805f9b34fb";
-    public static final String CGM_SESSION_START_TIME = "00002aaa-0000-1000-8000-00805f9b34fb";
-    public static final String CGM_SPECIFIC_OPS_CONTROL_POINT = "00002aaC-0000-1000-8000-00805f9b34fb";
-    public static final String CGM_STATUS = "00002aa9-0000-1000-8000-00805f9b34fb";
-    public static final String CYCLING_POWER_CONTROL_POINT = "00002a66-0000-1000-8000-00805f9b34fb";
-    public static final String CYCLING_POWER_FEATURE = "00002a65-0000-1000-8000-00805f9b34fb";
-    public static final String CYCLING_POWER_MEASUREMENT = "00002a63-0000-1000-8000-00805f9b34fb";
-    public static final String CYCLING_POWER_VECTOR = "00002a64-0000-1000-8000-00805f9b34fb";
-    public static final String DATABASE_CHANGE_INCREMENT = "00002a99-0000-1000-8000-00805f9b34fb";
-    public static final String DATE_OF_BIRTH = "00002a85-0000-1000-8000-00805f9b0131";
-    public static final String DATE_OF_THRESHOLD_ASSESSMENT = "00002a86-0000-1000-8000-00805f9b0131";
-    public static final String DATE_TIME = "00002a08-0000-1000-8000-00805f9b34fb";
-    public static final String DAY_DATE_TIME = "00002a0a-0000-1000-8000-00805f9b34fb";
-    public static final String DAY_OF_WEEK = "00002A09-0000-1000-8000-00805f9b34fb";
-    public static final String DESCRIPTOR_VALUE_CHANGED = "00002a7d-0000-1000-8000-00805f9b34fb";
-    public static final String DEVICE_NAME = "00002a00-0000-1000-8000-00805f9b34fb";
-    public static final String DEW_POINT = "00002a7b-0000-1000-8000-00805f9b34fb";
-    public static final String DST_OFFSET = "00002a0d-0000-1000-8000-00805f9b34fb";
-    public static final String ELEVATION = "00002a6c-0000-1000-8000-00805f9b34fb";
-    public static final String EMAIL_ADDRESS = "00002a87-0000-1000-8000-00805f9b34fb";
-    public static final String EXACT_TIME_256 = "00002a0c-0000-1000-8000-00805f9b34fb";
-    public static final String FAT_BURN_HEART_RATE_LOWER_LIMIT = "00002a88-0000-1000-8000-00805f9b34fb";
-    public static final String FAT_BURN_HEART_RATE_UPPER_LIMIT = "00002a89-0000-1000-8000-00805f9b34fb";
-    public static final String FIRSTNAME = "00002a8a-0000-1000-8000-00805f9b34fb";
-    public static final String FIVE_ZONE_HEART_RATE_LIMITS = "00002A8b-0000-1000-8000-00805f9b34fb";
-    public static final String GENDER = "00002a8c-0000-1000-8000-00805f9b34fb";
-    public static final String GUST_FACTOR = "00002a74-0000-1000-8000-00805f9b34fb";
-    public static final String HEAT_INDEX = "00002a89-0000-1000-8000-00805f9b34fb";
-    public static final String HEIGHT = "00002a8a-0000-1000-8000-00805f9b34fb";
-    public static final String HEART_RATE_MAX = "00002a8d-0000-1000-8000-00805f9b34fb";
-    public static final String HIP_CIRCUMFERENCE = "00002a8f-0000-1000-8000-00805f9b34fb";
-    public static final String HUMIDITY = "00002a6f-0000-1000-8000-00805f9b34fb";
-    public static final String INTERMEDIATE_CUFF_PRESSURE = "00002a36-0000-1000-8000-00805f9b34fb";
-    public static final String INTERMEDIATE_TEMPERATURE = "00002a1e-0000-1000-8000-00805f9b34fb";
-    public static final String IRRADIANCE = "00002a77-0000-1000-8000-00805f9b34fb";
-    public static final String LANGUAGE = "00002aa2-0000-1000-8000-00805f9b34fb";
-    public static final String LAST_NAME = "00002a90-0000-1000-8000-00805f9b34fb";
-    public static final String LN_CONTROL_POINT = "00002a6b-0000-1000-8000-00805f9b34fb";
-    public static final String LN_FEATURE = "00002a6a-0000-1000-8000-00805f9b34fb";
-    public static final String LOCAL_TIME_INFORMATION = "00002a0f-0000-1000-8000-00805f9b34fb";
-    public static final String LOCATION_AND_SPEED = "00002a67-0000-1000-8000-00805f9b34fb";
-    public static final String MAGNETIC_DECLINATION = "00002a2c-0000-1000-8000-00805f9b34fb";
-    public static final String MAGNETIC_FLUX_DENSITY_2D = "00002aa0-0000-1000-8000-00805f9b34fb";
-    public static final String MAGNETIC_FLUX_DENSITY_3D = "00002aa1-0000-1000-8000-00805f9b34fb";
-    public static final String MANUFACTURE_NAME_STRING = "00002a29-0000-1000-8000-00805f9b34fb";
-    public static final String MAXIMUM_RECOMMENDED_HEART_RATE = "00002a91-0000-1000-8000-00805f9b34fb";
-    public static final String MEASUREMENT_INTERVAL = "00002a21-0000-1000-8000-00805f9b34fb";
-    public static final String NAVIGATION = "00002a68-0000-1000-8000-00805f9b34fb";
-    public static final String NEW_ALERT = "00002a46-0000-1000-8000-00805f9b34fb";
-    public static final String PERIPHERAL_PREFERRED_CONNECTION_PARAMETERS = "00002a04-0000-1000-8000-00805f9b34fb";
-    public static final String PERIPHERAL_PRIVACY_FLAG = "00002a02-0000-1000-8000-00805f9b34fb";
-    public static final String POLLEN_CONCENTRATION = "00002a75-0000-1000-8000-00805f9b34fb";
-    public static final String POSITION_QUALITY = "00002a69-0000-1000-8000-00805f9b34fb";
-    public static final String PRESSURE = "00002a6d-0000-1000-8000-00805f9b34fb";
-    public static final String RAINFALL = "00002a78-0000-1000-8000-00805f9b34fb";
-    public static final String RECONNECTION_ADDRESS = "00002a03-0000-1000-8000-00805f9b34fb";
-    public static final String REFERNCE_TIME_INFORMATION = "00002a14-0000-1000-8000-00805f9b34fb";
-    public static final String RESTING_HEART_RATE = "00002a92-0000-1000-8000-00805f9b34fb";
-    public static final String RINGER_CONTROL_POINT = "00002a40-0000-1000-8000-00805f9b34fb";
-    public static final String RINGER_SETTING = "00002a41-0000-1000-8000-00805f9b34fb";
-    public static final String SCAN_INTERVAL_WINDOW = "00002a4F-0000-1000-8000-00805f9b34fb";
-    public static final String SENSOR_LOCATION = "00002a5d-0000-1000-8000-00805f9b34fb";
-    public static final String SERVICE_CHANGED = "00002a05-0000-1000-8000-00805f9b34fb";
-    public static final String SPORT_TYPE_FOR_AEROBIN_AND_ANAEROBIC_THRESHOLDS = "00002a93-0000-1000-8000-00805f9b34fb";
-    public static final String SUPPORTED_NEW_ALERT_CATEGORY = "00002a47-0000-1000-8000-00805f9b34fb";
-    public static final String SUPPORTED_UNREAD_ALERT_CATEGORY = "00002a48-0000-1000-8000-00805f9b34fb";
-    public static final String TEMPERATURE = "00002a6e-0000-1000-8000-00805f9b34fb";
-    public static final String TEMPERATURE_MEASUREMENT = "00002a1c-0000-1000-8000-00805f9b34fb";
-    public static final String THREE_ZONE_HEART_RATE_LIMITS = "00002a94-0000-1000-8000-00805f9b34fb";
-    public static final String TIME_ACCURACY = "00002a12-0000-1000-8000-00805f9b34fb";
-    public static final String TIME_SOURCE = "00002a13-0000-1000-8000-00805f9b34fb";
-    public static final String TIME_UPDATE_CONTROL_POINT= "00002a16-0000-1000-8000-00805f9b34fb";
-    public static final String TIME_UPDATE_STATE = "00002a17-0000-1000-8000-00805f9b34fb";
-    public static final String TIME_WITH_DST = "00002a11-0000-1000-8000-00805f9b34fb";
-    public static final String TIME_ZONE = "00002a0e-0000-1000-8000-00805f9b34fb";
-    public static final String TRUE_WIND_DIRECTION = "00002a71-0000-1000-8000-00805f9b34fb";
-    public static final String TRUE_WIND_SPEED = "00002a70-0000-1000-8000-00805f9b34fb";
-    public static final String TWO_ZONE_HEART_RATE = "00002a95-0000-1000-8000-00805f9b34fb";
-    public static final String TX_POWER = "00002a07-0000-1000-8000-00805f9b34fb";
-    public static final String UNCERTAINITY = "00002ab4-0000-1000-8000-00805f9b34fb";
-    public static final String UNREAD_ALERT_STATUS = "00002a45-0000-1000-8000-00805f9b34fb";
-    public static final String USER_CONTROL_POINT = "00002a9f-0000-1000-8000-00805f9b34fb";
-    public static final String USER_INDEX = "00002a9a-0000-1000-8000-00805f9b34fb";
-    public static final String UV_INDEX = "00002a76-0000-1000-8000-00805f9b34fb";
-    public static final String VO2_MAX = "00002a96-0000-1000-8000-00805f9b34fb";
-    public static final String WAIST_CIRCUMFERENCE = "00002a97-0000-1000-8000-00805f9b34fb";
-    public static final String WEIGHT = "00002a98-0000-1000-8000-00805f9b34fb";
-    public static final String WEIGHT_SCALE_FEATURE = "00002a9e-0000-1000-8000-00805f9b34fb";
-    public static final String WIND_CHILL = "00002a7-0000-1000-8000-00805f9b34fb";
-
 
     static {
 

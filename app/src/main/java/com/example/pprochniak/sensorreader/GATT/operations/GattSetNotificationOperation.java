@@ -4,13 +4,6 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
-import android.content.Context;
-
-import com.example.pprochniak.sensorreader.GATT.GattController;
-
-import org.androidannotations.annotations.Bean;
-import org.androidannotations.annotations.RootContext;
-
 import java.util.UUID;
 
 /**
@@ -19,9 +12,6 @@ import java.util.UUID;
 
 public class GattSetNotificationOperation extends GattOperation {
     private static final String TAG = GattSetNotificationOperation.class.getSimpleName();
-
-    @Bean GattController mGattManager;
-    @RootContext Context context;
 
     private final UUID mServiceUuid;
     private final UUID mCharacteristicUuid;
@@ -51,6 +41,10 @@ public class GattSetNotificationOperation extends GattOperation {
 
     @Override
     public boolean hasAvailableCompletionCallback() {
-        return false;
+        return true;
+    }
+
+    public interface GattSetNotificationCallback {
+        void call(int status);
     }
 }

@@ -143,10 +143,6 @@ public class MainActivity extends AppCompatActivity {
             if (BluetoothLeService.getConnectionState() == 2 ||
                     BluetoothLeService.getConnectionState() == 1 ||
                     BluetoothLeService.getConnectionState() == 4) {
-                BluetoothLeService.disconnect();
-                Toast.makeText(this,
-                        getResources().getString(R.string.alert_message_bluetooth_disconnect),
-                        Toast.LENGTH_SHORT).show();
 
                 Intent intent = getIntent();
                 finish();

@@ -148,20 +148,6 @@ public class UUIDDatabase {
             .fromString(GattAttributes.TEMPERATURE_SENSOR_SCAN_INTERVAL);
 
     /**
-     * RDK related UUID
-     */
-    public final static UUID UUID_REP0RT = UUID
-            .fromString(GattAttributes.REP0RT);
-
-    /**
-     * OTA related UUID
-     */
-    public final static UUID UUID_OTA_UPDATE_SERVICE = UUID
-            .fromString(GattAttributes.OTA_UPDATE_SERVICE);
-    public final static UUID UUID_OTA_UPDATE_CHARACTERISTIC = UUID
-            .fromString(GattAttributes.OTA_CHARACTERISTIC);
-
-    /**
      * Descriptor UUID
      */
     public final static UUID UUID_CLIENT_CHARACTERISTIC_CONFIG = UUID

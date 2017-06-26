@@ -119,11 +119,6 @@ public class GattController {
                 public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
                     super.onConnectionStateChange(gatt, status, newState);
 
-//                    EventBus.postEvent(Trigger.TRIGGER_CONNECTION_STATE_CHANGED,
-//                            new ConnectionStateChangedBundle(
-//                                    device.getAddress(),
-//                                    newState));
-
                     if (status == 133) {
                         Log.e(TAG, "Got the status 133 bug, closing gatt");
                         gatt.close();
