@@ -31,12 +31,10 @@ import android.widget.Toast;
 import com.example.pprochniak.sensorreader.GATT.GattController;
 import com.example.pprochniak.sensorreader.GATT.ServicesFragment;
 import com.example.pprochniak.sensorreader.GATT.ServicesFragment_;
-import com.example.pprochniak.sensorreader.GATT.operations.GattSetNotificationOperation;
 import com.example.pprochniak.sensorreader.R;
 import com.example.pprochniak.sensorreader.ble.BluetoothLeService;
 import com.example.pprochniak.sensorreader.utils.Constants;
 import com.example.pprochniak.sensorreader.utils.Logger;
-import com.example.pprochniak.sensorreader.utils.UUIDDatabase;
 import com.example.pprochniak.sensorreader.utils.Utils;
 
 import org.androidannotations.annotations.AfterInject;
@@ -46,14 +44,9 @@ import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.ViewById;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 
 /**
@@ -171,7 +164,7 @@ public class DevicesFragment extends Fragment {
     }
 
     private void setRecyclerWithAdapter() {
-        deviceListAdapter = new DeviceListAdapter();
+        deviceListAdapter = new DeviceListAdapter(this);
         deviceListView.setLayoutManager(new LinearLayoutManager(getContext()));
         deviceListView.setAdapter(deviceListAdapter);
     }
@@ -223,7 +216,7 @@ public class DevicesFragment extends Fragment {
      *
      * @param enable
      */
-    private void scanLeDevice(final boolean enable) {
+    void scanLeDevice(final boolean enable) {
         if (bluetoothAdapter == null || bleScanner == null) checkBleSupportAndInitialize();
         if (isInFragment) {
             if (enable) {
@@ -452,74 +445,5 @@ public class DevicesFragment extends Fragment {
     }
 
 
-    public class DeviceListAdapter extends RecyclerView.Adapter<DeviceListAdapter.DeviceViewHolder> {
-        private static final String TAG = "DeviceListAdapter";
 
-        private ArrayList<BluetoothDevice> deviceList;
-        private Map<String, Integer> rssiList;
-
-
-        public DeviceListAdapter() {
-            deviceList = new ArrayList<>();
-            rssiList = new HashMap<>();
-        }
-
-        public void addDevice(BluetoothDevice device, int rssi) {
-            if (!deviceList.contains(device)) {
-                deviceList.add(device);
-                rssiList.put(device.getAddress(), rssi);
-            } else {
-                rssiList.put(device.getAddress(), rssi);
-            }
-        }
-
-        public void clear() {
-            deviceList.clear();
-        }
-
-        @Override
-        public DeviceViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.device_item, parent, false);
-            return new DeviceViewHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(DeviceViewHolder holder, int position) {
-            final BluetoothDevice device = deviceList.get(position);
-            holder.bind(device, rssiList.get(device.getAddress()));
-            holder.itemView.setOnClickListener((view) -> {
-                        scanLeDevice(false);
-                        connectDevice(device, true);
-                    }
-            );
-        }
-
-        @Override
-        public int getItemCount() {
-            return deviceList.size();
-        }
-
-        @Override
-        public long getItemId(int i) {
-            return 0;
-        }
-
-        class DeviceViewHolder extends RecyclerView.ViewHolder {
-            @BindView(R.id.device_name) TextView deviceName;
-            @BindView(R.id.device_address) TextView deviceAddress;
-            @BindView(R.id.device_rssi) TextView deviceRssi;
-
-            DeviceViewHolder(View itemView) {
-                super(itemView);
-                ButterKnife.bind(this, itemView);
-            }
-
-            void bind(BluetoothDevice device, int rssi) {
-                deviceName.setText(device.getName());
-                deviceAddress.setText(device.getAddress());
-                deviceRssi.setText(String.valueOf(rssi));
-            }
-
-        }
-    }
 }

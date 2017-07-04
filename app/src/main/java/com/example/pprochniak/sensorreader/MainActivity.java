@@ -1,74 +1,55 @@
 package com.example.pprochniak.sensorreader;
 
 import android.Manifest;
-import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Build;
-import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.example.pprochniak.sensorreader.GATT.ServicesFragment;
 import com.example.pprochniak.sensorreader.ble.BluetoothLeService;
 import com.example.pprochniak.sensorreader.deviceDiscovery.DevicesFragment;
 import com.example.pprochniak.sensorreader.deviceDiscovery.DevicesFragment_;
-import com.example.pprochniak.sensorreader.utils.Constants;
 import com.example.pprochniak.sensorreader.utils.DrawerController;
 import com.example.pprochniak.sensorreader.utils.Logger;
 import com.example.pprochniak.sensorreader.utils.Utils;
 
+import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.ViewById;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
-@EActivity
+@EActivity(R.layout.activity_main)
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
     public static boolean isAppInBackground = false;
 
-    String attachmentFileName = "attachment.sensorread";
-    //Upgrade file catch
-    private InputStream attachment = null;
-
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
     private static final int PERMISSIONS_REQUEST_STORAGE = 2;
+    private static final int PERMISSIONS_MULTIPLE = 3;
 
-    @BindView(R.id.drawer_layout) DrawerLayout drawerLayout;
-    @BindView(R.id.drawer) ListView drawerList;
+    @ViewById(R.id.drawer_layout) DrawerLayout drawerLayout;
+    @ViewById(R.id.drawer) ListView drawerList;
     @Bean DrawerController drawerController;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
-
+    @AfterViews
+    public void afterViews() {
         setupDrawer();
 
         DevicesFragment devicesFragment = new DevicesFragment_();
@@ -92,12 +73,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        try {
-            catchUpgradeFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         isAppInBackground = false;
 
         final IntentFilter intentFilter = new IntentFilter();
@@ -161,21 +136,24 @@ public class MainActivity extends AppCompatActivity {
     private void checkPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // Check location permission (needed for BLE)
-            if (this.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            boolean locationPermissionGranted = this.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED;
+            boolean writePermissionGranted = this.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED;
+            if (!locationPermissionGranted && !writePermissionGranted) {
                 requestPermissions(new String[]{
-                                Manifest.permission.ACCESS_COARSE_LOCATION},
-                        PERMISSION_REQUEST_COARSE_LOCATION);
-            }
-            // Check if we have write permission
-            int writePermission = this.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
-            if (writePermission != PackageManager.PERMISSION_GRANTED) {
-                // We don't have permission so prompt the user
+                                Manifest.permission.ACCESS_COARSE_LOCATION,
+                                Manifest.permission.READ_EXTERNAL_STORAGE,
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        PERMISSIONS_MULTIPLE);
+            } else if (!writePermissionGranted && locationPermissionGranted) {
                 requestPermissions(new String[]{
                                 Manifest.permission.READ_EXTERNAL_STORAGE,
                                 Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                        PERMISSIONS_REQUEST_STORAGE
-                );
+                        PERMISSIONS_REQUEST_STORAGE);
+            } else {
+                requestPermissions(new String[]{
+                                Manifest.permission.ACCESS_COARSE_LOCATION,
+                                Manifest.permission.READ_EXTERNAL_STORAGE},
+                        PERMISSION_REQUEST_COARSE_LOCATION);
             }
         }
     }
@@ -251,138 +229,6 @@ public class MainActivity extends AppCompatActivity {
 
         }
     };
-
-
-
-    // Get intent, action and MIME type
-    private void catchUpgradeFile() throws IOException, NullPointerException {
-        Intent intent = getIntent();
-        String action = intent.getAction();
-        Uri data = intent.getData();
-
-        File targetLocationparent = new File("/storage/emulated/0/CySmart");
-
-        if (Intent.ACTION_VIEW.equalsIgnoreCase(action) && data != null) {
-            if (intent.getScheme().compareTo("content") == 0) {
-                try {
-                    Cursor c = getContentResolver().query(
-                            intent.getData(), null, null, null, null);
-                    c.moveToFirst();
-                    final int fileNameColumnId = c.getColumnIndex(
-                            MediaStore.MediaColumns.DISPLAY_NAME);
-                    if (fileNameColumnId >= 0)
-                        attachmentFileName = c.getString(fileNameColumnId);
-                    Logger.e("Filename>>>" + attachmentFileName);
-                    // Fetch the attachment
-                    attachment = getContentResolver().openInputStream(data);
-                    if (attachment == null) {
-                        Logger.e("onCreate" + "cannot access mail attachment");
-                    } else {
-                        if (fileExists(attachmentFileName, targetLocationparent)) {
-                            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                            builder.setMessage(getResources().getString(R.string.alert_message_file_copy))
-                                    .setCancelable(false)
-                                    .setTitle(getResources().getString(R.string.app_name))
-                                    .setPositiveButton(
-                                            getResources()
-                                                    .getString(R.string.alert_message_yes),
-                                            new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int id) {
-                                                    try {
-                                                        FileOutputStream tmp = new FileOutputStream("/storage/emulated/0/CySmart" + File.separator + attachmentFileName);
-                                                        byte[] buffer = new byte[1024];
-                                                        int bytes = 0;
-                                                        while ((bytes = attachment.read(buffer)) > 0)
-                                                            tmp.write(buffer, 0, bytes);
-                                                        tmp.close();
-                                                        attachment.close();
-                                                        getIntent().setData(null);
-                                                    } catch (IOException e) {
-                                                        e.printStackTrace();
-                                                    }
-                                                }
-                                            })
-                                    .setNegativeButton(
-                                            getResources().getString(
-                                                    R.string.alert_message_no),
-                                            new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int id) {
-                                                    // Cancel the dialog box
-                                                    dialog.cancel();
-                                                    getIntent().setData(null);
-                                                }
-                                            });
-                            AlertDialog alert = builder.create();
-                            alert.show();
-                        } else {
-                            try {
-                                FileOutputStream tmp = new FileOutputStream("/storage/emulated/0/CySmart" + File.separator + attachmentFileName);
-                                byte[] buffer = new byte[1024];
-                                int bytes = 0;
-                                while ((bytes = attachment.read(buffer)) > 0)
-                                    tmp.write(buffer, 0, bytes);
-                                tmp.close();
-                                attachment.close();
-                                Toast.makeText(this, getResources().getString(R.string.toast_file_copied), Toast.LENGTH_SHORT).show();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                } catch (FileNotFoundException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            } else {
-                String sourcePath = data.getPath();
-                Logger.e("Action>>>" + action + "Uri" + data.toString() + "Source path>>" + sourcePath);
-
-                final File sourceLocation = new File(sourcePath);
-                String sourceFileName = sourceLocation.getName();
-
-                final File targetLocation = new File("/storage/emulated/0/CySmart" + File.separator + sourceFileName);
-
-                if (fileExists(sourceFileName, targetLocationparent)) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(
-                            MainActivity.this);
-                    builder.setMessage(getResources().getString(R.string.alert_message_file_copy))
-                            .setCancelable(false)
-                            .setTitle(getResources().getString(R.string.app_name))
-                            .setPositiveButton(
-                                    getResources()
-                                            .getString(R.string.alert_message_yes),
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int id) {
-                                            try {
-                                                copyDirectory(sourceLocation, targetLocation);
-                                            } catch (IOException e) {
-                                                e.printStackTrace();
-                                            }
-                                        }
-                                    })
-                            .setNegativeButton(
-                                    getResources().getString(
-                                            R.string.alert_message_no),
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int id) {
-                                            // Cancel the dialog box
-                                            dialog.cancel();
-                                            getIntent().setData(null);
-                                        }
-                                    });
-                    AlertDialog alert = builder.create();
-                    alert.show();
-                } else {
-                    try {
-                        copyDirectory(sourceLocation, targetLocation);
-                        Toast.makeText(this, getResources().getString(R.string.toast_file_copied), Toast.LENGTH_SHORT).show();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-    }
 
     /*
     Checks whether a file exists in the folder specified

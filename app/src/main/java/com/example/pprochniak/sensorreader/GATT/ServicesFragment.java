@@ -31,7 +31,10 @@ import com.jjoe64.graphview.LegendRenderer;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
+import org.androidannotations.annotations.AfterInject;
+import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.ViewById;
 
 import java.util.HashMap;
 import java.util.List;
@@ -44,7 +47,7 @@ import butterknife.ButterKnife;
  * Created by Henny on 2017-03-29.
  */
 
-@EFragment
+@EFragment(R.layout.services_fragment)
 public class ServicesFragment extends Fragment {
     private static final String TAG = "ServicesFragment";
 
@@ -62,12 +65,12 @@ public class ServicesFragment extends Fragment {
     long xTimestamp, yTimestamp, zTimestamp;
 
     // View bindings
-    @BindView(R.id.services_not_found) TextView servicesNotFound;
-    @BindView(R.id.graph) GraphView graphView;
-    @BindView(R.id.x_speed) TextView xSpeedView;
-    @BindView(R.id.y_speed) TextView ySpeedView;
-    @BindView(R.id.z_speed) TextView zSpeedView;
-    @BindView(R.id.total_time) TextView totalTimeView;
+    @ViewById(R.id.services_not_found) TextView servicesNotFound;
+    @ViewById(R.id.graph) GraphView graphView;
+    @ViewById(R.id.x_speed) TextView xSpeedView;
+    @ViewById(R.id.y_speed) TextView ySpeedView;
+    @ViewById(R.id.z_speed) TextView zSpeedView;
+    @ViewById(R.id.total_time) TextView totalTimeView;
 
     private final BroadcastReceiver mGattUpdateListener = new BroadcastReceiver() {
         @Override
@@ -88,15 +91,10 @@ public class ServicesFragment extends Fragment {
         }
     };
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.services_fragment, container, false);
-        ButterKnife.bind(this, rootView);
+    @AfterViews public void afterViews() {
         setGraphProperties();
-        Logger.d(TAG, "Created views of ServicesFragment");
-        return rootView;
     }
+
 
     private void setGraphProperties() {
         graphView.getGridLabelRenderer().setLabelVerticalWidth(100);
