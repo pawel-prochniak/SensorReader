@@ -203,10 +203,6 @@ public class Utils {
         intentFilter.addAction(BluetoothLeService.ACTION_GATT_CONNECTED);
         intentFilter.addAction(BluetoothLeService.ACTION_GATT_CONNECTING);
         intentFilter.addAction(BluetoothLeService.ACTION_GATT_DISCONNECTED);
-        intentFilter.addAction(BluetoothLeService.ACTION_GATT_DISCONNECTED_CAROUSEL);
-        intentFilter.addAction(BluetoothLeService.ACTION_GATT_DISCONNECTED_OTA);
-        intentFilter.addAction(BluetoothLeService.ACTION_GATT_CONNECT_OTA);
-        intentFilter.addAction(BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED_OTA);
         intentFilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
         intentFilter
                 .addAction(BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED);

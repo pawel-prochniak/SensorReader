@@ -9,36 +9,30 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
-import android.support.constraint.solver.widgets.ConstraintAnchor;
+import android.support.annotation.StringDef;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.pprochniak.sensorreader.MainActivity;
 import com.example.pprochniak.sensorreader.R;
 import com.example.pprochniak.sensorreader.ble.BluetoothLeService;
 import com.example.pprochniak.sensorreader.utils.Constants;
 import com.example.pprochniak.sensorreader.utils.Logger;
 import com.example.pprochniak.sensorreader.utils.UUIDDatabase;
 import com.example.pprochniak.sensorreader.utils.Utils;
+
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.LegendRenderer;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.RootContext;
-import org.androidannotations.annotations.ViewById;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -50,47 +44,30 @@ import butterknife.ButterKnife;
  * Created by Henny on 2017-03-29.
  */
 
-@EFragment(R.layout.services_fragment)
+@EFragment
 public class ServicesFragment extends Fragment {
     private static final String TAG = "ServicesFragment";
 
     public static boolean isInFragment = false;
-    private boolean registeredToUpdates = false;
 
-    private static final String LIST_UUID = "UUID";
+    private static final String X_MAP = "X";
+    private static final String Y_MAP = "Y";
+    private static final String Z_MAP = "Z";
+
     private static final long DELAY_PERIOD = 500;
-    private static final long SERVICE_DISCOVERY_TIMEOUT = 10000;
     private static final int SERIES_LENGTH = 500; // how many data points will be collected for each axis
-    static ArrayList<HashMap<String, BluetoothGattService>> mGattServiceData =
-            new ArrayList<HashMap<String, BluetoothGattService>>();
-    private static ArrayList<HashMap<String, BluetoothGattService>> mGattdbServiceData =
-            new ArrayList<HashMap<String, BluetoothGattService>>();
-    private static ArrayList<HashMap<String, BluetoothGattService>> mGattServiceMasterData =
-            new ArrayList<HashMap<String, BluetoothGattService>>();
-
-    MainActivity mainActivity;
-    @Bean GattController gattController;
-
-    private ServicesDelegatesAdapter recyclerAdapter;
-    private BroadcastReceiver gattListener;
-    LineGraphSeries<DataPoint> seriesX = new LineGraphSeries<>();
-    LineGraphSeries<DataPoint> seriesY = new LineGraphSeries<>();
-    LineGraphSeries<DataPoint> seriesZ = new LineGraphSeries<>();
-    int xCounter = 0;
-    int yCounter = 0;
-    int zCounter = 0;
+    static HashMap<String, List<BluetoothGattService>> mGattServiceData =
+            new HashMap<>();
+    HashMap<String, HashMap<String, LineGraphSeries<DataPoint>>> mapOfSeries = new HashMap<>();
     long xTimestamp, yTimestamp, zTimestamp;
 
-    boolean appendingCompleted = false;
-
     // View bindings
-    @ViewById(R.id.services_not_found) TextView servicesNotFound;
-    @ViewById(R.id.graph) GraphView graphView;
-    @ViewById(R.id.x_speed) TextView xSpeedView;
-    @ViewById(R.id.y_speed) TextView ySpeedView;
-    @ViewById(R.id.z_speed) TextView zSpeedView;
-    @ViewById(R.id.total_time) TextView totalTimeView;
-
+    @BindView(R.id.services_not_found) TextView servicesNotFound;
+    @BindView(R.id.graph) GraphView graphView;
+    @BindView(R.id.x_speed) TextView xSpeedView;
+    @BindView(R.id.y_speed) TextView ySpeedView;
+    @BindView(R.id.z_speed) TextView zSpeedView;
+    @BindView(R.id.total_time) TextView totalTimeView;
 
     private final BroadcastReceiver mGattUpdateListener = new BroadcastReceiver() {
         @Override
@@ -101,25 +78,9 @@ public class ServicesFragment extends Fragment {
             // GATT Data available
             if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
                 receiveValueAndAppendPoint(extras);
-            }
-        }
-    };
-
-    private final BroadcastReceiver mServiceDiscoveryListener = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
-            if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED
+            } else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED
                     .equals(action)) {
-                Logger.e("Service discovered");
-                prepareGattServices(BluetoothLeService.getSupportedGattServices());
-
-                /*
-                / Changes the MTU size to 512 in case LOLLIPOP and above devices
-                */
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    BluetoothLeService.exchangeGattMtu(512);
-                }
+                processServiceDiscovery(extras);
             } else if (BluetoothLeService.ACTION_GATT_SERVICE_DISCOVERY_UNSUCCESSFUL
                     .equals(action)) {
                 showNoServiceDiscoverAlert();
@@ -127,59 +88,58 @@ public class ServicesFragment extends Fragment {
         }
     };
 
-    @AfterViews
-    public void afterViews(){
-        mainActivity = (MainActivity) getActivity();
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.services_fragment, container, false);
+        ButterKnife.bind(this, rootView);
         setGraphProperties();
         Logger.d(TAG, "Created views of ServicesFragment");
-        Handler delayHandler = new Handler();
-        delayHandler.postDelayed(() -> {
-            Logger.e("Discover service called");
-            if (BluetoothLeService.getConnectionState() == BluetoothLeService.STATE_CONNECTED)
-                BluetoothLeService.discoverServices();
-        }, DELAY_PERIOD);
+        return rootView;
     }
 
     private void setGraphProperties() {
         graphView.getGridLabelRenderer().setLabelVerticalWidth(100);
-        seriesX.setTitle("X");
-        seriesY.setTitle("Y");
-        seriesZ.setTitle("Z");
-        seriesY.setColor(Color.rgb(255, 0, 0));
-        seriesZ.setColor(Color.rgb(0, 255, 0));
         graphView.getViewport().setXAxisBoundsManual(true);
         graphView.getViewport().setMinX(0);
         graphView.getViewport().setMaxX(SERIES_LENGTH);
-        graphView.addSeries(seriesX);
-        graphView.addSeries(seriesY);
-        graphView.addSeries(seriesZ);
         graphView.getLegendRenderer().setVisible(true);
         graphView.getLegendRenderer().setAlign(LegendRenderer.LegendAlign.TOP);
+    }
+
+    private void addSeriesForDevice(HashMap<String, LineGraphSeries<DataPoint>> map) {
+        LineGraphSeries xSeries = map.get("X");
+        LineGraphSeries ySeries = map.get("Y");
+        LineGraphSeries zSeries = map.get("Z");
+        xSeries.setTitle("X");
+        ySeries.setTitle("Y");
+        zSeries.setTitle("Z");
+        ySeries.setColor(Color.rgb(255,0,0));
+        zSeries.setColor(Color.rgb(0,255,0));
+        graphView.addSeries(xSeries);
+        graphView.addSeries(ySeries);
+        graphView.addSeries(zSeries);
     }
 
     @Override
     public void onResume() {
         super.onResume();
         Logger.d("Registering mServiceDiscovery");
-        getActivity().registerReceiver(mServiceDiscoveryListener, Utils.makeGattUpdateIntentFilter());
-        if (gattListener != null) {
-            getActivity().registerReceiver(gattListener, Utils.makeGattUpdateIntentFilter());
-        } else {
-            Log.e(TAG, "Couldn't register gattListener, gatListener null!");
-        }
+        subscribeToGattUpdates();
+        Handler delayHandler = new Handler();
+        delayHandler.postDelayed(() -> {
+            Logger.e("Discover service called");
+            if (BluetoothLeService.getConnectionState() == BluetoothLeService.STATE_CONNECTED)
+                BluetoothLeService.discoverAllServices();
+        }, DELAY_PERIOD);
         isInFragment = true;
     }
 
     @Override
     public void onPause() {
         isInFragment = false;
-        unsubscribeBroadcastReceivers();
+        getActivity().unregisterReceiver(mGattUpdateListener);
         super.onPause();
-    }
-
-    private void setAdapter() {
-        recyclerAdapter = new ServicesDelegatesAdapter();
-        gattListener = recyclerAdapter.getGattUpdateReceiver();
     }
 
     private void showNoServiceDiscoverAlert() {
@@ -188,56 +148,55 @@ public class ServicesFragment extends Fragment {
 
     private void receiveValueAndAppendPoint(Bundle extras) {
         int receivedValue;
-        int counter;
+        double counter;
+        String deviceAddress = extras.getString(Constants.DEVICE_ADDRESS);
         LineGraphSeries<DataPoint> series;
+        HashMap<String, LineGraphSeries<DataPoint>> deviceSeriesMap = mapOfSeries.get(deviceAddress);
 
-        if (extras.containsKey(Constants.EXTRA_ACC_X_VALUE) && xCounter < SERIES_LENGTH) {
-            if (xCounter == 0) xTimestamp = System.currentTimeMillis();
-            series = seriesX;
-            counter = xCounter++;
+        if (extras.containsKey(Constants.EXTRA_ACC_X_VALUE)) {
+            series = deviceSeriesMap.get("X");
+            counter = series.getHighestValueX() + 1.0d;
             receivedValue = extras.getInt(Constants.EXTRA_ACC_X_VALUE);
-            if (xCounter == SERIES_LENGTH) {
-                Log.d(TAG, "receiveValueAndAppendPoint: x series finished");
-                float speed = SERIES_LENGTH * 1000 / (System.currentTimeMillis() - xTimestamp);
-                xSpeedView.setText(String.valueOf(speed));
+            if (counter <= SERIES_LENGTH) {
+                if (counter - 1.0d == 0) xTimestamp = System.currentTimeMillis();
+                if (counter == SERIES_LENGTH) {
+                    Log.d(TAG, "receiveValueAndAppendPoint: x series finished");
+                    float speed = SERIES_LENGTH * 1000 / (System.currentTimeMillis() - xTimestamp);
+                    xSpeedView.setText(String.valueOf(speed));
+                }
             }
         }
-        else if (extras.containsKey(Constants.EXTRA_ACC_Y_VALUE) && yCounter < SERIES_LENGTH) {
-            if (yCounter == 0) yTimestamp = System.currentTimeMillis();
-            series = seriesY;
-            counter = yCounter++;
+        else if (extras.containsKey(Constants.EXTRA_ACC_Y_VALUE)) {
+            series = deviceSeriesMap.get("Y");
+            counter = series.getHighestValueX() + 1.0d;
             receivedValue = extras.getInt(Constants.EXTRA_ACC_Y_VALUE);
-            if (yCounter == SERIES_LENGTH) {
-                Log.d(TAG, "receiveValueAndAppendPoint: y series finished");
-                float speed = SERIES_LENGTH * 1000 / (System.currentTimeMillis() - yTimestamp);
-                ySpeedView.setText(String.valueOf(speed));
+
+            if (counter <= SERIES_LENGTH) {
+                if (counter - 1.0d == 0) yTimestamp = System.currentTimeMillis();
+                if (counter == SERIES_LENGTH) {
+                    Log.d(TAG, "receiveValueAndAppendPoint: y series finished");
+                    float speed = SERIES_LENGTH * 1000 / (System.currentTimeMillis() - yTimestamp);
+                    ySpeedView.setText(String.valueOf(speed));
+                }
             }
         }
-        else if (extras.containsKey(Constants.EXTRA_ACC_Z_VALUE) && zCounter < SERIES_LENGTH) {
-            if (zCounter == 0) zTimestamp = System.currentTimeMillis();
-            series = seriesZ;
-            counter = zCounter++;
+        else if (extras.containsKey(Constants.EXTRA_ACC_Z_VALUE)) {
+            series = deviceSeriesMap.get("Z");
+            counter = series.getHighestValueX() + 1.0d;
             receivedValue = extras.getInt(Constants.EXTRA_ACC_Z_VALUE);
-            if (zCounter == SERIES_LENGTH) {
-                Log.d(TAG, "receiveValueAndAppendPoint: z series finished");
-                float speed = SERIES_LENGTH * 1000 / (System.currentTimeMillis() - zTimestamp);
-                zSpeedView.setText(String.valueOf(speed));
+
+            if (counter <= SERIES_LENGTH) {
+                if (counter - 1.0d == 0) zTimestamp = System.currentTimeMillis();
+                if (counter == SERIES_LENGTH) {
+                    Log.d(TAG, "receiveValueAndAppendPoint: z series finished");
+                    float speed = SERIES_LENGTH * 1000 / (System.currentTimeMillis() - zTimestamp);
+                    zSpeedView.setText(String.valueOf(speed));
+                }
             }
         }
-        else return; // unknown data received
-
-        // calculate total time if all series ended
-        if (xCounter == SERIES_LENGTH && yCounter == SERIES_LENGTH && zCounter == SERIES_LENGTH) {
-            long least;
-            // Find earliest timestamp
-            if (xTimestamp - yTimestamp < 0) {
-                least = xTimestamp;
-            } else least = yTimestamp;
-            if (least - zTimestamp > 0) least = zTimestamp;
-
-            long totalTime = (System.currentTimeMillis() - least) / 1000;
-            Log.d(TAG, "receiveValueAndAppendPoint: total time: "+String.valueOf(totalTime));
-            totalTimeView.setText(String.valueOf(totalTime));
+        else {
+            Log.d(TAG, "No known characteristic read");
+            return; // unknown data received
         }
 
         if (counter <= SERIES_LENGTH) {
@@ -246,13 +205,29 @@ public class ServicesFragment extends Fragment {
 
     }
 
-    /**
-     * Getting the GATT Services
-     *
-     * @param gattServices
-     */
-    private void prepareGattServices(List<BluetoothGattService> gattServices) {
-        prepareData(gattServices);
+    private void processServiceDiscovery(Bundle extras) {
+        String deviceAddress = extras.getString(Constants.DEVICE_ADDRESS);
+        Log.d(TAG, "Service discovered from device "+deviceAddress);
+        List<BluetoothGattService> services = BluetoothLeService.getSupportedGattServices(deviceAddress);
+        setNotificationsEnabled(services);
+        mGattServiceData.put(deviceAddress, services);
+        mapOfSeries.put(deviceAddress, getNewXYZSeries());
+        addSeriesForDevice(mapOfSeries.get(deviceAddress));
+
+        /*
+        / Changes the MTU size to 512 in case LOLLIPOP and above devices
+        */
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            BluetoothLeService.exchangeGattMtu(deviceAddress, 512);
+        }
+    }
+
+    private HashMap<String, LineGraphSeries<DataPoint>> getNewXYZSeries() {
+        HashMap<String, LineGraphSeries<DataPoint>> seriesMap = new HashMap<>(3);
+        seriesMap.put(X_MAP, new LineGraphSeries<>());
+        seriesMap.put(Y_MAP, new LineGraphSeries<>());
+        seriesMap.put(Z_MAP, new LineGraphSeries<>());
+        return seriesMap;
     }
 
     /**
@@ -260,59 +235,29 @@ public class ServicesFragment extends Fragment {
      *
      * @param gattServices
      */
-    private void prepareData(List<BluetoothGattService> gattServices) {
+    private void setNotificationsEnabled(List<BluetoothGattService> gattServices) {
         if (gattServices == null)
             return;
-        // Clear all array list before entering values.
-        mGattServiceData.clear();
-        mGattServiceMasterData.clear();
-
         // Loops through available GATT Services.
         for (BluetoothGattService gattService : gattServices) {
-            HashMap<String, BluetoothGattService> currentServiceData = new HashMap<String, BluetoothGattService>();
             UUID uuid = gattService.getUuid();
             if (UUIDDatabase.UUID_SENSOR_READ_SERVICE.equals(uuid)) {
                 // Auto set notify as TRUE
                 for (BluetoothGattCharacteristic gattCharacteristic : gattService.getCharacteristics()) {
                     if (Utils.checkCharacteristicsPropertyPresence(gattCharacteristic.getProperties(), BluetoothGattCharacteristic.PROPERTY_NOTIFY)) {
                         BluetoothLeService.setCharacteristicNotification(gattCharacteristic, true);
+                    } else {
+                        Log.d(TAG, "setNotificationsEnabled: no notify characteristic available");
                     }
                 }
             }
-
-            currentServiceData.put(LIST_UUID, gattService);
-            mGattServiceMasterData.add(currentServiceData);
-            mGattServiceData.add(currentServiceData);
-
         }
-        gattController.setGattServiceMasterData(mGattServiceMasterData);
-        if (mGattServiceData.size() > 0) {
-            subscribeToGattUpdates();
-        } else {
-            showNoServiceDiscoverAlert();
-        }
-    }
-
-
-    private void displayAllGattData() {
-        if (mGattdbServiceData.contains(UUIDDatabase.UUID_SENSOR_READ_SERVICE.toString()))
-            recyclerAdapter.notifyServiceListChanged();
     }
 
     private void subscribeToGattUpdates() {
-        registeredToUpdates = true;
         getActivity().registerReceiver(mGattUpdateListener, Utils.makeGattUpdateIntentFilter());
     }
 
-    private void unsubscribeBroadcastReceivers() {
-        getActivity().unregisterReceiver(mServiceDiscoveryListener);
-        if (registeredToUpdates) {
-            getActivity().unregisterReceiver(mGattUpdateListener);
-            registeredToUpdates = false;
-        }
-        if (gattListener != null) {
-            getActivity().unregisterReceiver(gattListener);
-        }
-    }
+
 
 }

@@ -28,15 +28,20 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.pprochniak.sensorreader.GATT.GattController;
 import com.example.pprochniak.sensorreader.GATT.ServicesFragment;
 import com.example.pprochniak.sensorreader.GATT.ServicesFragment_;
+import com.example.pprochniak.sensorreader.GATT.operations.GattSetNotificationOperation;
 import com.example.pprochniak.sensorreader.R;
 import com.example.pprochniak.sensorreader.ble.BluetoothLeService;
+import com.example.pprochniak.sensorreader.utils.Constants;
 import com.example.pprochniak.sensorreader.utils.Logger;
+import com.example.pprochniak.sensorreader.utils.UUIDDatabase;
 import com.example.pprochniak.sensorreader.utils.Utils;
 
 import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.ViewById;
 
@@ -101,10 +106,10 @@ public class DevicesFragment extends Fragment {
 
     private ProgressDialog progressDialog;
 
+    @Bean GattController gattController;
 
     @ViewById(R.id.discover_device_scan_button) Button scanButton;
     @ViewById(R.id.discover_device_recycler_view) RecyclerView deviceListView;
-
 
     // Lifecycle methods
 
@@ -155,6 +160,10 @@ public class DevicesFragment extends Fragment {
     @Override
     public void onPause() {
         getActivity().unregisterReceiver(mGattConnectReceiver);
+        if (scanningInProgress) {
+            if (Build.VERSION.SDK_INT < 21) bluetoothAdapter.stopLeScan(mLeScanCallback);
+            else bleScanner.stopScan(scanCallbackAPI21);
+        }
         Logger.d(TAG, "Unregistered gatt receiver");
         isInFragment = false;
         if (progressDialog!=null) progressDialog = null;
@@ -241,6 +250,7 @@ public class DevicesFragment extends Fragment {
         showProgressDialog("Connecting to device");
         mDeviceAddress = device.getAddress();
         mDeviceName = device.getName();
+
         // Get the connection status of the device
         if (BluetoothLeService.getConnectionState() == BluetoothLeService.STATE_DISCONNECTED) {
             Logger.v("BLE DISCONNECTED STATE");
@@ -249,18 +259,14 @@ public class DevicesFragment extends Fragment {
         } else {
             Logger.v("BLE OTHER STATE-->" + BluetoothLeService.getConnectionState());
             // Connecting to some devices,so disconnect and then connect
-            BluetoothLeService.disconnect();
+            BluetoothLeService.disconnect(mDeviceAddress);
             Handler delayHandler = new Handler();
-            delayHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
+            delayHandler.postDelayed(() -> {
                     BluetoothLeService.connect(mDeviceAddress, mDeviceName, getActivity());
-                }
-            }, DELAY_PERIOD);
-
+                }, DELAY_PERIOD);
         }
         if (isFirstConnect) {
-            startConnectTimer();
+            startConnectTimer(mDeviceAddress);
             mConnectTimerON = true;
         }
 
@@ -284,14 +290,14 @@ public class DevicesFragment extends Fragment {
     /**
      * Connect Timer
      */
-    private void startConnectTimer() {
+    private void startConnectTimer(String deviceAddress) {
         mConnectTimer = new Timer();
         mConnectTimer.schedule(new TimerTask() {
             @Override
             public void run() {
                 Logger.v("CONNECTION TIME OUT");
                 mConnectTimerON = false;
-                BluetoothLeService.disconnect();
+                BluetoothLeService.disconnect(deviceAddress);
                 if (getActivity() != null) {
                     getActivity().runOnUiThread(() -> {
                             Toast.makeText(getActivity(),
@@ -350,14 +356,14 @@ public class DevicesFragment extends Fragment {
 
                 Logger.d(TAG, "Connected to GATT service");
                 Toast.makeText(context, "Connected to GATT service", Toast.LENGTH_LONG).show();
-                setServiceFragment();
+//                setServiceFragment();
             } else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
                 /**
                  * Disconnect event.When the connect timer is ON,Reconnect the device
                  * else show disconnect message
                  */
                 if (mConnectTimerON) {
-                    BluetoothLeService.reconnect();
+                    BluetoothLeService.reconnect(intent.getExtras().getString(Constants.DEVICE_ADDRESS));
                 } else {
                     Toast.makeText(getActivity(),
                             R.string.profile_cannot_connect_message,
