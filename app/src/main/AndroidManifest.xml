@@ -28,12 +28,6 @@
             android:name="com.example.pprochniak.sensorreader.ble.BluetoothLeService"
             android:enabled="true" />
 
-        <receiver android:name="com.example.pprochniak.sensorreader.ble.BLEStatusReceiver">
-            <intent-filter>
-                <action android:name="com.example.bluetooth.le.ACTION_GATT_DISCONNECTED" />
-            </intent-filter>
-        </receiver>
-
         <activity android:name=".MainActivity_"
             android:launchMode="singleTop"
             android:screenOrientation="landscape">

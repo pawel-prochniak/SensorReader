@@ -4,7 +4,6 @@ import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -14,13 +13,11 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ListView;
 
-import com.example.pprochniak.sensorreader.GATT.ServicesFragment;
 import com.example.pprochniak.sensorreader.ble.BluetoothLeService;
 import com.example.pprochniak.sensorreader.deviceDiscovery.DevicesFragment;
 import com.example.pprochniak.sensorreader.deviceDiscovery.DevicesFragment_;
 import com.example.pprochniak.sensorreader.utils.DrawerController;
 import com.example.pprochniak.sensorreader.utils.Logger;
-import com.example.pprochniak.sensorreader.utils.Utils;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
@@ -52,8 +49,6 @@ public class MainActivity extends AppCompatActivity {
     public void afterViews() {
         setupDrawer();
 
-        DevicesFragment devicesFragment = new DevicesFragment_();
-
         // start BLE service
         Intent gattServiceIntent = new Intent(getApplicationContext(),
                 BluetoothLeService.class);
@@ -80,7 +75,6 @@ public class MainActivity extends AppCompatActivity {
         intentFilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
         intentFilter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
         intentFilter.addAction(BluetoothLeService.ACTION_PAIR_REQUEST);
-        registerReceiver(mBondStateReceiver, intentFilter);
 
         super.onResume();
     }
@@ -96,7 +90,6 @@ public class MainActivity extends AppCompatActivity {
                     BluetoothLeService.class);
             stopService(gattServiceIntent);
         }
-        unregisterReceiver(mBondStateReceiver);
         isAppInBackground = true;
         super.onPause();
     }
@@ -113,25 +106,6 @@ public class MainActivity extends AppCompatActivity {
         setIntent(intent);
     }
 
-    @Override
-    public void onBackPressed() {
-        // Getting the current active fragment
-        Fragment currentFragment = getSupportFragmentManager()
-                .findFragmentById(R.id.main_container);
-
-        if (currentFragment instanceof ServicesFragment) {
-            if (BluetoothLeService.getConnectionState() == 2 ||
-                    BluetoothLeService.getConnectionState() == 1 ||
-                    BluetoothLeService.getConnectionState() == 4) {
-
-                Intent intent = getIntent();
-                finish();
-                startActivity(intent);
-                super.onBackPressed();
-            }
-        } else super.onBackPressed();
-
-    }
 
     private void checkPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -162,73 +136,6 @@ public class MainActivity extends AppCompatActivity {
         drawerController.setupDrawer(drawerLayout, drawerList);
     }
 
-    /**
-     * Broadcast receiver for getting the bonding information
-     */
-    private BroadcastReceiver mBondStateReceiver = new BroadcastReceiver() {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
-            //Received when the bond state is changed
-            if (action.equals(BluetoothDevice.ACTION_BOND_STATE_CHANGED)) {
-                final int state = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR);
-                final int bondState = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, -1);
-                final int previousBondState = intent.getIntExtra(BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE, -1);
-
-                if (state == BluetoothDevice.BOND_BONDING) {
-                    // Bonding...
-                    String dataLog2 = getResources().getString(R.string.dl_commaseparator)
-                            + "[" + DevicesFragment.mDeviceName + "|"
-                            + DevicesFragment.mDeviceAddress + "] " +
-                            getResources().getString(R.string.dl_connection_pairing_request);
-                    Logger.datalog(dataLog2);
-
-                } else if (state == BluetoothDevice.BOND_BONDED) {
-                    Logger.e("HomepageActivity--->Bonded");
-                    Utils.stopDialogTimer();
-                    // Bonded...
-
-                    String dataLog = getResources().getString(R.string.dl_commaseparator)
-                            + "[" + DevicesFragment.mDeviceName + "|"
-                            + DevicesFragment.mDeviceAddress + "] " +
-                            getResources().getString(R.string.dl_connection_paired);
-                    Logger.datalog(dataLog);
-
-                } else if (state == BluetoothDevice.BOND_NONE) {
-                    // Not bonded...
-                    Logger.e("HomepageActivity--->Not Bonded");
-                    Utils.stopDialogTimer();
-
-                    String dataLog = getResources().getString(R.string.dl_commaseparator)
-                            + "[" + DevicesFragment.mDeviceName + "|"
-                            + DevicesFragment.mDeviceAddress + "] " +
-                            getResources().getString(R.string.dl_connection_pairing_unsupported);
-                    Logger.datalog(dataLog);
-                } else {
-                    Logger.e("Error received in pair-->" + state);
-                }
-            } else if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
-                Logger.i("BluetoothAdapter.ACTION_STATE_CHANGED.");
-                if (intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1) ==
-                        BluetoothAdapter.STATE_OFF) {
-                    Logger.i("BluetoothAdapter.STATE_OFF");
-
-
-                } else if (intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1) ==
-                        BluetoothAdapter.STATE_ON) {
-                    Logger.i("BluetoothAdapter.STATE_ON");
-
-                }
-
-            } else if (action.equals(BluetoothLeService.ACTION_PAIR_REQUEST)) {
-                Logger.e("Pair request received");
-                Logger.e("HomepageActivity--->Pair Request");
-                Utils.stopDialogTimer();
-            }
-
-        }
-    };
 
     /*
     Checks whether a file exists in the folder specified

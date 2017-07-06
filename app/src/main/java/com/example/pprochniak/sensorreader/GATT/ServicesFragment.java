@@ -9,14 +9,9 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.ContactsContract;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringDef;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.pprochniak.sensorreader.R;
@@ -31,7 +26,6 @@ import com.jjoe64.graphview.LegendRenderer;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
-import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.ViewById;
@@ -39,9 +33,6 @@ import org.androidannotations.annotations.ViewById;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 /**
  * Created by Henny on 2017-03-29.
@@ -126,9 +117,8 @@ public class ServicesFragment extends Fragment {
         subscribeToGattUpdates();
         Handler delayHandler = new Handler();
         delayHandler.postDelayed(() -> {
-            Logger.e("Discover service called");
-            if (BluetoothLeService.getConnectionState() == BluetoothLeService.STATE_CONNECTED)
-                BluetoothLeService.discoverAllServices();
+            Logger.d("Discover service called");
+            BluetoothLeService.discoverAllServices();
         }, DELAY_PERIOD);
         isInFragment = true;
     }
@@ -207,7 +197,7 @@ public class ServicesFragment extends Fragment {
         String deviceAddress = extras.getString(Constants.DEVICE_ADDRESS);
         Log.d(TAG, "Service discovered from device "+deviceAddress);
         List<BluetoothGattService> services = BluetoothLeService.getSupportedGattServices(deviceAddress);
-        setNotificationsEnabled(services);
+        setNotificationsEnabled(deviceAddress, services);
         mGattServiceData.put(deviceAddress, services);
         mapOfSeries.put(deviceAddress, getNewXYZSeries());
         addSeriesForDevice(mapOfSeries.get(deviceAddress));
@@ -233,7 +223,7 @@ public class ServicesFragment extends Fragment {
      *
      * @param gattServices
      */
-    private void setNotificationsEnabled(List<BluetoothGattService> gattServices) {
+    private void setNotificationsEnabled(String deviceAddress, List<BluetoothGattService> gattServices) {
         if (gattServices == null)
             return;
         // Loops through available GATT Services.
@@ -243,7 +233,7 @@ public class ServicesFragment extends Fragment {
                 // Auto set notify as TRUE
                 for (BluetoothGattCharacteristic gattCharacteristic : gattService.getCharacteristics()) {
                     if (Utils.checkCharacteristicsPropertyPresence(gattCharacteristic.getProperties(), BluetoothGattCharacteristic.PROPERTY_NOTIFY)) {
-                        BluetoothLeService.setCharacteristicNotification(gattCharacteristic, true);
+                        BluetoothLeService.setCharacteristicNotification(deviceAddress,gattCharacteristic, true);
                     } else {
                         Log.d(TAG, "setNotificationsEnabled: no notify characteristic available");
                     }

@@ -21,9 +21,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -70,7 +67,7 @@ public class DevicesFragment extends Fragment {
     private boolean mScanning;
 
     // Connection time out after 10 seconds.
-    private static final long CONNECTION_TIMEOUT = 10000;
+    private static final long CONNECTION_TIMEOUT = 20000;
     private Timer mConnectTimer;
     private boolean mConnectTimerON = false;
 
@@ -79,10 +76,6 @@ public class DevicesFragment extends Fragment {
 
     // Activity request constant
     private static final int REQUEST_ENABLE_BT = 1;
-
-    // device details
-    public static String mDeviceName = "name";
-    public static String mDeviceAddress = "address";
 
     private boolean searchEnabled = false;
     private boolean scanningInProgress = false;
@@ -239,30 +232,30 @@ public class DevicesFragment extends Fragment {
 
     }
 
-    public void connectDevice(BluetoothDevice device, boolean isFirstConnect) {
+    public void connectDevice(String deviceAddress, boolean isFirstConnect) {
         showProgressDialog("Connecting to device");
-        mDeviceAddress = device.getAddress();
-        mDeviceName = device.getName();
 
         // Get the connection status of the device
-        if (BluetoothLeService.getConnectionState() == BluetoothLeService.STATE_DISCONNECTED) {
+        if (!BluetoothLeService.getConnectedDevices().containsKey(deviceAddress)) {
             Logger.v("BLE DISCONNECTED STATE");
             // Disconnected,so connect
-            BluetoothLeService.connect(mDeviceAddress, mDeviceName, getActivity());
+            BluetoothLeService.connect(deviceAddress, getActivity());
         } else {
-            Logger.v("BLE OTHER STATE-->" + BluetoothLeService.getConnectionState());
             // Connecting to some devices,so disconnect and then connect
-            BluetoothLeService.disconnect(mDeviceAddress);
+            disconnectDevice(deviceAddress);
             Handler delayHandler = new Handler();
             delayHandler.postDelayed(() -> {
-                    BluetoothLeService.connect(mDeviceAddress, mDeviceName, getActivity());
+                    BluetoothLeService.connect(deviceAddress, getActivity());
                 }, DELAY_PERIOD);
         }
         if (isFirstConnect) {
-            startConnectTimer(mDeviceAddress);
+            startConnectTimer(deviceAddress);
             mConnectTimerON = true;
         }
+    }
 
+    public void disconnectDevice(String deviceAddress) {
+        BluetoothLeService.disconnect(deviceAddress);
     }
 
     /**
@@ -290,19 +283,16 @@ public class DevicesFragment extends Fragment {
             public void run() {
                 Logger.v("CONNECTION TIME OUT");
                 mConnectTimerON = false;
-                BluetoothLeService.disconnect(deviceAddress);
+                disconnectDevice(deviceAddress);
                 if (getActivity() != null) {
                     getActivity().runOnUiThread(() -> {
                             Toast.makeText(getActivity(),
                                     R.string.profile_cannot_connect_message,
                                     Toast.LENGTH_SHORT).show();
                         progressDialog.hide();
-                            if (deviceListAdapter != null)
+                            if (deviceListAdapter != null) {
                                 deviceListAdapter.clear();
-                            try {
                                 deviceListAdapter.notifyDataSetChanged();
-                            } catch (Exception e) {
-                                e.printStackTrace();
                             }
                             scanLeDevice(true);
                             mScanning = true;
@@ -342,19 +332,23 @@ public class DevicesFragment extends Fragment {
                     bluetoothAdapter.stopLeScan(mLeScanCallback);
                     mScanning = false;
                 }
-                deviceListAdapter.clear();
                 if (mConnectTimer != null)
                     mConnectTimer.cancel();
                 mConnectTimerON = false;
 
+                String deviceAddress = intent.getStringExtra(Constants.DEVICE_ADDRESS);
+
+                deviceListAdapter.addConnectedDevice(deviceAddress);
+
                 Logger.d(TAG, "Connected to GATT service");
                 Toast.makeText(context, "Connected to GATT service", Toast.LENGTH_LONG).show();
-//                setServiceFragment();
             } else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
                 /**
                  * Disconnect event.When the connect timer is ON,Reconnect the device
                  * else show disconnect message
                  */
+                String deviceAddress = intent.getStringExtra(Constants.DEVICE_ADDRESS);
+                deviceListAdapter.removeConnectedDevice(deviceAddress);
                 if (mConnectTimerON) {
                     BluetoothLeService.reconnect(intent.getExtras().getString(Constants.DEVICE_ADDRESS));
                 } else {
