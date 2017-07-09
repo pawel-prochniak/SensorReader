@@ -1,4 +1,4 @@
-package com.example.pprochniak.sensorreader.GATT;
+package com.example.pprochniak.sensorreader.services;
 
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
@@ -18,6 +18,7 @@ import com.example.pprochniak.sensorreader.R;
 import com.example.pprochniak.sensorreader.ble.BluetoothLeService;
 import com.example.pprochniak.sensorreader.utils.Constants;
 import com.example.pprochniak.sensorreader.utils.Logger;
+import com.example.pprochniak.sensorreader.utils.SharedPreferencesController;
 import com.example.pprochniak.sensorreader.utils.UUIDDatabase;
 import com.example.pprochniak.sensorreader.utils.Utils;
 
@@ -49,10 +50,10 @@ public class ServicesFragment extends Fragment {
     private static final String Z_MAP = "Z";
 
     private static final long DELAY_PERIOD = 500;
-    private static final int SERIES_LENGTH = 500; // how many data points will be collected for each axis
-    static HashMap<String, List<BluetoothGattService>> mGattServiceData =
-            new HashMap<>();
+    private int SERIES_LENGTH; // how many data points will be collected for each axis
+    static HashMap<String, List<BluetoothGattService>> mGattServiceData = new HashMap<>();
     HashMap<String, HashMap<String, LineGraphSeries<DataPoint>>> mapOfSeries = new HashMap<>();
+    private SharedPreferencesController sharedPreferencesController;
     long xTimestamp, yTimestamp, zTimestamp;
 
     // View bindings
@@ -61,7 +62,6 @@ public class ServicesFragment extends Fragment {
     @ViewById(R.id.x_speed) TextView xSpeedView;
     @ViewById(R.id.y_speed) TextView ySpeedView;
     @ViewById(R.id.z_speed) TextView zSpeedView;
-    @ViewById(R.id.total_time) TextView totalTimeView;
 
     private final BroadcastReceiver mGattUpdateListener = new BroadcastReceiver() {
         @Override
@@ -83,12 +83,15 @@ public class ServicesFragment extends Fragment {
     };
 
     @AfterViews public void afterViews() {
+        sharedPreferencesController = new SharedPreferencesController(getContext());
+        SERIES_LENGTH = sharedPreferencesController.getCollectedSampleSize();
         setGraphProperties();
     }
 
 
     private void setGraphProperties() {
-        graphView.getGridLabelRenderer().setLabelVerticalWidth(100);
+        graphView.getGridLabelRenderer().setLabelVerticalWidth(120);
+        graphView.getLegendRenderer().setWidth(80);
         graphView.getViewport().setXAxisBoundsManual(true);
         graphView.getViewport().setMinX(0);
         graphView.getViewport().setMaxX(SERIES_LENGTH);

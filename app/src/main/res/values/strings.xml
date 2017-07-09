@@ -121,4 +121,5 @@
     <!--Common logs-->
     <string name="dl_status_success">" - Success"</string>
     <string name="dl_status_failure">" - Failed with error code : "</string>
+    <string name="collected_samples_size">Collected samples size:</string>
 </resources>

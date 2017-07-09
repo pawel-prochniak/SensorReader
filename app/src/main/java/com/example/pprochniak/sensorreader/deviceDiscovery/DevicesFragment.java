@@ -27,8 +27,8 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.pprochniak.sensorreader.GATT.GattController;
-import com.example.pprochniak.sensorreader.GATT.ServicesFragment;
-import com.example.pprochniak.sensorreader.GATT.ServicesFragment_;
+import com.example.pprochniak.sensorreader.services.ServicesFragment;
+import com.example.pprochniak.sensorreader.services.ServicesFragment_;
 import com.example.pprochniak.sensorreader.R;
 import com.example.pprochniak.sensorreader.ble.BluetoothLeService;
 import com.example.pprochniak.sensorreader.utils.Constants;
@@ -42,7 +42,6 @@ import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.ViewById;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -73,7 +72,7 @@ public class DevicesFragment extends Fragment {
     // Connection time out after 10 seconds.
     private static final long CONNECTION_TIMEOUT = 20000;
     private Timer mConnectTimer;
-    private boolean mConnectTimerON = false;
+    private int mConnectionCounter = 0;
 
     //Delay Time out
     private static final long DELAY_PERIOD = 500;
@@ -149,7 +148,7 @@ public class DevicesFragment extends Fragment {
         }
         Logger.d(TAG, "Unregistered gatt receiver");
         isInFragment = false;
-        if (progressDialog!=null) progressDialog = null;
+        if (progressDialog != null) progressDialog = null;
         super.onPause();
     }
 
@@ -159,7 +158,7 @@ public class DevicesFragment extends Fragment {
         deviceListView.setAdapter(deviceListAdapter);
 
         Set<Map.Entry<String, BluetoothGatt>> bleGattConnected = BluetoothLeService.getConnectedGattServices().entrySet();
-        Log.d(TAG, "setRecyclerWithAdapter: found "+bleGattConnected.size() + " connected devices");
+        Log.d(TAG, "setRecyclerWithAdapter: found " + bleGattConnected.size() + " connected devices");
         for (Map.Entry<String, BluetoothGatt> entry : bleGattConnected) {
             deviceListAdapter.addDevice(entry.getValue().getDevice());
             deviceListAdapter.addConnectedDevice(entry.getKey());
@@ -202,7 +201,7 @@ public class DevicesFragment extends Fragment {
     }
 
     private void hideProgressDialog() {
-        if (progressDialog!=null) {
+        if (progressDialog != null) {
             progressDialog.hide();
         }
     }
@@ -221,7 +220,7 @@ public class DevicesFragment extends Fragment {
                     Logger.d(TAG, "Starting BLE scan");
                     scanningInProgress = true;
                     if (Build.VERSION.SDK_INT < 21) bluetoothAdapter.startLeScan(mLeScanCallback);
-                    else bleScanner.startScan(scanFilters,scanSettings,scanCallbackAPI21);
+                    else bleScanner.startScan(scanFilters, scanSettings, scanCallbackAPI21);
                     scanButton.post(() -> scanButton.setText(R.string.device_discovery_scanning));
                 }
             } else {
@@ -229,7 +228,7 @@ public class DevicesFragment extends Fragment {
                 scanningInProgress = false;
                 if (Build.VERSION.SDK_INT < 21) bluetoothAdapter.stopLeScan(mLeScanCallback);
                 else bleScanner.stopScan(scanCallbackAPI21);
-                if (scanButton!=null)
+                if (scanButton != null)
                     scanButton.post(() -> scanButton.setText(R.string.device_discovery_scan));
             }
         }
@@ -249,12 +248,12 @@ public class DevicesFragment extends Fragment {
             disconnectDevice(deviceAddress);
             Handler delayHandler = new Handler();
             delayHandler.postDelayed(() -> {
-                    BluetoothLeService.connect(deviceAddress, getActivity());
-                }, DELAY_PERIOD);
+                BluetoothLeService.connect(deviceAddress, getActivity());
+            }, DELAY_PERIOD);
         }
         if (isFirstConnect) {
             startConnectTimer(deviceAddress);
-            mConnectTimerON = true;
+            mConnectionCounter++;
         }
     }
 
@@ -286,20 +285,19 @@ public class DevicesFragment extends Fragment {
             @Override
             public void run() {
                 Logger.v("CONNECTION TIME OUT");
-                mConnectTimerON = false;
                 disconnectDevice(deviceAddress);
                 if (getActivity() != null) {
                     getActivity().runOnUiThread(() -> {
-                            Toast.makeText(getActivity(),
-                                    R.string.profile_cannot_connect_message,
-                                    Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(),
+                                R.string.profile_cannot_connect_message,
+                                Toast.LENGTH_SHORT).show();
                         progressDialog.hide();
-                            if (deviceListAdapter != null) {
-                                deviceListAdapter.clear();
-                                deviceListAdapter.notifyDataSetChanged();
-                            }
-                            scanLeDevice(true);
-                            mScanning = true;
+                        if (deviceListAdapter != null) {
+                            deviceListAdapter.clear();
+                            deviceListAdapter.notifyDataSetChanged();
+                        }
+                        scanLeDevice(true);
+                        mScanning = true;
                     });
                 }
 
@@ -328,7 +326,9 @@ public class DevicesFragment extends Fragment {
     private final BroadcastReceiver mGattConnectReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            hideProgressDialog();
+            mConnectionCounter--;
+            if (mConnectionCounter < 1) hideProgressDialog();
+
             final String action = intent.getAction();
             // Status received when connected to GATT Server
             if (BluetoothLeService.ACTION_GATT_CONNECTED.equals(action)) {
@@ -338,7 +338,6 @@ public class DevicesFragment extends Fragment {
                 }
                 if (mConnectTimer != null)
                     mConnectTimer.cancel();
-                mConnectTimerON = false;
 
                 String deviceAddress = intent.getStringExtra(Constants.DEVICE_ADDRESS);
 
@@ -353,13 +352,11 @@ public class DevicesFragment extends Fragment {
                  */
                 String deviceAddress = intent.getStringExtra(Constants.DEVICE_ADDRESS);
                 deviceListAdapter.removeConnectedDevice(deviceAddress);
-                if (mConnectTimerON) {
-                    BluetoothLeService.reconnect(intent.getExtras().getString(Constants.DEVICE_ADDRESS));
-                } else {
-                    Toast.makeText(getActivity(),
-                            R.string.profile_cannot_connect_message,
-                            Toast.LENGTH_SHORT).show();
-                }
+
+                Toast.makeText(getActivity(),
+                        R.string.profile_cannot_connect_message,
+                        Toast.LENGTH_SHORT).show();
+
             }
         }
     };
@@ -369,24 +366,24 @@ public class DevicesFragment extends Fragment {
      * This call back is called when a BLE device is found near by.
      */
     private BluetoothAdapter.LeScanCallback mLeScanCallback =
-            (device,rssi,scanRecord) -> addFoundBluetoothDevice(device,rssi);
+            (device, rssi, scanRecord) -> addFoundBluetoothDevice(device, rssi);
 
     private ScanCallback scanCallbackAPI21 = new ScanCallback() {
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
-            if (result!=null && result.getDevice()!=null )
+            if (result != null && result.getDevice() != null)
                 addFoundBluetoothDevice(result.getDevice(), result.getRssi());
         }
 
         @Override
         public void onBatchScanResults(List<ScanResult> results) {
-            Logger.d(TAG, "API21 scan callback - batch: "+results.toString());
+            Logger.d(TAG, "API21 scan callback - batch: " + results.toString());
         }
 
         @Override
         public void onScanFailed(int errorCode) {
             super.onScanFailed(errorCode);
-            Logger.e("Scan failed with errorCode: "+errorCode);
+            Logger.e("Scan failed with errorCode: " + errorCode);
         }
     };
 
@@ -414,7 +411,7 @@ public class DevicesFragment extends Fragment {
     private void setServiceFragment() {
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction().remove(this).commit();
-        fragmentManager.beginTransaction().replace(R.id.main_container,servicesFragment).commit();
+        fragmentManager.beginTransaction().replace(R.id.main_container, servicesFragment).commit();
     }
 
     @Override
@@ -441,7 +438,6 @@ public class DevicesFragment extends Fragment {
             }
         }
     }
-
 
 
 }

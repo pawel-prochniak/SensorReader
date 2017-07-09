@@ -9,10 +9,11 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.example.pprochniak.sensorreader.GATT.ServicesFragment_;
+import com.example.pprochniak.sensorreader.services.ServicesFragment_;
 import com.example.pprochniak.sensorreader.MainActivity;
 import com.example.pprochniak.sensorreader.R;
 import com.example.pprochniak.sensorreader.deviceDiscovery.DevicesFragment_;
+import com.example.pprochniak.sensorreader.settings.SettingsFragment_;
 
 import org.androidannotations.annotations.EBean;
 import org.androidannotations.annotations.RootContext;
@@ -33,11 +34,15 @@ public class DrawerController implements ListView.OnItemClickListener {
     @Retention(SOURCE)
     @StringDef({
             DEVICES_FRAGMENT,
-            SIGNAL_FRAGMENT
+            SIGNAL_FRAGMENT,
+            SETTINGS_FRAGMENT
     })
     public @interface FragmentName {}
     public static final String DEVICES_FRAGMENT = "Devices";
     public static final String SIGNAL_FRAGMENT = "Signal Chart";
+    public static final String SETTINGS_FRAGMENT = "Settings";
+
+    private int selectedFragmentPosition;
 
     @RootContext MainActivity activity;
     DrawerLayout drawerLayout;
@@ -46,6 +51,7 @@ public class DrawerController implements ListView.OnItemClickListener {
     public DrawerController() {
         drawerItems.add(DEVICES_FRAGMENT);
         drawerItems.add(SIGNAL_FRAGMENT);
+        drawerItems.add(SETTINGS_FRAGMENT);
     }
 
     public void setupDrawer(DrawerLayout drawerLayout, ListView drawerList) {
@@ -64,7 +70,7 @@ public class DrawerController implements ListView.OnItemClickListener {
         selectItem(drawerItems.indexOf(name));
     }
 
-    private void setFragment(Fragment fragment, String tag, String title) {
+    private void setFragment(Fragment fragment, String tag, String fragmentName) {
         // setTitle(title);
         FragmentManager fragmentManager = activity.getSupportFragmentManager();
         fragmentManager
@@ -79,6 +85,9 @@ public class DrawerController implements ListView.OnItemClickListener {
             case SIGNAL_FRAGMENT:
                 fragment = new ServicesFragment_();
                 break;
+            case SETTINGS_FRAGMENT:
+                fragment = new SettingsFragment_();
+                break;
             case DEVICES_FRAGMENT:
             default:
                 fragment = new DevicesFragment_();
@@ -92,7 +101,11 @@ public class DrawerController implements ListView.OnItemClickListener {
         @FragmentName String fragmentName = drawerItems.get(position);
         Fragment fragment = getFragmentByName(fragmentName);
 
+        this.drawerList.setItemChecked(selectedFragmentPosition, false);
+
+        selectedFragmentPosition = position;
         this.drawerList.setItemChecked(position, true);
+        this.drawerList.setSelection(position);
         drawerLayout.closeDrawer(drawerList);
 
         setFragment(fragment, fragment.getTag(), fragmentName);
