@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
@@ -21,8 +22,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.pprochniak.sensorreader.GATT.GattController;
@@ -41,7 +42,10 @@ import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.ViewById;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -112,14 +116,6 @@ public class DevicesFragment extends Fragment {
         scanButton.setOnClickListener((view) -> {
             if (!mScanning) {
                 // Prepare list view and initiate scanning
-                if (deviceListAdapter != null) {
-                    deviceListAdapter.clear();
-                    try {
-                        deviceListAdapter.notifyDataSetChanged();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
                 scanLeDevice(true);
                 mScanning = true;
                 searchEnabled = false;
@@ -141,6 +137,7 @@ public class DevicesFragment extends Fragment {
         Logger.e("Registering receiver in Profile scannng");
         getActivity().registerReceiver(mGattConnectReceiver,
                 Utils.makeGattUpdateIntentFilter());
+
     }
 
     @Override
@@ -160,6 +157,13 @@ public class DevicesFragment extends Fragment {
         deviceListAdapter = new DeviceListAdapter(this);
         deviceListView.setLayoutManager(new LinearLayoutManager(getContext()));
         deviceListView.setAdapter(deviceListAdapter);
+
+        Set<Map.Entry<String, BluetoothGatt>> bleGattConnected = BluetoothLeService.getConnectedGattServices().entrySet();
+        Log.d(TAG, "setRecyclerWithAdapter: found "+bleGattConnected.size() + " connected devices");
+        for (Map.Entry<String, BluetoothGatt> entry : bleGattConnected) {
+            deviceListAdapter.addDevice(entry.getValue().getDevice());
+            deviceListAdapter.addConnectedDevice(entry.getKey());
+        }
     }
 
     private void checkBleSupportAndInitialize() {
@@ -236,7 +240,7 @@ public class DevicesFragment extends Fragment {
         showProgressDialog("Connecting to device");
 
         // Get the connection status of the device
-        if (!BluetoothLeService.getConnectedDevices().containsKey(deviceAddress)) {
+        if (!BluetoothLeService.getConnectedGattServices().containsKey(deviceAddress)) {
             Logger.v("BLE DISCONNECTED STATE");
             // Disconnected,so connect
             BluetoothLeService.connect(deviceAddress, getActivity());

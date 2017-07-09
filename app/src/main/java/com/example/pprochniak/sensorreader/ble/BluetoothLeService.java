@@ -125,7 +125,7 @@ public class BluetoothLeService extends Service {
     private static int readingCharacteristicCount = 0;
 
     /**
-     * Device address
+     * Map of device address to Gatt
      */
     private static HashMap<String, BluetoothGatt> mGattDevices = new HashMap<>();
     private static Context mContext;
@@ -422,7 +422,7 @@ public class BluetoothLeService extends Service {
         Log.d(TAG, dataLog);
     }
 
-    public static HashMap<String, BluetoothGatt> getConnectedDevices() {
+    public static HashMap<String, BluetoothGatt> getConnectedGattServices() {
         return mGattDevices;
     }
 

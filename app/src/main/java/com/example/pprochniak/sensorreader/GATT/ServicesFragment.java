@@ -141,6 +141,10 @@ public class ServicesFragment extends Fragment {
         LineGraphSeries<DataPoint> series;
         HashMap<String, LineGraphSeries<DataPoint>> deviceSeriesMap = mapOfSeries.get(deviceAddress);
 
+        if (deviceSeriesMap == null) {
+            return;
+        }
+
         if (extras.containsKey(Constants.EXTRA_ACC_X_VALUE)) {
             series = deviceSeriesMap.get("X");
             counter = series.getHighestValueX() + 1.0d;

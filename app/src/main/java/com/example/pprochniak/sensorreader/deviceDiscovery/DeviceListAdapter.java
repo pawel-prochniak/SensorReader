@@ -2,6 +2,7 @@ package com.example.pprochniak.sensorreader.deviceDiscovery;
 
 import android.bluetooth.BluetoothDevice;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,10 +39,15 @@ public class DeviceListAdapter extends RecyclerView.Adapter<DeviceListAdapter.De
         deviceList = new ArrayList<>();
         rssiList = new HashMap<>();
         connectedDevices = new ArrayList<>();
-        connectedDevices.addAll(BluetoothLeService.getConnectedDevices().keySet());
     }
 
-    public void addDevice(BluetoothDevice device, int rssi) {
+    void addDevice(BluetoothDevice device) {
+        if (!deviceList.contains(device)) {
+            deviceList.add(device);
+        }
+    }
+
+    void addDevice(BluetoothDevice device, int rssi) {
         if (!deviceList.contains(device)) {
             deviceList.add(device);
             rssiList.put(device.getAddress(), rssi);
@@ -50,16 +56,16 @@ public class DeviceListAdapter extends RecyclerView.Adapter<DeviceListAdapter.De
         }
     }
 
-    public void clear() {
+    void clear() {
         deviceList.clear();
     }
 
-    public void addConnectedDevice(String deviceAddress) {
+    void addConnectedDevice(String deviceAddress) {
         connectedDevices.add(deviceAddress);
         notifyDataSetChanged();
     }
 
-    public void removeConnectedDevice(String deviceAddress) {
+    void removeConnectedDevice(String deviceAddress) {
         if (connectedDevices.contains(deviceAddress)) {
             connectedDevices.remove(deviceAddress);
             notifyDataSetChanged();
@@ -77,8 +83,8 @@ public class DeviceListAdapter extends RecyclerView.Adapter<DeviceListAdapter.De
         final BluetoothDevice device = deviceList.get(position);
         boolean isConnected = connectedDevices.contains(device.getAddress());
         String deviceAddress = device.getAddress();
-        holder.bind(device, rssiList.get(device.getAddress()));
-        // TODO show icon with connected device
+        holder.bind(device);
+        if (rssiList.containsKey(deviceAddress)) holder.setRssi(rssiList.get(deviceAddress));
         holder.itemView.setOnClickListener((view) -> {
                     if (!connectedDevices.contains(deviceAddress)) {
                         fragment.scanLeDevice(false);
@@ -118,15 +124,14 @@ public class DeviceListAdapter extends RecyclerView.Adapter<DeviceListAdapter.De
             ButterKnife.bind(this, itemView);
         }
 
-        void bind(BluetoothDevice device, int rssi) {
+        void bind(BluetoothDevice device) {
             deviceName.setText(device.getName());
             deviceAddress.setText(device.getAddress());
-            deviceRssi.setText(String.valueOf(rssi));
+
         }
 
-        void setDeviceConnectedState(boolean isConnected) {
-
-
+        void setRssi(int rssi) {
+            deviceRssi.setText(String.valueOf(rssi));
         }
 
     }
