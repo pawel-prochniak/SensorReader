@@ -70,7 +70,7 @@ public class DevicesFragment extends Fragment {
     private boolean mScanning;
 
     // Connection time out after 10 seconds.
-    private static final long CONNECTION_TIMEOUT = 20000;
+    private static final long CONNECTION_TIMEOUT = 15000;
     private Timer mConnectTimer;
     private int mConnectionCounter = 0;
 
@@ -353,10 +353,9 @@ public class DevicesFragment extends Fragment {
                 String deviceAddress = intent.getStringExtra(Constants.DEVICE_ADDRESS);
                 deviceListAdapter.removeConnectedDevice(deviceAddress);
 
-                Toast.makeText(getActivity(),
-                        R.string.profile_cannot_connect_message,
-                        Toast.LENGTH_SHORT).show();
+                String disconnectMsg = getResources().getString(R.string.device_disconnected, deviceAddress);
 
+                Toast.makeText(getActivity(), disconnectMsg, Toast.LENGTH_SHORT).show();
             }
         }
     };

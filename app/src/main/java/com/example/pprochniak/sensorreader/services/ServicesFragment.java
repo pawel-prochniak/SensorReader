@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothGattService;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.pprochniak.sensorreader.R;
 import com.example.pprochniak.sensorreader.ble.BluetoothLeService;
@@ -32,6 +34,7 @@ import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.ViewById;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
@@ -78,6 +81,8 @@ public class ServicesFragment extends Fragment {
             } else if (BluetoothLeService.ACTION_GATT_SERVICE_DISCOVERY_UNSUCCESSFUL
                     .equals(action)) {
                 showNoServiceDiscoverAlert();
+            } else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
+                displayDisconnectToast(extras);
             }
         }
     };
@@ -100,9 +105,12 @@ public class ServicesFragment extends Fragment {
     }
 
     private void addSeriesForDevice(HashMap<String, LineGraphSeries<DataPoint>> map) {
-        LineGraphSeries xSeries = map.get("X");
-        LineGraphSeries ySeries = map.get("Y");
-        LineGraphSeries zSeries = map.get("Z");
+        LineGraphSeries<DataPoint> xSeries = map.get(X_MAP);
+        LineGraphSeries<DataPoint> ySeries = map.get(Y_MAP);
+        LineGraphSeries<DataPoint> zSeries = map.get(Z_MAP);
+        xSeries.appendData(new DataPoint(-1.0,0), false, SERIES_LENGTH);
+        ySeries.appendData(new DataPoint(-1.0,0), false, SERIES_LENGTH);
+        zSeries.appendData(new DataPoint(-1.0,0), false, SERIES_LENGTH);
         xSeries.setTitle("X");
         ySeries.setTitle("Y");
         zSeries.setTitle("Z");
@@ -111,6 +119,7 @@ public class ServicesFragment extends Fragment {
         graphView.addSeries(xSeries);
         graphView.addSeries(ySeries);
         graphView.addSeries(zSeries);
+
     }
 
     @Override
@@ -137,8 +146,15 @@ public class ServicesFragment extends Fragment {
         servicesNotFound.setVisibility(View.VISIBLE);
     }
 
+    private void displayDisconnectToast(Bundle extras) {
+        Resources res = getResources();
+        String deviceAddress = extras.getString(Constants.DEVICE_ADDRESS);
+        String formattedDisconnectMsg = res.getString(R.string.device_disconnected, deviceAddress);
+        Toast.makeText(getContext(), formattedDisconnectMsg, Toast.LENGTH_LONG).show();
+    }
+
     private void receiveValueAndAppendPoint(Bundle extras) {
-        int receivedValue;
+        float receivedValue;
         double counter;
         String deviceAddress = extras.getString(Constants.DEVICE_ADDRESS);
         LineGraphSeries<DataPoint> series;
@@ -151,7 +167,10 @@ public class ServicesFragment extends Fragment {
         if (extras.containsKey(Constants.EXTRA_ACC_X_VALUE)) {
             series = deviceSeriesMap.get("X");
             counter = series.getHighestValueX() + 1.0d;
-            receivedValue = extras.getInt(Constants.EXTRA_ACC_X_VALUE);
+            receivedValue = extras.getFloat(Constants.EXTRA_ACC_X_VALUE);
+//            if (counter < 10) {
+//                Log.d(TAG, "Appending x: ("+counter+", "+receivedValue+")");
+//            }
             if (counter <= SERIES_LENGTH) {
                 if (counter - 1.0d == 0) xTimestamp = System.currentTimeMillis();
                 if (counter == SERIES_LENGTH) {
@@ -164,7 +183,7 @@ public class ServicesFragment extends Fragment {
         else if (extras.containsKey(Constants.EXTRA_ACC_Y_VALUE)) {
             series = deviceSeriesMap.get("Y");
             counter = series.getHighestValueX() + 1.0d;
-            receivedValue = extras.getInt(Constants.EXTRA_ACC_Y_VALUE);
+            receivedValue = extras.getFloat(Constants.EXTRA_ACC_Y_VALUE);
 
             if (counter <= SERIES_LENGTH) {
                 if (counter - 1.0d == 0) yTimestamp = System.currentTimeMillis();
@@ -178,7 +197,7 @@ public class ServicesFragment extends Fragment {
         else if (extras.containsKey(Constants.EXTRA_ACC_Z_VALUE)) {
             series = deviceSeriesMap.get("Z");
             counter = series.getHighestValueX() + 1.0d;
-            receivedValue = extras.getInt(Constants.EXTRA_ACC_Z_VALUE);
+            receivedValue = extras.getFloat(Constants.EXTRA_ACC_Z_VALUE);
 
             if (counter <= SERIES_LENGTH) {
                 if (counter - 1.0d == 0) zTimestamp = System.currentTimeMillis();

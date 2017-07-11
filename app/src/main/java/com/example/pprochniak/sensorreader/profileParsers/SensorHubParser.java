@@ -32,13 +32,18 @@
 package com.example.pprochniak.sensorreader.profileParsers;
 
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.util.Log;
 
 import com.example.pprochniak.sensorreader.utils.Logger;
+
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 /**
  * Class used for parsing Sensor hub related information
  */
 public class SensorHubParser {
+    private static final String TAG = "SensorHubParser";
     private static final int FIRST_BITMASK = 0x01;
     public static final int SECOND_BITMASK = FIRST_BITMASK << 1;
     public static final int THIRD_BITMASK = FIRST_BITMASK << 2;
@@ -48,19 +53,22 @@ public class SensorHubParser {
     public static final int SEVENTH_BITMASK = FIRST_BITMASK << 6;
     public static final int EIGTH_BITMASK = FIRST_BITMASK << 7;
 
-    public static int getAcceleroMeterXYZReading(
+    private static int counter = 0;
+
+    public static float getAcceleroMeterXYZReading(
             BluetoothGattCharacteristic characteristic) {
 
-        int mAccXYZ = characteristic.getIntValue(
-                BluetoothGattCharacteristic.FORMAT_UINT16, 0);
-        return mAccXYZ;
+        byte[] bytes = characteristic.getValue();
+        float value = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).getFloat();
+
+        return value;
     }
 
     public static float getThermometerReading(
             BluetoothGattCharacteristic characteristic) {
 
         float mTemp = characteristic.getFloatValue(
-                BluetoothGattCharacteristic.FORMAT_FLOAT, 0);
+                BluetoothGattCharacteristic.FORMAT_SFLOAT, 0);
         return mTemp;
     }
 

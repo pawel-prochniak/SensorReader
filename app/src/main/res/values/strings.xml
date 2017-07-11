@@ -32,40 +32,13 @@
     <string name="device_discovery_scanning">Scanning</string>
     <string name="profile_cannot_connect_message">Cannot connect to the device</string>
 
-    <!-- Device information profile elements -->
-
-    <!-- Glucose additional information profile elements -->
-
-    <!-- Gatt DB elements -->
-
-    <!-- DataLogger elements -->
-
-    <!-- Capsense elements -->
-
-    <!-- ActionBar fragment Names -->
-
-    <!-- RGB LED profile elements -->
-
-    <!-- Find Me profile elements -->
-
-    <!-- Blood pressure profile elements -->
-
-    <!-- RSC profile elements -->
-
-    <!-- CSC profile elements -->
-
-
-    <!-- Sensorhub profile elements -->
 
     <!-- Battery profile elements -->
     <string name="battery_read">Read</string>
     <string name="battery_level">Battery level: </string>
 
-    <!-- RDK profile elements -->
-
-    <!-- OTA profile elements -->
-
     <!-- General Toast  -->
+    <string name="device_disconnected">Device %s disconnected</string>
 
     <!-- Descriptor parser  -->
     <string name="descriptor_notification_enabled">Notifications enabled</string>

@@ -462,14 +462,14 @@ public class BluetoothLeService extends Service {
                 characteristic.getService().getInstanceId());
 
         if (characteristic.getUuid().equals(UUIDDatabase.UUID_ACC_X)) {
-            int val = SensorHubParser.getAcceleroMeterXYZReading(characteristic);
-            mBundle.putInt(Constants.EXTRA_ACC_X_VALUE, val);
+            float val = SensorHubParser.getAcceleroMeterXYZReading(characteristic);
+            mBundle.putFloat(Constants.EXTRA_ACC_X_VALUE, val);
         } else if (characteristic.getUuid().equals(UUIDDatabase.UUID_ACC_Y)) {
-            int val = SensorHubParser.getAcceleroMeterXYZReading(characteristic);
-            mBundle.putInt(Constants.EXTRA_ACC_Y_VALUE, val);
+            float val = SensorHubParser.getAcceleroMeterXYZReading(characteristic);
+            mBundle.putFloat(Constants.EXTRA_ACC_Y_VALUE, val);
         } else if (characteristic.getUuid().equals(UUIDDatabase.UUID_ACC_Z)) {
-            int val = SensorHubParser.getAcceleroMeterXYZReading(characteristic);
-            mBundle.putInt(Constants.EXTRA_ACC_Z_VALUE, val);
+            float val = SensorHubParser.getAcceleroMeterXYZReading(characteristic);
+            mBundle.putFloat(Constants.EXTRA_ACC_Z_VALUE, val);
         }
 
         intent.putExtras(mBundle);
@@ -594,12 +594,15 @@ public class BluetoothLeService extends Service {
         Logger.i("disconnect called");
         if (mBluetoothAdapter != null && gatt != null)  {
             BluetoothLeService.refreshDeviceCache(gatt);
-            gatt.disconnect();
+            if (mEnabledCharacteristics.containsKey(deviceAddress)) {
+                mEnabledCharacteristics.remove(deviceAddress);
+            }
             String dataLog = mContext.getResources().getString(R.string.dl_commaseparator)
                     + "[" + deviceAddress + "] " +
                     mContext.getResources().getString(R.string.dl_disconnection_request);
             Log.d(TAG, dataLog);
             close(gatt.getDevice().getAddress());
+            broadcastConnectionUpdate(ACTION_GATT_DISCONNECTED, deviceAddress);
         }
 
     }
