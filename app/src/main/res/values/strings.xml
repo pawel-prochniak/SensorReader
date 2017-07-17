@@ -94,5 +94,12 @@
     <!--Common logs-->
     <string name="dl_status_success">" - Success"</string>
     <string name="dl_status_failure">" - Failed with error code : "</string>
-    <string name="collected_samples_size">Collected samples size:</string>
+
+    <!--Settings-->
+    <string name="collected_samples_size">Plot limit [samples]:</string>
+    <string name="real_time_plotting">Real time plotting:</string>
+    <string name="real_time_plotting_explanation">(No real time plotting means collecting sample size of plot limit and plotting all at once after acquisition)</string>
+    <string name="continuous_plotting">Continuous plotting:</string>
+    <string name="continuous_plotting_explanation">(Requires real time plotting enabled. No continuous plotting means discarding oldest sample after reaching plot limit to plot new sample)</string>
+
 </resources>

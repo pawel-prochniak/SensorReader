@@ -20,4 +20,46 @@
             android:inputType="number"/>
     </LinearLayout>
 
+    <LinearLayout
+        android:paddingTop="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/real_time_plotting"/>
+        <CheckBox
+            android:id="@+id/real_time_plotting_check_box"
+            android:layout_width="24dp"
+            android:layout_height="24dp"/>
+    </LinearLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/real_time_plotting_explanation"/>
+
+    <LinearLayout
+        android:id="@+id/continuous_plotting_layout"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    <LinearLayout
+        android:paddingTop="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/continuous_plotting"/>
+        <CheckBox
+            android:id="@+id/continuous_plotting_check_box"
+            android:layout_width="24dp"
+            android:layout_height="24dp"/>
+    </LinearLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/continuous_plotting_explanation"/>
+    </LinearLayout>
+
 </LinearLayout>

@@ -20,7 +20,7 @@ import com.example.pprochniak.sensorreader.R;
 import com.example.pprochniak.sensorreader.ble.BluetoothLeService;
 import com.example.pprochniak.sensorreader.utils.Constants;
 import com.example.pprochniak.sensorreader.utils.Logger;
-import com.example.pprochniak.sensorreader.utils.SharedPreferencesController;
+import com.example.pprochniak.sensorreader.settings.SharedPreferencesController;
 import com.example.pprochniak.sensorreader.utils.UUIDDatabase;
 import com.example.pprochniak.sensorreader.utils.Utils;
 
@@ -34,7 +34,6 @@ import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.ViewById;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
@@ -224,9 +223,11 @@ public class ServicesFragment extends Fragment {
         Log.d(TAG, "Service discovered from device "+deviceAddress);
         List<BluetoothGattService> services = BluetoothLeService.getSupportedGattServices(deviceAddress);
         setNotificationsEnabled(deviceAddress, services);
-        mGattServiceData.put(deviceAddress, services);
-        mapOfSeries.put(deviceAddress, getNewXYZSeries());
-        addSeriesForDevice(mapOfSeries.get(deviceAddress));
+        if (!mGattServiceData.containsKey(deviceAddress)) mGattServiceData.put(deviceAddress, services);
+        if (!mapOfSeries.containsKey(deviceAddress)) {
+            mapOfSeries.put(deviceAddress, getNewXYZSeries());
+            addSeriesForDevice(mapOfSeries.get(deviceAddress));
+        }
 
         /*
         / Changes the MTU size to 512 in case LOLLIPOP and above devices
