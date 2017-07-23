@@ -101,5 +101,8 @@
     <string name="real_time_plotting_explanation">(No real time plotting means collecting sample size of plot limit and plotting all at once after acquisition)</string>
     <string name="continuous_plotting">Continuous plotting:</string>
     <string name="continuous_plotting_explanation">(Requires real time plotting enabled. No continuous plotting means discarding oldest sample after reaching plot limit to plot new sample)</string>
+    <string name="signal_plot_settings">Signal plot settings</string>
+    <string name="rms_settings">RMS settings</string>
+    <string name="rms_sample_size">Samples to calculate: </string>
 
 </resources>

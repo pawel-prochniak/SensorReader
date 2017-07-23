@@ -1,65 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:padding="16dp">
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/collected_samples_size"/>
-        <EditText
-            android:id="@+id/collected_sample_size"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:inputType="number"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:paddingTop="16dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/real_time_plotting"/>
-        <CheckBox
-            android:id="@+id/real_time_plotting_check_box"
-            android:layout_width="24dp"
-            android:layout_height="24dp"/>
-    </LinearLayout>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/real_time_plotting_explanation"/>
-
-    <LinearLayout
-        android:id="@+id/continuous_plotting_layout"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-    <LinearLayout
-        android:paddingTop="16dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:padding="16dp">
+
+
+        <!--Plot control-->
+
+        <TextView
+            style="@style/SettingsSectionTitle"
+            android:text="@string/signal_plot_settings"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/collected_samples_size"/>
+
+            <EditText
+                android:id="@+id/collected_sample_size"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:inputType="number"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/real_time_plotting"/>
+
+            <CheckBox
+                android:id="@+id/real_time_plotting_check_box"
+                android:layout_width="24dp"
+                android:layout_height="24dp"/>
+        </LinearLayout>
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/continuous_plotting"/>
-        <CheckBox
-            android:id="@+id/continuous_plotting_check_box"
-            android:layout_width="24dp"
-            android:layout_height="24dp"/>
-    </LinearLayout>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/continuous_plotting_explanation"/>
-    </LinearLayout>
+            android:text="@string/real_time_plotting_explanation"/>
 
-</LinearLayout>
+        <LinearLayout
+            android:id="@+id/continuous_plotting_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/continuous_plotting"/>
+
+                <CheckBox
+                    android:id="@+id/continuous_plotting_check_box"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"/>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/continuous_plotting_explanation"/>
+        </LinearLayout>
+
+        <!--RMS-->
+
+        <TextView
+            style="@style/SettingsSectionTitle"
+            android:paddingTop="16dp"
+            android:text="@string/rms_settings"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/rms_sample_size"/>
+
+            <EditText
+                android:id="@+id/rms_sample_size"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:inputType="number"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

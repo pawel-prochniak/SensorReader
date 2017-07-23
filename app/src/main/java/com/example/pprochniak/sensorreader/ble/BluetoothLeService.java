@@ -630,7 +630,29 @@ public class BluetoothLeService extends Service {
                     mContext.getResources().getString(R.string.dl_service_discovery_request);
             Log.d(TAG, dataLog);
         }
+    }
 
+    public static void subscribeToSensorNotifications(String deviceAddress) {
+        List<BluetoothGattService> services = BluetoothLeService.getSupportedGattServices(deviceAddress);
+
+        if (services == null) {
+            Log.e(TAG, "subscribeToSensorNotifications: no services found");
+            return;
+        }
+        // Loops through available GATT Services.
+        for (BluetoothGattService gattService : services) {
+            UUID uuid = gattService.getUuid();
+            if (UUIDDatabase.UUID_SENSOR_READ_SERVICE.equals(uuid)) {
+                // Auto set notify as TRUE
+                for (BluetoothGattCharacteristic gattCharacteristic : gattService.getCharacteristics()) {
+                    if (Utils.checkCharacteristicsPropertyPresence(gattCharacteristic.getProperties(), BluetoothGattCharacteristic.PROPERTY_NOTIFY)) {
+                        BluetoothLeService.setCharacteristicNotification(deviceAddress,gattCharacteristic, true);
+                    } else {
+                        Log.d(TAG, "subscribeToSensorNotifications: no notify characteristic available");
+                    }
+                }
+            }
+        }
     }
 
     /**

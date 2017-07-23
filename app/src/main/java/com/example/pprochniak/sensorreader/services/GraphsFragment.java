@@ -1,7 +1,5 @@
 package com.example.pprochniak.sensorreader.services;
 
-import android.bluetooth.BluetoothGattCharacteristic;
-import android.bluetooth.BluetoothGattService;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -19,22 +17,12 @@ import com.example.pprochniak.sensorreader.R;
 import com.example.pprochniak.sensorreader.ble.BluetoothLeService;
 import com.example.pprochniak.sensorreader.utils.Constants;
 import com.example.pprochniak.sensorreader.utils.Logger;
-import com.example.pprochniak.sensorreader.utils.UUIDDatabase;
 import com.example.pprochniak.sensorreader.utils.Utils;
 
 import com.jjoe64.graphview.GraphView;
 
-import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.ViewById;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
-
-import static com.example.pprochniak.sensorreader.services.TimeSeriesPlotController.X;
-import static com.example.pprochniak.sensorreader.services.TimeSeriesPlotController.Y;
-import static com.example.pprochniak.sensorreader.services.TimeSeriesPlotController.Z;
 
 /**
  * Created by Henny on 2017-03-29.
@@ -47,19 +35,17 @@ public class GraphsFragment extends Fragment {
     public static boolean isInFragment = false;
 
     private static final long DELAY_PERIOD = 500;
-    static HashMap<String, List<BluetoothGattService>> mGattServiceData = new HashMap<>();
 
     // Plot settings
-    private TimeSeriesPlotController timeSeriesPlotController;
-    private RmsPlotController rmsPlotController;
+    private PlotController plotController;
 
     // View bindings
     @ViewById(R.id.services_not_found) TextView servicesNotFound;
     @ViewById(R.id.graph) GraphView graphView;
-    @ViewById(R.id.x_speed) TextView xSpeedView;
-    @ViewById(R.id.y_speed) TextView ySpeedView;
-    @ViewById(R.id.z_speed) TextView zSpeedView;
+    @ViewById(R.id.receiving_speed) TextView receivingSpeedView;
     @ViewById(R.id.x_bar_graph) BarGraph xBarGraph;
+    @ViewById(R.id.y_bar_graph) BarGraph yBarGraph;
+    @ViewById(R.id.z_bar_graph) BarGraph zBarGraph;
 
     private final BroadcastReceiver mGattUpdateListener = new BroadcastReceiver() {
         @Override
@@ -69,7 +55,7 @@ public class GraphsFragment extends Fragment {
 
             // GATT Data available
             if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
-                timeSeriesPlotController.receiveValueAndAppendPoint(extras);
+                plotController.receiveValueAndAppendPoint(extras);
             } else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
                 processServiceDiscovery(extras);
             } else if (BluetoothLeService.ACTION_GATT_SERVICE_DISCOVERY_UNSUCCESSFUL.equals(action)) {
@@ -80,42 +66,17 @@ public class GraphsFragment extends Fragment {
         }
     };
 
-    @AfterViews public void afterViews() {
-        initializePlotController();
-    }
-
     private void initializePlotController() {
-        timeSeriesPlotController = new TimeSeriesPlotController(this);
-        timeSeriesPlotController.setGraphProperties();
-        xBarGraph.setTitle("RMS X");
+        plotController = new PlotController(this);
     }
 
-    void setXRms(float val) {
-        xBarGraph.setValue(val);
-    }
-
-    void setReceivingSpeed(float speed, @TimeSeriesPlotController.AXIS String axis) {
-        String str = String.valueOf(speed);
-        TextView textView;
-        switch (axis) {
-            default:
-            case X:
-                textView = xSpeedView;
-                break;
-            case Y:
-                textView = ySpeedView;
-                break;
-            case Z:
-                textView = zSpeedView;
-        }
-        textView.setText(str);
-    }
 
 
     @Override
     public void onResume() {
         super.onResume();
         Logger.d("Registering mServiceDiscovery");
+        initializePlotController();
         subscribeToGattUpdates();
         Handler delayHandler = new Handler();
         delayHandler.postDelayed(() -> {
@@ -146,41 +107,14 @@ public class GraphsFragment extends Fragment {
     private void processServiceDiscovery(Bundle extras) {
         String deviceAddress = extras.getString(Constants.DEVICE_ADDRESS);
         Log.d(TAG, "Service discovered from device "+deviceAddress);
-        List<BluetoothGattService> services = BluetoothLeService.getSupportedGattServices(deviceAddress);
-        setNotificationsEnabled(deviceAddress, services);
-        if (!mGattServiceData.containsKey(deviceAddress)) mGattServiceData.put(deviceAddress, services);
-        timeSeriesPlotController.addDevice(deviceAddress);
+        BluetoothLeService.subscribeToSensorNotifications(deviceAddress);
+        plotController.addDevice(deviceAddress);
 
         /*
         / Changes the MTU size to 512 in case LOLLIPOP and above devices
         */
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             BluetoothLeService.exchangeGattMtu(deviceAddress, 512);
-        }
-    }
-
-
-    /**
-     * Prepare GATTServices data.
-     *
-     * @param gattServices
-     */
-    private void setNotificationsEnabled(String deviceAddress, List<BluetoothGattService> gattServices) {
-        if (gattServices == null)
-            return;
-        // Loops through available GATT Services.
-        for (BluetoothGattService gattService : gattServices) {
-            UUID uuid = gattService.getUuid();
-            if (UUIDDatabase.UUID_SENSOR_READ_SERVICE.equals(uuid)) {
-                // Auto set notify as TRUE
-                for (BluetoothGattCharacteristic gattCharacteristic : gattService.getCharacteristics()) {
-                    if (Utils.checkCharacteristicsPropertyPresence(gattCharacteristic.getProperties(), BluetoothGattCharacteristic.PROPERTY_NOTIFY)) {
-                        BluetoothLeService.setCharacteristicNotification(deviceAddress,gattCharacteristic, true);
-                    } else {
-                        Log.d(TAG, "setNotificationsEnabled: no notify characteristic available");
-                    }
-                }
-            }
         }
     }
 

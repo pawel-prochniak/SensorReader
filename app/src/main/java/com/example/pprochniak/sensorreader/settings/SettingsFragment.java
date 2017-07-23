@@ -27,6 +27,7 @@ public class SettingsFragment extends Fragment {
     @ViewById(R.id.real_time_plotting_check_box) CheckBox realTimePlottingCheckBox;
     @ViewById(R.id.continuous_plotting_check_box) CheckBox continuousPlottingCheckBox;
     @ViewById(R.id.continuous_plotting_layout) View continuousPlottingLayout;
+    @ViewById(R.id.rms_sample_size) EditText rmsSampleSizeEditText;
 
     @AfterViews
     void afterViews() {
@@ -35,6 +36,7 @@ public class SettingsFragment extends Fragment {
         setSampleSizeState();
         setRealTimePlottingState();
         setContinuousPlottingState();
+        setRmsSampleSizeState();
 
         setRealTimePlottingOnClick();
     }
@@ -44,6 +46,7 @@ public class SettingsFragment extends Fragment {
         saveSampleSizeSetting();
         saveRealTimePlottingSetting();
         saveContinuousPlottingSetting();
+        saveRmsSampleSizeSetting();
 
         super.onPause();
     }
@@ -71,7 +74,10 @@ public class SettingsFragment extends Fragment {
         boolean realTimePlottingEnabled = sharedPreferencesController.getRealTimePlotting();
         enableContinuousPlottingCheckBox(realTimePlottingEnabled);
         continuousPlottingCheckBox.setChecked(sharedPreferencesController.getContinuousPlotting());
+    }
 
+    private void setRmsSampleSizeState() {
+        rmsSampleSizeEditText.setText(String.valueOf(sharedPreferencesController.getRmsSampleSize()));
     }
 
     private void saveSampleSizeSetting() {
@@ -91,5 +97,13 @@ public class SettingsFragment extends Fragment {
 
     private void saveRealTimePlottingSetting() {
         sharedPreferencesController.saveRealTimePlotting(realTimePlottingCheckBox.isChecked());
+    }
+
+    private void saveRmsSampleSizeSetting() {
+        Editable editTextEditable = rmsSampleSizeEditText.getText();
+        if (editTextEditable.length() > 0) {
+            String editTextValue = editTextEditable.toString();
+            sharedPreferencesController.saveRmsSampleSize(Integer.valueOf(editTextValue));
+        }
     }
 }

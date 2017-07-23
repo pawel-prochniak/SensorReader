@@ -1,6 +1,5 @@
 package com.example.pprochniak.sensorreader.calculation;
 
-import java.nio.BufferOverflowException;
 import java.nio.BufferUnderflowException;
 import java.util.Arrays;
 

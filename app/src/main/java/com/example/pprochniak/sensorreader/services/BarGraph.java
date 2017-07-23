@@ -22,7 +22,7 @@ public class BarGraph extends LinearLayout {
     private GraphView graphView;
     private BarGraphSeries<DataPoint> series;
 
-    private static final double BAR_POSITION = 0.0;
+    private static final double BAR_POSITION = 0.25;
 
     public BarGraph(Context context) {
         super(context);

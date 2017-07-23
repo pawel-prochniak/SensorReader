@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:keepScreenOn="true">
+
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
@@ -25,33 +26,32 @@
             android:layout_height="250dp"
             android:id="@+id/graph" />
 
-        <com.example.pprochniak.sensorreader.services.BarGraph
-            android:id="@+id/x_bar_graph"
-            android:layout_width="240dp"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.example.pprochniak.sensorreader.services.BarGraph
+                android:id="@+id/x_bar_graph"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="200dp"
+                android:orientation="vertical"/>
+
+            <com.example.pprochniak.sensorreader.services.BarGraph
+                android:id="@+id/y_bar_graph"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="200dp"
+                android:orientation="vertical"/>
+
+            <com.example.pprochniak.sensorreader.services.BarGraph
+            android:id="@+id/z_bar_graph"
+            android:layout_weight="1"
+            android:layout_width="0dp"
             android:layout_height="200dp"
             android:orientation="vertical"/>
 
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Receiving speed [samples/s]: "/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:layout_width="30dp"
-                android:layout_height="wrap_content"
-                android:text="X: " />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/x_speed"
-                tools:text="300"/>
-
         </LinearLayout>
 
         <LinearLayout
@@ -59,52 +59,18 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:layout_width="30dp"
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Y: " />
+                android:text="Receiving speed [samples/s]: "/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/y_speed"
-                tools:text="250"/>
+                android:id="@+id/receiving_speed"
+                tools:text="80"/>
 
         </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:layout_width="30dp"
-                android:layout_height="wrap_content"
-                android:text="Z: " />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/z_speed"
-                tools:text="120"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:text="Total time [s]: " />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/total_time"
-                tools:text="25"/>
-
-        </LinearLayout>
-
 
     </LinearLayout>
 
