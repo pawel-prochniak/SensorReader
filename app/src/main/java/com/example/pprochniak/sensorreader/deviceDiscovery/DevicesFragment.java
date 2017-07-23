@@ -27,8 +27,8 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.pprochniak.sensorreader.GATT.GattController;
-import com.example.pprochniak.sensorreader.services.ServicesFragment;
-import com.example.pprochniak.sensorreader.services.ServicesFragment_;
+import com.example.pprochniak.sensorreader.services.GraphsFragment;
+import com.example.pprochniak.sensorreader.services.GraphsFragment_;
 import com.example.pprochniak.sensorreader.R;
 import com.example.pprochniak.sensorreader.ble.BluetoothLeService;
 import com.example.pprochniak.sensorreader.utils.Constants;
@@ -59,7 +59,7 @@ public class DevicesFragment extends Fragment {
 
     public static boolean isInFragment = false;
 
-    ServicesFragment servicesFragment;
+    GraphsFragment graphsFragment;
 
     //
     // Scanning properties
@@ -104,7 +104,7 @@ public class DevicesFragment extends Fragment {
 
     @AfterInject
     public void afterInject() {
-        servicesFragment = new ServicesFragment_();
+        graphsFragment = new GraphsFragment_();
     }
 
     @AfterViews
@@ -251,10 +251,10 @@ public class DevicesFragment extends Fragment {
                 BluetoothLeService.connect(deviceAddress, getActivity());
             }, DELAY_PERIOD);
         }
-        if (isFirstConnect) {
-            startConnectTimer(deviceAddress);
-            mConnectionCounter++;
-        }
+
+        startConnectTimer(deviceAddress);
+        mConnectionCounter++;
+
     }
 
     public void disconnectDevice(String deviceAddress) {
@@ -336,8 +336,7 @@ public class DevicesFragment extends Fragment {
                     bluetoothAdapter.stopLeScan(mLeScanCallback);
                     mScanning = false;
                 }
-                if (mConnectTimer != null)
-                    mConnectTimer.cancel();
+
 
                 String deviceAddress = intent.getStringExtra(Constants.DEVICE_ADDRESS);
 
@@ -356,6 +355,10 @@ public class DevicesFragment extends Fragment {
                 String disconnectMsg = getResources().getString(R.string.device_disconnected, deviceAddress);
 
                 Toast.makeText(getActivity(), disconnectMsg, Toast.LENGTH_SHORT).show();
+            }
+
+            if (mConnectTimer != null) {
+                mConnectTimer.cancel();
             }
         }
     };
@@ -410,7 +413,7 @@ public class DevicesFragment extends Fragment {
     private void setServiceFragment() {
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction().remove(this).commit();
-        fragmentManager.beginTransaction().replace(R.id.main_container, servicesFragment).commit();
+        fragmentManager.beginTransaction().replace(R.id.main_container, graphsFragment).commit();
     }
 
     @Override

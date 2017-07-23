@@ -9,7 +9,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.example.pprochniak.sensorreader.services.ServicesFragment_;
+import com.example.pprochniak.sensorreader.services.GraphsFragment_;
 import com.example.pprochniak.sensorreader.MainActivity;
 import com.example.pprochniak.sensorreader.R;
 import com.example.pprochniak.sensorreader.deviceDiscovery.DevicesFragment_;
@@ -83,7 +83,7 @@ public class DrawerController implements ListView.OnItemClickListener {
         Fragment fragment;
         switch (name) {
             case SIGNAL_FRAGMENT:
-                fragment = new ServicesFragment_();
+                fragment = new GraphsFragment_();
                 break;
             case SETTINGS_FRAGMENT:
                 fragment = new SettingsFragment_();
