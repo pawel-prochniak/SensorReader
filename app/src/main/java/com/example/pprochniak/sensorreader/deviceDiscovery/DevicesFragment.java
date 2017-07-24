@@ -133,7 +133,7 @@ public class DevicesFragment extends Fragment {
                         .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
             }
         }
-        Logger.e("Registering receiver in Profile scannng");
+        Log.e(TAG, "Registering receiver in Profile scannng");
         getActivity().registerReceiver(mGattConnectReceiver,
                 Utils.makeGattUpdateIntentFilter());
 
@@ -146,7 +146,7 @@ public class DevicesFragment extends Fragment {
             if (Build.VERSION.SDK_INT < 21) bluetoothAdapter.stopLeScan(mLeScanCallback);
             else bleScanner.stopScan(scanCallbackAPI21);
         }
-        Logger.d(TAG, "Unregistered gatt receiver");
+        Log.d(TAG, "Unregistered gatt receiver");
         isInFragment = false;
         if (progressDialog != null) progressDialog = null;
         super.onPause();
@@ -217,14 +217,14 @@ public class DevicesFragment extends Fragment {
         if (isInFragment) {
             if (enable) {
                 if (!scanningInProgress) {
-                    Logger.d(TAG, "Starting BLE scan");
+                    Log.d(TAG, "Starting BLE scan");
                     scanningInProgress = true;
                     if (Build.VERSION.SDK_INT < 21) bluetoothAdapter.startLeScan(mLeScanCallback);
                     else bleScanner.startScan(scanFilters, scanSettings, scanCallbackAPI21);
                     scanButton.post(() -> scanButton.setText(R.string.device_discovery_scanning));
                 }
             } else {
-                Logger.d(TAG, "Stopping BLE scan");
+                Log.d(TAG, "Stopping BLE scan");
                 scanningInProgress = false;
                 if (Build.VERSION.SDK_INT < 21) bluetoothAdapter.stopLeScan(mLeScanCallback);
                 else bleScanner.stopScan(scanCallbackAPI21);
@@ -240,7 +240,7 @@ public class DevicesFragment extends Fragment {
 
         // Get the connection status of the device
         if (!BluetoothLeService.getConnectedGattServices().containsKey(deviceAddress)) {
-            Logger.v("BLE DISCONNECTED STATE");
+            Log.v(TAG, "BLE DISCONNECTED STATE");
             // Disconnected,so connect
             BluetoothLeService.connect(deviceAddress, getActivity());
         } else {
@@ -284,7 +284,7 @@ public class DevicesFragment extends Fragment {
         mConnectTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                Logger.v("CONNECTION TIME OUT");
+                Log.v(TAG, "CONNECTION TIME OUT");
                 disconnectDevice(deviceAddress);
                 if (getActivity() != null) {
                     getActivity().runOnUiThread(() -> {
@@ -342,7 +342,7 @@ public class DevicesFragment extends Fragment {
 
                 deviceListAdapter.addConnectedDevice(deviceAddress);
 
-                Logger.d(TAG, "Connected to GATT service");
+                Log.d(TAG, "Connected to GATT service");
                 Toast.makeText(context, "Connected to GATT service", Toast.LENGTH_LONG).show();
             } else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
                 /**
@@ -379,19 +379,19 @@ public class DevicesFragment extends Fragment {
 
         @Override
         public void onBatchScanResults(List<ScanResult> results) {
-            Logger.d(TAG, "API21 scan callback - batch: " + results.toString());
+            Log.d(TAG, "API21 scan callback - batch: " + results.toString());
         }
 
         @Override
         public void onScanFailed(int errorCode) {
             super.onScanFailed(errorCode);
-            Logger.e("Scan failed with errorCode: " + errorCode);
+            Log.e(TAG, "Scan failed with errorCode: " + errorCode);
         }
     };
 
     private void addFoundBluetoothDevice(BluetoothDevice device, int rssi) {
         Activity mActivity = getActivity();
-        Logger.d(TAG, "Found device: " + device.getName() + ", address: " + device.getAddress() + ", RSSI: " + rssi);
+        Log.d(TAG, "Found device: " + device.getName() + ", address: " + device.getAddress() + ", RSSI: " + rssi);
         if (mActivity != null) {
             mActivity.runOnUiThread(() -> {
                         if (!searchEnabled) {

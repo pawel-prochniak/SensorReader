@@ -77,12 +77,12 @@ public class GraphsFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        Logger.d("Registering mServiceDiscovery");
+        Log.d(TAG, "Registering mServiceDiscovery");
         initializePlotController();
         subscribeToGattUpdates();
         Handler delayHandler = new Handler();
         delayHandler.postDelayed(() -> {
-            Logger.d("Discover service called");
+            Log.d(TAG, "Discover service called");
             BluetoothLeService.discoverAllServices();
         }, DELAY_PERIOD);
         isInFragment = true;

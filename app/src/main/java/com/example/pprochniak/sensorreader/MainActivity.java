@@ -11,6 +11,7 @@ import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.ListView;
 
 import com.example.pprochniak.sensorreader.ble.BluetoothLeService;
@@ -101,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onNewIntent(Intent intent) {
-        Logger.v("newIntent");
+        Log.v(TAG, "newIntent");
         super.onNewIntent(intent);
         setIntent(intent);
     }
@@ -147,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
                 if (fil.isDirectory()) {
                     fileExists(name, fil);
                 } else if (name.equalsIgnoreCase(fil.getName())) {
-                    Logger.e("File>>" + fil.getName());
+                    Log.e(TAG, "File>>" + fil.getName());
                     return true;
                 }
             }

@@ -59,7 +59,7 @@
     <!---->
 
     <!--Data Logger file-->
-    <string name="dl_directory">CySmart</string>
+    <string name="dl_directory">SensorReader</string>
     <string name="dl_file_extension">.txt</string>
     <string name="dl_commaseparator">" , "</string>
 

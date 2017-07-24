@@ -48,6 +48,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -70,128 +71,10 @@ import java.util.concurrent.TimeUnit;
  * Class for commonly used methods in the project
  */
 public class Utils {
+    private static final String TAG = "Utils";
 
     // Shared preference constant
     private static final String SHARED_PREF_NAME = "CySmart Shared Preference";
-    private static ProgressDialog mProgressDialog;
-    private static Timer mTimer;
-
-    /**
-     * Returns the manufacture name from the given characteristic
-     *
-     * @param characteristic
-     * @return manfacture_name_string
-     */
-    public static String getManufacturerNameString(
-            BluetoothGattCharacteristic characteristic) {
-        String manfacture_name_string = characteristic.getStringValue(0);
-        return manfacture_name_string;
-    }
-
-    /**
-     * Returns the model number from the given characteristic
-     *
-     * @param characteristic
-     * @return model_name_string
-     */
-
-    public static String getModelNumberString(
-            BluetoothGattCharacteristic characteristic) {
-        String model_name_string = characteristic.getStringValue(0);
-
-        return model_name_string;
-    }
-
-    /**
-     * Returns the serial number from the given characteristic
-     *
-     * @param characteristic
-     * @return serial_number_string
-     */
-    public static String getSerialNumberString(
-            BluetoothGattCharacteristic characteristic) {
-        String serial_number_string = characteristic.getStringValue(0);
-
-        return serial_number_string;
-    }
-
-    /**
-     * Returns the hardware number from the given characteristic
-     *
-     * @param characteristic
-     * @return hardware_revision_name_string
-     */
-    public static String getHardwareRevisionString(
-            BluetoothGattCharacteristic characteristic) {
-        String hardware_revision_name_string = characteristic.getStringValue(0);
-
-        return hardware_revision_name_string;
-    }
-
-    /**
-     * Returns the Firmware number from the given characteristic
-     *
-     * @param characteristic
-     * @return hardware_revision_name_string
-     */
-    public static String getFirmwareRevisionString(
-            BluetoothGattCharacteristic characteristic) {
-        String firmware_revision_name_string = characteristic.getStringValue(0);
-
-        return firmware_revision_name_string;
-    }
-
-    /**
-     * Returns the software revision number from the given characteristic
-     *
-     * @param characteristic
-     * @return hardware_revision_name_string
-     */
-    public static String getSoftwareRevisionString(
-            BluetoothGattCharacteristic characteristic) {
-        String hardware_revision_name_string = characteristic.getStringValue(0);
-
-        return hardware_revision_name_string;
-    }
-
-    public static int getSensorReadValue(BluetoothGattCharacteristic characteristic) {
-        return characteristic.getIntValue(
-                BluetoothGattCharacteristic.FORMAT_UINT16, 0);
-    }
-
-    /**
-     * Returns the PNP ID from the given characteristic
-     *
-     * @param characteristic
-     * @return {@link String}
-     */
-    public static String getPNPID(BluetoothGattCharacteristic characteristic) {
-        final byte[] data = characteristic.getValue();
-        final StringBuilder stringBuilder = new StringBuilder(data.length);
-        if (data != null && data.length > 0) {
-            for (byte byteChar : data)
-                stringBuilder.append(String.format("%02X ", byteChar));
-        }
-
-        return String.valueOf(stringBuilder);
-    }
-
-    /**
-     * Returns the SystemID from the given characteristic
-     *
-     * @param characteristic
-     * @return {@link String}
-     */
-    public static String getSYSID(BluetoothGattCharacteristic characteristic) {
-        final byte[] data = characteristic.getValue();
-        final StringBuilder stringBuilder = new StringBuilder(data.length);
-        if (data != null && data.length > 0) {
-            for (byte byteChar : data)
-                stringBuilder.append(String.format("%02X ", byteChar));
-        }
-
-        return String.valueOf(stringBuilder);
-    }
 
     /**
      * Adding the necessary INtent filters for Broadcast receivers
@@ -293,7 +176,6 @@ public class Utils {
     }
 
     public static String byteToASCII(byte[] array) {
-
         StringBuffer sb = new StringBuffer();
         for (byte byteChar : array) {
             if (byteChar >= 32 && byteChar < 127) {
@@ -320,33 +202,6 @@ public class Utils {
                 BluetoothGattCharacteristic.FORMAT_UINT8, 0);
         return String.valueOf(battery_level);
     }
-
-    /**
-     * Returns the Alert level information from the characteristics
-     *
-     * @param characteristics
-     * @return {@link String}
-     */
-    public static String getAlertLevel(
-            BluetoothGattCharacteristic characteristics) {
-        int alert_level = characteristics.getIntValue(
-                BluetoothGattCharacteristic.FORMAT_UINT8, 0);
-        return String.valueOf(alert_level);
-    }
-
-    /**
-     * Returns the Transmission power information from the characteristic
-     *
-     * @param characteristics
-     * @return {@link integer}
-     */
-    public static int getTransmissionPower(
-            BluetoothGattCharacteristic characteristics) {
-        int power_level = characteristics.getIntValue(
-                BluetoothGattCharacteristic.FORMAT_SINT8, 0);
-        return power_level;
-    }
-
 
     /**
      * Returns the Date from the long milliseconds
@@ -453,90 +308,7 @@ public class Utils {
 
     }
 
-    /**
-     * Setting the shared preference with values provided as parameters
-     *
-     * @param context
-     * @param key
-     * @param value
-     */
-    public static final void setStringSharedPreference(Context context,
-                                                       String key, String value) {
-        SharedPreferences goaPref = context.getSharedPreferences(
-                SHARED_PREF_NAME, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = goaPref.edit();
-        editor.putString(key, value);
-        editor.apply();
-    }
 
-    /**
-     * Returning the stored values in the shared preference with values provided
-     * as parameters
-     *
-     * @param context
-     * @param key
-     * @return
-     */
-    public static final String getStringSharedPreference(Context context,
-                                                         String key) {
-        if (context != null) {
-
-            SharedPreferences Pref = context.getSharedPreferences(
-                    SHARED_PREF_NAME, Context.MODE_PRIVATE);
-            String value = Pref.getString(key, "");
-            return value;
-
-        } else {
-            return "";
-        }
-    }
-
-    /**
-     * Setting the shared preference with values provided as parameters
-     *
-     * @param context
-     * @param key
-     * @param value
-     */
-    public static final void setIntSharedPreference(Context context,
-                                                    String key, int value) {
-        SharedPreferences goaPref = context.getSharedPreferences(
-                SHARED_PREF_NAME, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = goaPref.edit();
-        editor.putInt(key, value);
-        editor.apply();
-    }
-
-    /**
-     * Returning the stored values in the shared preference with values provided
-     * as parameters
-     *
-     * @param context
-     * @param key
-     * @return
-     */
-    public static final int getIntSharedPreference(Context context,
-                                                   String key) {
-        if (context != null) {
-
-            SharedPreferences Pref = context.getSharedPreferences(
-                    SHARED_PREF_NAME, Context.MODE_PRIVATE);
-            int value = Pref.getInt(key, 0);
-            return value;
-
-        } else {
-            return 0;
-        }
-    }
-
-    public static final void setBooleanSharedPreference(Context context,
-                                                        String key, boolean value) {
-        SharedPreferences Preference = context.getSharedPreferences(
-                SHARED_PREF_NAME, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = Preference.edit();
-        editor.putBoolean(key, value);
-        editor.commit();
-    }
 
     public static final boolean getBooleanSharedPreference(Context context,
                                                            String key) {
@@ -547,124 +319,9 @@ public class Utils {
         return value;
     }
 
-    public static final void setInitialBooleanSharedPreference(Context context,
-                                                               String key, boolean value) {
-        SharedPreferences Preference = context.getSharedPreferences(
-                SHARED_PREF_NAME, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = Preference.edit();
-        editor.putBoolean(key, value);
-        editor.commit();
-    }
-
-    public static final boolean getInitialBooleanSharedPreference(Context context,
-                                                           String key) {
-        boolean value;
-        SharedPreferences Preference = context.getSharedPreferences(
-                SHARED_PREF_NAME, Context.MODE_PRIVATE);
-        value = Preference.getBoolean(key, true);
-        return value;
-    }
-
-    public static final boolean ifContainsSharedPreference(Context context,
-                                                           String key) {
-        boolean value;
-        SharedPreferences Preference = context.getSharedPreferences(
-                SHARED_PREF_NAME, Context.MODE_PRIVATE);
-        value = Preference.contains(key);
-        return value;
-    }
-
-    /**
-     * Take the screen shot of the device
-     *
-     * @param view
-     */
-    public static void screenShotMethod(View view) {
-        Bitmap bitmap;
-        if (view != null) {
-            View v1 = view;
-            v1.setDrawingCacheEnabled(true);
-            v1.buildDrawingCache(true);
-            bitmap = Bitmap.createBitmap(v1.getDrawingCache());
-            v1.setDrawingCacheEnabled(false);
-
-            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-            File f = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
-                    + File.separator + "CySmart" + File.separator + "file.jpg");
-            try {
-                FileOutputStream fo = new FileOutputStream(f);
-                fo.write(bytes.toByteArray());
-                fo.flush();
-                fo.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-    }
-
     public static boolean checkCharacteristicsPropertyPresence(int characteristics,
                                                  int characteristicsSearch) {
         return (characteristics & characteristicsSearch) == characteristicsSearch;
-    }
-
-
-    /**
-     * Method to detect whether the device is phone or tablet
-     */
-    public static boolean isTablet(Context context) {
-        return (context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_LARGE;
-    }
-
-    public static void bondingProgressDialog(final Activity context, ProgressDialog pDialog,
-                                             boolean status) {
-            mProgressDialog=pDialog;
-        if (status) {
-            mProgressDialog.setTitle(context.getResources().getString(
-                    R.string.alert_message_bonding_title));
-            mProgressDialog.setMessage((context.getResources().getString(
-                    R.string.alert_message_bonding_message)));
-            mProgressDialog.setCancelable(false);
-            mProgressDialog.show();
-            mTimer=setDialogTimer();
-
-        } else {
-            mProgressDialog.dismiss();
-        }
-
-    }
-
-    public static Timer setDialogTimer(){
-        Logger.e("Started Timer");
-        long delayInMillis = 20000;
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if(mProgressDialog!=null)
-                mProgressDialog.dismiss();
-            }
-        }, delayInMillis);
-    return timer;
-    }
-    public static void stopDialogTimer(){
-        if(mTimer!=null){
-            Logger.e("Stopped Timer");
-            mTimer.cancel();
-        }
-    }
-    /**
-     * Setting up the action bar with values provided as parameters
-     *
-     * @param context
-     * @param title
-     */
-    public static void setUpActionBar(Activity context, String title) {
-        ActionBar actionBar = context.getActionBar();
-        actionBar.setIcon(new ColorDrawable(context.getResources().getColor(
-                android.R.color.transparent)));
-        actionBar.setTitle(title);
     }
 
     /**
@@ -687,9 +344,5 @@ public class Utils {
         } else {
             return false;
         }
-    }
-
-    public void toast(Activity context, String text) {
-        Toast.makeText(context, text.toString(), Toast.LENGTH_LONG).show();
     }
 }

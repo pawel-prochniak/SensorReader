@@ -44,14 +44,6 @@ import java.nio.ByteOrder;
  */
 public class SensorHubParser {
     private static final String TAG = "SensorHubParser";
-    private static final int FIRST_BITMASK = 0x01;
-    public static final int SECOND_BITMASK = FIRST_BITMASK << 1;
-    public static final int THIRD_BITMASK = FIRST_BITMASK << 2;
-    public static final int FOURTH_BITMASK = FIRST_BITMASK << 3;
-    public static final int FIFTH_BITMASK = FIRST_BITMASK << 4;
-    public static final int SIXTH_BITMASK = FIRST_BITMASK << 5;
-    public static final int SEVENTH_BITMASK = FIRST_BITMASK << 6;
-    public static final int EIGTH_BITMASK = FIRST_BITMASK << 7;
 
     private static int counter = 0;
 
@@ -70,15 +62,6 @@ public class SensorHubParser {
         float mTemp = characteristic.getFloatValue(
                 BluetoothGattCharacteristic.FORMAT_SFLOAT, 0);
         return mTemp;
-    }
-
-    public static int getBarometerReading(
-            BluetoothGattCharacteristic characteristic) {
-
-        int mPressure = characteristic.getIntValue(
-                BluetoothGattCharacteristic.FORMAT_UINT16, 0);
-        Logger.w("pressure " + mPressure);
-        return mPressure;
     }
 
     public static int getSensorScanIntervalReading(

@@ -139,7 +139,7 @@ public class BluetoothLeService extends Service {
         public void onConnectionStateChange(BluetoothGatt gatt, int status,
                                             int newState) {
 
-            Logger.i("onConnectionStateChange");
+            Log.i(TAG, "onConnectionStateChange");
             String intentAction;
             BluetoothDevice device = gatt.getDevice();
             String deviceAddress = device.getAddress();
@@ -434,7 +434,7 @@ public class BluetoothLeService extends Service {
     private BluetoothManager mBluetoothManager;
 
     private static void broadcastConnectionUpdate(final String action, final String deviceAddress) {
-        Logger.i("action :" + action);
+        Log.i(TAG, "action :" + action);
         final Intent intent = new Intent(action);
         intent.putExtra(Constants.DEVICE_ADDRESS, deviceAddress);
         mContext.sendBroadcast(intent);
@@ -491,7 +491,7 @@ public class BluetoothLeService extends Service {
      * callback.
      */
     public static void connect(final String address, Context context) {
-        Logger.d("Connecting to device");
+        Log.d(TAG, "Connecting to device");
         mContext = context;
         if (mBluetoothAdapter == null || address == null) {
             return;
@@ -507,7 +507,7 @@ public class BluetoothLeService extends Service {
         BluetoothGatt gatt = device.connectGatt(context, false, mGattCallback);
         //Clearing Bluetooth cache before disconnecting to the device
         if (Utils.getBooleanSharedPreference(mContext, Constants.PREF_PAIR_CACHE_STATUS)) {
-            //Logger.e(getActivity().getClass().getName() + "Cache cleared on disconnect!");
+            //Log.e(TAG, getActivity().getClass().getName() + "Cache cleared on disconnect!");
             BluetoothLeService.refreshDeviceCache(gatt);
         }
 
@@ -521,7 +521,7 @@ public class BluetoothLeService extends Service {
      * Reconnect method to connect to already connected device
      */
     public static void reconnect(String deviceAddress) {
-        Logger.e("<--Reconnecting device-->");
+        Log.e(TAG, "<--Reconnecting device-->");
         BluetoothDevice device = mBluetoothAdapter
                 .getRemoteDevice(deviceAddress);
         if (device == null) {
@@ -541,7 +541,7 @@ public class BluetoothLeService extends Service {
      * Reconnect method to connect to already connected device
      */
     public static void reDiscoverServices(String deviceAddress) {
-        Logger.e("<--Rediscovering services-->");
+        Log.e(TAG, "<--Rediscovering services-->");
         BluetoothDevice device = mBluetoothAdapter
                 .getRemoteDevice(deviceAddress);
         if (device == null) {
@@ -578,7 +578,7 @@ public class BluetoothLeService extends Service {
                 return (Boolean) localMethod.invoke(localBluetoothGatt);
             }
         } catch (Exception localException) {
-            Logger.i("An exception occured while refreshing device");
+            Log.i(TAG, "An exception occured while refreshing device");
         }
         return false;
     }
@@ -591,7 +591,7 @@ public class BluetoothLeService extends Service {
      */
     public static void disconnect(String deviceAddress) {
         BluetoothGatt gatt = mGattDevices.get(deviceAddress);
-        Logger.i("disconnect called");
+        Log.i(TAG, "disconnect called");
         if (mBluetoothAdapter != null && gatt != null)  {
             BluetoothLeService.refreshDeviceCache(gatt);
             if (mEnabledCharacteristics.containsKey(deviceAddress)) {
@@ -802,8 +802,8 @@ public class BluetoothLeService extends Service {
         if ((properties & (BluetoothGattCharacteristic.PROPERTY_WRITE | BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE)) == 0)
             return false;
 
-        Logger.v("Writing characteristic " + characteristic.getUuid());
-        Logger.d("gatt.writeCharacteristic(" + characteristic.getUuid() + ")");
+        Log.d(TAG, "Writing characteristic " + characteristic.getUuid());
+        Log.d(TAG, "gatt.writeCharacteristic(" + characteristic.getUuid() + ")");
         return gatt.writeCharacteristic(characteristic);
     }
 
@@ -925,9 +925,9 @@ public class BluetoothLeService extends Service {
             Class class1 = Class.forName("android.bluetooth.BluetoothDevice");
             Method createBondMethod = class1.getMethod("createBond");
             Boolean returnValue = (Boolean) createBondMethod.invoke(gatt.getDevice());
-            Logger.e("Pair initates status-->" + returnValue);
+            Log.e(TAG, "Pair initates status-->" + returnValue);
         } catch (Exception e) {
-            Logger.e("Exception Pair" + e.getMessage());
+            Log.e(TAG, "Exception Pair" + e.getMessage());
         }
 
     }
@@ -937,16 +937,16 @@ public class BluetoothLeService extends Service {
             case 0:
                 //Disabled notification and indication
                 removeEnabledCharacteristic(deviceAddress, descriptor.getCharacteristic());
-                Logger.e("Removed characteristic");
+                Log.e(TAG, "Removed characteristic");
                 break;
             case 1:
                 //Enabled notification
-                Logger.e("added notify characteristic");
+                Log.e(TAG, "added notify characteristic");
                 addEnabledCharacteristic(deviceAddress, descriptor.getCharacteristic());
                 break;
             case 2:
                 //Enabled indication
-                Logger.e("added indicate characteristic");
+                Log.e(TAG, "added indicate characteristic");
                 addEnabledCharacteristic(deviceAddress, descriptor.getCharacteristic());
                 break;
         }
@@ -977,7 +977,7 @@ public class BluetoothLeService extends Service {
             Set<String> addresses = mEnabledCharacteristics.keySet();
             for (String address : addresses) {
                 for (BluetoothGattCharacteristic characteristic : mEnabledCharacteristics.get(address)) {
-                    Logger.e("Disabling characteristic--" + characteristic.getUuid());
+                    Log.e(TAG, "Disabling characteristic--" + characteristic.getUuid());
                     setCharacteristicNotification(address, characteristic, false);
                     Timer timer = new Timer();
                     try {
@@ -1048,7 +1048,7 @@ public class BluetoothLeService extends Service {
     public void onCreate() {
         // Initializing the service
         if (!initialize()) {
-            Logger.d("Service not initialized");
+            Log.d(TAG, "Service not initialized");
         }
     }
 

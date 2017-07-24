@@ -24,93 +24,16 @@ import java.io.OutputStreamWriter;
  * *
  */
 public class Logger {
-    private static String mLogTag = "Logger";
+    private static final String TAG = "Logger";
     private static boolean mLogflag = true;
     private static File mDataLoggerDirectory;
     private static File mDataLoggerFile;
     private static File mDataLoggerOldFile;
     private static Context mContext;
 
-    public static void d(String message) {
-        show(Log.DEBUG, mLogTag, message);
-
-    }
-
-    public static void d(String tag, String message) {
-        show(Log.DEBUG, tag, message);
-
-    }
-
-    public static void w(String message) {
-        show(Log.WARN, mLogTag, message);
-
-    }
-
-    public static void i(String message) {
-        show(Log.INFO, mLogTag, message);
-
-    }
-
-    public static void e(String message) {
-        show(Log.ERROR, mLogTag, message);
-
-    }
-
-    public static void v(String message) {
-        show(Log.ERROR, mLogTag, message);
-
-    }
-
     public static void datalog(String message) {
         // show(Log.INFO, mLogTag, message);
         // saveLogData(message);
-
-    }
-
-    /**
-     * print log for info/error/debug/warn/verbose
-     *
-     * @param type : <br>
-     *             Log.INFO <br>
-     *             Log.ERROR <br>
-     *             Log.DEBUG <br>
-     *             Log.WARN <br>
-     *             Log.VERBOSE Log.
-     */
-    private static void show(int type, String tag, String msg) {
-
-        if (msg.length() > 4000) {
-            Log.i("Length ", msg.length() + "");
-
-            while (msg.length() > 4000) {
-                show(type, tag, msg.substring(0, 4000));
-                msg = msg.substring(4000, msg.length());
-
-            }
-        }
-        if (mLogflag)
-            switch (type) {
-                case Log.INFO:
-                    Log.i(tag, msg);
-                    break;
-                case Log.ERROR:
-                    Log.e(tag, msg);
-                    break;
-                case Log.DEBUG:
-                    Log.d(tag, msg);
-                    break;
-                case Log.WARN:
-                    Log.w(tag, msg);
-                    break;
-                case Log.VERBOSE:
-                    Log.v(tag, msg);
-                    break;
-                case Log.ASSERT:
-                    Log.wtf(tag, msg);
-                    break;
-                default:
-                    break;
-            }
 
     }
 
@@ -147,7 +70,9 @@ public class Logger {
                     File.separator
                     + context.getResources().getString(R.string.dl_directory));
             if (!mDataLoggerDirectory.exists()) {
-                mDataLoggerDirectory.mkdirs();
+                if (!mDataLoggerDirectory.mkdirs()) {
+                    Log.e(TAG, "createDataLoggerFile: failed");
+                }
             }
             /**
              * File  name
@@ -157,9 +82,8 @@ public class Logger {
                     + Utils.GetDate() + context.getResources().getString(R.string.dl_file_extension));
             if (!mDataLoggerFile.exists()) {
                 boolean isFileFound = mDataLoggerFile.createNewFile();
-                Logger.e("creating new file, is success: "+isFileFound);
+                Log.e(TAG, "creating new file, is success: "+isFileFound);
             }
-            deleteOLDFiles();
         } catch (IOException e) {
             e.printStackTrace();
         }
