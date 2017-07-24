@@ -7,21 +7,25 @@ import com.example.pprochniak.sensorreader.settings.SharedPreferencesController;
 
 import java.util.HashMap;
 
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+
 import static com.example.pprochniak.sensorreader.services.PlotController.*;
 
 /**
  * Created by Henny on 2017-07-22.
  */
 
-public class RmsPlotController implements GraphPlotController {
+public class RmsPlotController implements CharacteristicController {
     private static final String TAG = "RmsPlotController";
 
     private HashMap<String, HashMap<String, RootMeanSquare>> deviceRmsMap = new HashMap<>();
 
-    private BarGraph xBar, yBar, zBar;
+    private SingleBarGraph xBar, yBar, zBar;
     private int rmsSize = 64;
 
-    public RmsPlotController(BarGraph xBar, BarGraph yBar, BarGraph zBar) {
+    public RmsPlotController(SingleBarGraph xBar, SingleBarGraph yBar, SingleBarGraph zBar) {
         this.xBar = xBar;
         this.yBar = yBar;
         this.zBar = zBar;
@@ -57,17 +61,23 @@ public class RmsPlotController implements GraphPlotController {
             return;
         }
         rms = axisToRmsMap.get(axis);
-        switch (axis) {
-            case X:
-                xBar.setValue(rms.putAndCalculate(val));
-                break;
-            case Y:
-                yBar.setValue(rms.putAndCalculate(val));
-                break;
-            case Z:
-                zBar.setValue(rms.putAndCalculate(val));
-                break;
-        }
+
+        Observable.just(rms.putAndCalculate(val))
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe((rmsVal) -> {
+                    switch (axis) {
+                        case X:
+                            xBar.setValue(rmsVal);
+                            break;
+                        case Y:
+                            yBar.setValue(rmsVal);
+                            break;
+                        case Z:
+                            zBar.setValue(rmsVal);
+                            break;
+                    }
+                });
     }
 
     private void addRmsForDevice(String deviceAddress) {

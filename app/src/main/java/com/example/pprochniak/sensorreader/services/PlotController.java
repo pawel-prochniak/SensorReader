@@ -4,17 +4,12 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.StringDef;
 import android.util.Log;
-import android.widget.TextView;
 
-import com.example.pprochniak.sensorreader.settings.SharedPreferencesController;
 import com.example.pprochniak.sensorreader.utils.Constants;
-import com.jjoe64.graphview.series.DataPoint;
-import com.jjoe64.graphview.series.LineGraphSeries;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -40,19 +35,22 @@ public class PlotController {
     private TimeSeriesPlotController timeSeriesPlotController;
     private RmsPlotController rmsPlotController;
     private ReceivingSpeedController speedController;
+    private PeakToPeakController peakToPeakController;
 
-    private List<GraphPlotController> activePlotControllers = new ArrayList<>();
+    private List<CharacteristicController> activePlotControllers = new ArrayList<>();
 
     private GraphsFragment fragment;
 
     public PlotController(GraphsFragment fragment) {
         this.fragment = fragment;
         timeSeriesPlotController = new TimeSeriesPlotController(fragment.graphView);
-        rmsPlotController = new RmsPlotController(fragment.xBarGraph, fragment.yBarGraph, fragment.zBarGraph);
+        rmsPlotController = new RmsPlotController(fragment.xSingleBarGraph, fragment.ySingleBarGraph, fragment.zSingleBarGraph);
         speedController = new ReceivingSpeedController(fragment.getContext(), fragment.receivingSpeedView);
+        peakToPeakController = new PeakToPeakController(fragment.peakToPeakLayout);
         activePlotControllers.add(timeSeriesPlotController);
         activePlotControllers.add(rmsPlotController);
         activePlotControllers.add(speedController);
+        activePlotControllers.add(peakToPeakController);
     }
 
 
@@ -87,13 +85,13 @@ public class PlotController {
     }
 
     private void addDeviceToAllActivePlots(String deviceAddress, int[] graphColors) {
-        for (GraphPlotController controller : activePlotControllers) {
+        for (CharacteristicController controller : activePlotControllers) {
             controller.addDevice(deviceAddress, graphColors);
         }
     }
 
     private void addValueToAllActivePlots(String deviceAddress, float val, @AXIS String axis) {
-        for (GraphPlotController controller : activePlotControllers) {
+        for (CharacteristicController controller : activePlotControllers) {
             controller.addValue(deviceAddress, val, axis);
         }
     }

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -17,19 +16,19 @@ import com.jjoe64.graphview.series.DataPoint;
  * Created by Henny on 2017-07-22.
  */
 
-public class BarGraph extends LinearLayout {
+public class SingleBarGraph extends LinearLayout {
     private TextView titleView, valueView;
     private GraphView graphView;
     private BarGraphSeries<DataPoint> series;
 
-    private static final double BAR_POSITION = 0.25;
+    private static final double BAR_POSITION = 0.5;
 
-    public BarGraph(Context context) {
+    public SingleBarGraph(Context context) {
         super(context);
         initializeViews(context);
     }
 
-    public BarGraph(Context context, @Nullable AttributeSet attrs) {
+    public SingleBarGraph(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         initializeViews(context);
     }
@@ -44,20 +43,23 @@ public class BarGraph extends LinearLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        graphView = (GraphView) this
-                .findViewById(R.id.bar_graph);
+        graphView = (GraphView) this.findViewById(R.id.bar_graph);
+        titleView = (TextView) this.findViewById(R.id.bar_title);
+        valueView =(TextView) this.findViewById(R.id.bar_value);
 
-        series = new BarGraphSeries<>();
-        series.appendData(new DataPoint(0.0, 0.0), false, 1);
+        setGraphProperties();
+    }
 
-        graphView.addSeries(series);
+    private void setGraphProperties() {
+        graphView.getViewport().setXAxisBoundsManual(true);
+        graphView.getViewport().setMinX(0);
+        graphView.getViewport().setMaxX(1);
         graphView.getGridLabelRenderer().setHorizontalLabelsVisible(false);
 
-        titleView = (TextView) this
-                .findViewById(R.id.bar_title);
+        series = new BarGraphSeries<>();
+        series.setDataWidth(0.7);
 
-        valueView =(TextView) this
-                .findViewById(R.id.bar_value);
+        graphView.addSeries(series);
     }
 
     public void setTitle(String title) {
@@ -72,6 +74,5 @@ public class BarGraph extends LinearLayout {
     public void setGraphColor(int color) {
         series.setColor(color);
     }
-
 
 }

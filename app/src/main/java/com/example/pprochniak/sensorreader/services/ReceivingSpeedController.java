@@ -1,7 +1,6 @@
 package com.example.pprochniak.sensorreader.services;
 
 import android.content.Context;
-import android.provider.Settings;
 import android.widget.TextView;
 
 import com.example.pprochniak.sensorreader.settings.SharedPreferencesController;
@@ -12,7 +11,7 @@ import static com.example.pprochniak.sensorreader.services.PlotController.X;
  * Created by Henny on 2017-07-23.
  */
 
-public class ReceivingSpeedController implements GraphPlotController {
+public class ReceivingSpeedController implements CharacteristicController {
     private int receivingSampleSize;
     private int xSamplesCounter = 0;
     private long timeStamp;

@@ -31,26 +31,34 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <com.example.pprochniak.sensorreader.services.BarGraph
+            <com.example.pprochniak.sensorreader.services.SingleBarGraph
                 android:id="@+id/x_bar_graph"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="200dp"
                 android:orientation="vertical"/>
 
-            <com.example.pprochniak.sensorreader.services.BarGraph
+            <com.example.pprochniak.sensorreader.services.SingleBarGraph
                 android:id="@+id/y_bar_graph"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="200dp"
                 android:orientation="vertical"/>
 
-            <com.example.pprochniak.sensorreader.services.BarGraph
+            <com.example.pprochniak.sensorreader.services.SingleBarGraph
             android:id="@+id/z_bar_graph"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="200dp"
             android:orientation="vertical"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/peak_to_peak_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
         </LinearLayout>
 

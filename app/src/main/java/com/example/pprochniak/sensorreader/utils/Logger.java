@@ -24,7 +24,6 @@ import java.io.OutputStreamWriter;
  * *
  */
 public class Logger {
-
     private static String mLogTag = "Logger";
     private static boolean mLogflag = true;
     private static File mDataLoggerDirectory;

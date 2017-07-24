@@ -1,19 +1,16 @@
 package com.example.pprochniak.sensorreader.services;
 
-import android.graphics.Color;
-import android.os.Bundle;
-import android.support.annotation.StringDef;
 import android.util.Log;
 
-import com.example.pprochniak.sensorreader.calculation.RootMeanSquare;
 import com.example.pprochniak.sensorreader.settings.SharedPreferencesController;
-import com.example.pprochniak.sensorreader.utils.Constants;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.LegendRenderer;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import static com.example.pprochniak.sensorreader.services.PlotController.*;
 
@@ -22,18 +19,15 @@ import static com.example.pprochniak.sensorreader.services.PlotController.*;
  * Created by Henny on 2017-07-20.
  */
 
-public class TimeSeriesPlotController implements GraphPlotController {
+public class TimeSeriesPlotController implements CharacteristicController {
     private static final String TAG = "TimeSeriesPlotControlle";
 
     HashMap<String, HashMap<String, LineGraphSeries<DataPoint>>> mapOfSeries = new HashMap<>();
-
-    long xTimestamp, yTimestamp, zTimestamp;
+    private HashMap<String, List<String>> completedSeries = new HashMap<>();
 
     private int SERIES_LENGTH; // how many data points will be collected for each axis
     private boolean realTimePlotting;
     private boolean continuousPlotting;
-
-    private RootMeanSquare xRMS;
 
     private GraphView graphView;
 
@@ -106,16 +100,26 @@ public class TimeSeriesPlotController implements GraphPlotController {
     public void addValue(String deviceAddress, float val, @AXIS String axis) {
         double counter;
         HashMap<String, LineGraphSeries<DataPoint>> deviceSeriesMap = mapOfSeries.get(deviceAddress);
+        if (deviceSeriesMap == null) {
+            Log.e(TAG, "addValue: unknown device, no series found");
+            return;
+        }
         LineGraphSeries<DataPoint> series = deviceSeriesMap.get(axis);
 
         counter = series.getHighestValueX() + 1.0d;
 
-        if (counter <= SERIES_LENGTH) {
+        if (continuousPlotting || counter <= SERIES_LENGTH) {
             series.appendData(new DataPoint(counter, val), true, SERIES_LENGTH);
         }
-
-        if (counter == SERIES_LENGTH) if (!realTimePlotting) graphView.addSeries(series);
+        if (!realTimePlotting)  {
+            if (!completedSeries.containsKey(deviceAddress)) {
+                completedSeries.put(deviceAddress, new ArrayList<>());
+            }
+            if (!completedSeries.get(deviceAddress).contains(axis) && counter == SERIES_LENGTH) {
+                graphView.addSeries(series);
+                completedSeries.get(deviceAddress).add(axis);
+            }
+        }
     }
-
 
 }

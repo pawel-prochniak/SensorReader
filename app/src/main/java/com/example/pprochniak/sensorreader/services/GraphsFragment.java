@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,9 +44,10 @@ public class GraphsFragment extends Fragment {
     @ViewById(R.id.services_not_found) TextView servicesNotFound;
     @ViewById(R.id.graph) GraphView graphView;
     @ViewById(R.id.receiving_speed) TextView receivingSpeedView;
-    @ViewById(R.id.x_bar_graph) BarGraph xBarGraph;
-    @ViewById(R.id.y_bar_graph) BarGraph yBarGraph;
-    @ViewById(R.id.z_bar_graph) BarGraph zBarGraph;
+    @ViewById(R.id.x_bar_graph) SingleBarGraph xSingleBarGraph;
+    @ViewById(R.id.y_bar_graph) SingleBarGraph ySingleBarGraph;
+    @ViewById(R.id.z_bar_graph) SingleBarGraph zSingleBarGraph;
+    @ViewById(R.id.peak_to_peak_layout) LinearLayout peakToPeakLayout;
 
     private final BroadcastReceiver mGattUpdateListener = new BroadcastReceiver() {
         @Override
@@ -121,7 +123,5 @@ public class GraphsFragment extends Fragment {
     private void subscribeToGattUpdates() {
         getActivity().registerReceiver(mGattUpdateListener, Utils.makeGattUpdateIntentFilter());
     }
-
-
 
 }
