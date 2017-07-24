@@ -17,10 +17,20 @@
         <item name="android:textColor">@android:color/black</item>
     </style>
 
-    <style name="BlackTextView">
+    <style name="BlackHeaderText">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center_horizontal</item>
         <item name="android:textColor">@android:color/black</item>
+        <item name="android:textSize">24sp</item>
+    </style>
+
+    <style name="BlackSubheaderText">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textSize">16sp</item>
     </style>
 
 </resources>

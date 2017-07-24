@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -17,7 +18,6 @@ import java.util.HashMap;
  */
 
 public class PeakToPeakView extends LinearLayout {
-    private static final String TAG = "PeakToPeakView";
     private TextView xTextView, yTextView, zTextView;
 
     private HashMap<String, TextView> axisToViewMap = new HashMap<>();
@@ -36,6 +36,7 @@ public class PeakToPeakView extends LinearLayout {
         LayoutInflater inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.peak_to_peak_view, this);
+        setGravity(Gravity.CENTER);
 
         xTextView = (TextView) this.findViewById(R.id.x_pk2pk);
         yTextView = (TextView) this.findViewById(R.id.y_pk2pk);

@@ -9,36 +9,38 @@
         android:orientation="vertical">
         <TextView
             android:text="X pk-pk:"
-            style="@style/BlackTextView"/>
+            style="@style/BlackSubheaderText"/>
         <TextView
             android:id="@+id/x_pk2pk"
-            style="@style/BlackTextView"/>
+            style="@style/BlackSubheaderText"/>
     </LinearLayout>
 
     <LinearLayout
         android:layout_weight="1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
         android:orientation="vertical">
         <TextView
             android:text="Y pk-pk:"
-            style="@style/BlackTextView"/>
+            style="@style/BlackSubheaderText"/>
         <TextView
             android:id="@+id/y_pk2pk"
-            style="@style/BlackTextView"/>
+            style="@style/BlackSubheaderText"/>
     </LinearLayout>
 
     <LinearLayout
         android:layout_weight="1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
         android:orientation="vertical">
         <TextView
             android:text="Z pk-pk:"
-            style="@style/BlackTextView"/>
+            style="@style/BlackSubheaderText"/>
         <TextView
             android:id="@+id/z_pk2pk"
-            style="@style/BlackTextView"/>
+            style="@style/BlackSubheaderText"/>
     </LinearLayout>
 
 </merge >

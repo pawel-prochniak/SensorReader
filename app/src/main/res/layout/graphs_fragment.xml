@@ -35,26 +35,27 @@
                 android:id="@+id/x_bar_graph"
                 android:layout_weight="1"
                 android:layout_width="0dp"
-                android:layout_height="200dp"
+                android:layout_height="160dp"
                 android:orientation="vertical"/>
 
             <com.example.pprochniak.sensorreader.services.SingleBarGraph
                 android:id="@+id/y_bar_graph"
                 android:layout_weight="1"
                 android:layout_width="0dp"
-                android:layout_height="200dp"
+                android:layout_height="160dp"
                 android:orientation="vertical"/>
 
             <com.example.pprochniak.sensorreader.services.SingleBarGraph
             android:id="@+id/z_bar_graph"
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="200dp"
+            android:layout_height="160dp"
             android:orientation="vertical"/>
 
         </LinearLayout>
 
         <LinearLayout
+            android:paddingTop="16dp"
             android:id="@+id/peak_to_peak_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

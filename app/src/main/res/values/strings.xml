@@ -5,17 +5,6 @@
     <!-- Application elements -->
     <string name="app_name">SensorReader</string>
 
-    <!-- Navigation drawer elements -->
-
-    <!-- bluetooth button elements -->
-
-    <!-- Nav Drawer List Item Icons -->
-    <!-- Keep them in order as the titles are in -->
-
-    <!-- CAB -->
-
-    <!-- Image descriptors -->
-
     <!-- Alert dialog elements -->
     <string name="alert_message_bluetooth_disconnect">The BLE device is disconnected</string>
     <string name="alert_message_bonding_title">Bonding</string>
