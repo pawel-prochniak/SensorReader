@@ -1,6 +1,7 @@
 package com.example.pprochniak.sensorreader.utils;
 
 import android.content.Context;
+import android.media.MediaScannerConnection;
 import android.os.Environment;
 import android.util.Log;
 
@@ -37,19 +38,6 @@ public class Logger {
 
     }
 
-    /**
-     * printStackTrace for exception *
-     */
-    private static void show(Exception exception) {
-        try {
-            if (mLogflag)
-                exception.printStackTrace();
-
-        } catch (NullPointerException e) {
-            Logger.show(e);
-        }
-    }
-
     public static boolean enableLog() {
         mLogflag = true;
         return mLogflag;
@@ -58,6 +46,68 @@ public class Logger {
     public static boolean disableLog() {
         mLogflag = false;
         return mLogflag;
+    }
+
+    public static File createSignalLogFile(Context context, String deviceAddress) {
+        mContext = context;
+        File file = null;
+        File directory;
+        try {
+            directory = new File(Environment.getExternalStorageDirectory()
+                    + File.separator
+                    + context.getResources().getString(R.string.dl_directory));
+
+            if (!directory.exists()) {
+                if (!directory.mkdirs()) {
+                    Log.e(TAG, "createDataLoggerFile: failed mkdirs");
+                }
+            }
+
+            String filename = getFilename(deviceAddress);
+
+            file = new File(directory.getAbsoluteFile() + File.separator
+                    + filename + context.getResources().getString(R.string.dl_file_extension));
+            if (!file.exists()) {
+                boolean isFileFound = file.createNewFile();
+                Log.d(TAG, "creating new file, is success: "+isFileFound);
+                file.setReadable(true);
+                file.setWritable(true);
+
+                MediaScannerConnection.scanFile(context, new String[] {file.toString()}, null, null);
+            }
+        } catch (IOException ioExc) {
+            Log.e(TAG, "createSignalLogFile: ", ioExc);
+        }
+        return file;
+    }
+
+    public static String getFilename(String deviceAddress) {
+        String formattedDeviceAddress = deviceAddress.replace(":","-");
+        String timestamp = Utils.GetDate();
+        StringBuilder filenameBuilder = new StringBuilder();
+        filenameBuilder.append(timestamp);
+        filenameBuilder.append("_");
+        filenameBuilder.append(formattedDeviceAddress);
+        return filenameBuilder.toString();
+    }
+
+    public static void saveMessageToFile (Context context, File file, String message) {
+        try {
+            OutputStreamWriter writer = new OutputStreamWriter(
+                    new FileOutputStream(file, true),
+                    "UTF-8");
+            BufferedWriter fbw = new BufferedWriter(writer);
+            fbw.write(message);
+            fbw.newLine();
+            fbw.flush();
+            fbw.close();
+
+            MediaScannerConnection.scanFile(context, new String[] {file.toString()}, null, null);
+
+            Log.d(TAG, "saveMessageToFile: finished writing to file: "+file.getName());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void createDataLoggerFile(Context context) {

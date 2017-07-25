@@ -90,6 +90,7 @@ public class GraphsFragment extends Fragment {
 
     @Override
     public void onPause() {
+        plotController.saveLogs();
         isInFragment = false;
         getActivity().unregisterReceiver(mGattUpdateListener);
         super.onPause();

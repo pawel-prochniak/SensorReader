@@ -21,7 +21,8 @@ public class PlotController {
 
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({X, Y, Z})
-    public @interface AXIS {}
+    public @interface AXIS {
+    }
 
     public static final String X = "X";
     public static final String Y = "Y";
@@ -31,11 +32,11 @@ public class PlotController {
 
     private List<String> devices = new ArrayList<>();
 
-
     private TimeSeriesPlotController timeSeriesPlotController;
     private RmsPlotController rmsPlotController;
     private ReceivingSpeedController speedController;
     private PeakToPeakController peakToPeakController;
+    private LoggingController loggingController;
 
     private List<CharacteristicController> activePlotControllers = new ArrayList<>();
 
@@ -47,10 +48,12 @@ public class PlotController {
         rmsPlotController = new RmsPlotController(fragment.xSingleBarGraph, fragment.ySingleBarGraph, fragment.zSingleBarGraph);
         speedController = new ReceivingSpeedController(fragment.getContext(), fragment.receivingSpeedView);
         peakToPeakController = new PeakToPeakController(fragment.peakToPeakLayout);
+        loggingController = new LoggingController(fragment.getContext().getApplicationContext());
         activePlotControllers.add(timeSeriesPlotController);
         activePlotControllers.add(rmsPlotController);
         activePlotControllers.add(speedController);
         activePlotControllers.add(peakToPeakController);
+        activePlotControllers.add(loggingController);
     }
 
 
@@ -112,6 +115,12 @@ public class PlotController {
         colorArray[1] = Color.HSVToColor(hsv1);
         colorArray[2] = Color.HSVToColor(hsv2);
         return colorArray;
+    }
+
+    public void saveLogs() {
+        if (loggingController != null) {
+            loggingController.saveLogs();
+        }
     }
 
 

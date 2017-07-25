@@ -240,7 +240,7 @@ public class Utils {
      * @return {@link String}
      */
     public static String GetDate() {
-        SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy");
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy_HH-mm");
         Calendar calendar = Calendar.getInstance();
         return formatter.format(calendar.getTime());
 

@@ -111,7 +111,7 @@ public class DevicesFragment extends Fragment {
     public void afterViews() {
         checkBleSupportAndInitialize();
         setRecyclerWithAdapter();
-        Logger.createDataLoggerFile(getActivity());
+//        Logger.createDataLoggerFile(getActivity());
         scanButton.setOnClickListener((view) -> {
             if (!mScanning) {
                 // Prepare list view and initiate scanning
