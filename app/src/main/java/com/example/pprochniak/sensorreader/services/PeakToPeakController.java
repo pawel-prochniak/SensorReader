@@ -3,7 +3,7 @@ package com.example.pprochniak.sensorreader.services;
 import android.util.Log;
 import android.widget.LinearLayout;
 
-import com.example.pprochniak.sensorreader.calculation.PeakToPeak;
+import com.example.pprochniak.sensorreader.calculation.PeakAmplitude;
 
 import java.util.HashMap;
 
@@ -14,8 +14,8 @@ import java.util.HashMap;
 public class PeakToPeakController implements CharacteristicController {
     private static final String TAG = "PeakToPeakController";
 
-    private HashMap<String, HashMap<String, PeakToPeak>> deviceToPeakValues = new HashMap<>();
-    private HashMap<String, PeakToPeakView> deviceToViewMap = new HashMap<>();
+    private HashMap<String, HashMap<String, PeakAmplitude>> deviceToPeakValues = new HashMap<>();
+    private HashMap<String, PeakAmplitudeView> deviceToViewMap = new HashMap<>();
 
     private LinearLayout viewToPopulate;
 
@@ -31,32 +31,32 @@ public class PeakToPeakController implements CharacteristicController {
 
     @Override
     public void addValue(String deviceAddress, float val, @PlotController.AXIS String axis) {
-        HashMap<String, PeakToPeak> axisToPeakToPeak = deviceToPeakValues.get(deviceAddress);
+        HashMap<String, PeakAmplitude> axisToPeakToPeak = deviceToPeakValues.get(deviceAddress);
         if (axisToPeakToPeak == null) {
             Log.e(TAG, "addValue: no map for this device found");
             return;
         }
-        PeakToPeak pk2pk = axisToPeakToPeak.get(axis);
+        PeakAmplitude pk2pk = axisToPeakToPeak.get(axis);
         if (pk2pk.putNewValueAndCheckIfChanged(val)) {
-            float newVal = pk2pk.getPk2Pk();
+            float newVal = pk2pk.getPkAmplitude();
             String newValText = String.valueOf(newVal);
-            PeakToPeakView view = deviceToViewMap.get(deviceAddress);
+            PeakAmplitudeView view = deviceToViewMap.get(deviceAddress);
             view.setValue(newValText, axis);
         }
 
     }
 
-    private HashMap<String, PeakToPeak> getAxisToPeakToPeakMap() {
-        HashMap<String, PeakToPeak> axisToPkPk = new HashMap<>();
-        axisToPkPk.put(PlotController.X, new PeakToPeak());
-        axisToPkPk.put(PlotController.Y, new PeakToPeak());
-        axisToPkPk.put(PlotController.Z, new PeakToPeak());
+    private HashMap<String, PeakAmplitude> getAxisToPeakToPeakMap() {
+        HashMap<String, PeakAmplitude> axisToPkPk = new HashMap<>();
+        axisToPkPk.put(PlotController.X, new PeakAmplitude());
+        axisToPkPk.put(PlotController.Y, new PeakAmplitude());
+        axisToPkPk.put(PlotController.Z, new PeakAmplitude());
         return axisToPkPk;
     }
 
     private void addViewForDevice(String deviceAddress) {
         Log.d(TAG, "addViewForDevice: ");
-        PeakToPeakView pk2pkView = new PeakToPeakView(viewToPopulate.getContext());
+        PeakAmplitudeView pk2pkView = new PeakAmplitudeView(viewToPopulate.getContext());
         pk2pkView.requestLayout();
         viewToPopulate.addView(pk2pkView);
         deviceToViewMap.put(deviceAddress, pk2pkView);

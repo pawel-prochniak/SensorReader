@@ -8,7 +8,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
         <TextView
-            android:text="X pk-pk:"
+            android:text="X peak amplitude:"
             style="@style/BlackSubheaderText"/>
         <TextView
             android:id="@+id/x_pk2pk"
@@ -22,7 +22,7 @@
         android:gravity="center_horizontal"
         android:orientation="vertical">
         <TextView
-            android:text="Y pk-pk:"
+            android:text="Y peak amplitude:"
             style="@style/BlackSubheaderText"/>
         <TextView
             android:id="@+id/y_pk2pk"
@@ -36,7 +36,7 @@
         android:gravity="center_horizontal"
         android:orientation="vertical">
         <TextView
-            android:text="Z pk-pk:"
+            android:text="Z peak amplitude:"
             style="@style/BlackSubheaderText"/>
         <TextView
             android:id="@+id/z_pk2pk"

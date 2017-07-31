@@ -73,7 +73,7 @@ public class Logger {
                 file.setReadable(true);
                 file.setWritable(true);
 
-                MediaScannerConnection.scanFile(context, new String[] {file.toString()}, null, null);
+//                MediaScannerConnection.scanFile(context, new String[] {file.toString()}, null, null);
             }
         } catch (IOException ioExc) {
             Log.e(TAG, "createSignalLogFile: ", ioExc);

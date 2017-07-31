@@ -3,7 +3,6 @@ package com.example.pprochniak.sensorreader.services;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
@@ -17,17 +16,17 @@ import java.util.HashMap;
  * Created by Henny on 2017-07-24.
  */
 
-public class PeakToPeakView extends LinearLayout {
+public class PeakAmplitudeView extends LinearLayout {
     private TextView xTextView, yTextView, zTextView;
 
     private HashMap<String, TextView> axisToViewMap = new HashMap<>();
 
-    public PeakToPeakView(Context context) {
+    public PeakAmplitudeView(Context context) {
         super(context);
         initializeViews(context);
     }
 
-    public PeakToPeakView(Context context, @Nullable AttributeSet attrs) {
+    public PeakAmplitudeView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         initializeViews(context);
     }
@@ -35,7 +34,7 @@ public class PeakToPeakView extends LinearLayout {
     private void initializeViews(Context context) {
         LayoutInflater inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        inflater.inflate(R.layout.peak_to_peak_view, this);
+        inflater.inflate(R.layout.peak_amplitude_view, this);
         setGravity(Gravity.CENTER);
 
         xTextView = (TextView) this.findViewById(R.id.x_pk2pk);
