@@ -30,7 +30,7 @@ public class PeakAmplitudeController implements CharacteristicController {
     }
 
     @Override
-    public void addValue(String deviceAddress, float val, @PlotController.AXIS String axis) {
+    public void addValue(String deviceAddress, float val, @SignalProcessor.AXIS String axis) {
         HashMap<String, PeakAmplitude> axisToPeakToPeak = deviceToPeakValues.get(deviceAddress);
         if (axisToPeakToPeak == null) {
             Log.e(TAG, "addValue: no map for this device found");
@@ -48,9 +48,9 @@ public class PeakAmplitudeController implements CharacteristicController {
 
     private HashMap<String, PeakAmplitude> getAxisToPeakToPeakMap() {
         HashMap<String, PeakAmplitude> axisToPkPk = new HashMap<>();
-        axisToPkPk.put(PlotController.X, new PeakAmplitude());
-        axisToPkPk.put(PlotController.Y, new PeakAmplitude());
-        axisToPkPk.put(PlotController.Z, new PeakAmplitude());
+        axisToPkPk.put(SignalProcessor.X, new PeakAmplitude());
+        axisToPkPk.put(SignalProcessor.Y, new PeakAmplitude());
+        axisToPkPk.put(SignalProcessor.Z, new PeakAmplitude());
         return axisToPkPk;
     }
 

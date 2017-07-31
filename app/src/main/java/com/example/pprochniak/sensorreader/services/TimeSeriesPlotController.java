@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.example.pprochniak.sensorreader.services.PlotController.*;
+import static com.example.pprochniak.sensorreader.services.SignalProcessor.*;
 
 
 /**

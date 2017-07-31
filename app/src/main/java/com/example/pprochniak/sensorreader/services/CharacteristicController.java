@@ -6,5 +6,5 @@ package com.example.pprochniak.sensorreader.services;
 
 public interface CharacteristicController {
     void addDevice(String deviceAddress, int[] colorArray);
-    void addValue(String deviceAddress, float val, @PlotController.AXIS String axis);
+    void addValue(String deviceAddress, float val, @SignalProcessor.AXIS String axis);
 }

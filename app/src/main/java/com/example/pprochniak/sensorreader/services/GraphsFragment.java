@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.View;
@@ -17,7 +16,6 @@ import android.widget.Toast;
 import com.example.pprochniak.sensorreader.R;
 import com.example.pprochniak.sensorreader.ble.BluetoothLeService;
 import com.example.pprochniak.sensorreader.utils.Constants;
-import com.example.pprochniak.sensorreader.utils.Logger;
 import com.example.pprochniak.sensorreader.utils.Utils;
 
 import com.jjoe64.graphview.GraphView;
@@ -36,7 +34,7 @@ public class GraphsFragment extends Fragment {
     public static boolean isInFragment = false;
 
     // Plot settings
-    private PlotController plotController;
+    private SignalProcessor signalProcessor;
 
     // View bindings
     @ViewById(R.id.services_not_found) TextView servicesNotFound;
@@ -55,7 +53,7 @@ public class GraphsFragment extends Fragment {
 
             // GATT Data available
             if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
-                plotController.receiveValueAndAppendPoint(extras);
+                signalProcessor.receiveValueAndAppendPoint(extras);
             } else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
                 processServiceDiscovery(extras);
             } else if (BluetoothLeService.ACTION_GATT_SERVICE_DISCOVERY_UNSUCCESSFUL.equals(action)) {
@@ -67,7 +65,7 @@ public class GraphsFragment extends Fragment {
     };
 
     private void initializePlotController() {
-        if (plotController == null) plotController = new PlotController(this);
+        if (signalProcessor == null) signalProcessor = new SignalProcessor(this);
     }
 
 
@@ -78,13 +76,13 @@ public class GraphsFragment extends Fragment {
         Log.d(TAG, "Registering mServiceDiscovery");
         initializePlotController();
         subscribeToGattUpdates();
-        plotController.connectToAllServices();
+        signalProcessor.connectToAllServices();
         isInFragment = true;
     }
 
     @Override
     public void onPause() {
-        plotController.saveLogs();
+        signalProcessor.saveLogs();
         isInFragment = false;
         getActivity().unregisterReceiver(mGattUpdateListener);
         super.onPause();
@@ -105,7 +103,7 @@ public class GraphsFragment extends Fragment {
         String deviceAddress = extras.getString(Constants.DEVICE_ADDRESS);
         Log.d(TAG, "Service discovered from device "+deviceAddress);
         BluetoothLeService.subscribeToSensorNotifications(deviceAddress);
-        plotController.addDevice(deviceAddress);
+        signalProcessor.addDevice(deviceAddress);
 
         /*
         / Changes the MTU size to 512 in case LOLLIPOP and above devices

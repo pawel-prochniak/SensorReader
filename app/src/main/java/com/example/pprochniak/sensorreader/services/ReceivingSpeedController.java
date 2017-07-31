@@ -5,7 +5,7 @@ import android.widget.TextView;
 
 import com.example.pprochniak.sensorreader.settings.SharedPreferencesController;
 
-import static com.example.pprochniak.sensorreader.services.PlotController.X;
+import static com.example.pprochniak.sensorreader.services.SignalProcessor.X;
 
 /**
  * Created by Henny on 2017-07-23.
@@ -46,7 +46,7 @@ public class ReceivingSpeedController implements CharacteristicController {
     }
 
     @Override
-    public void addValue(String deviceAddress, float val, @PlotController.AXIS String axis) {
+    public void addValue(String deviceAddress, float val, @SignalProcessor.AXIS String axis) {
         if (axis.equals(X)) {
             handleReceivingRate(deviceAddress);
         }

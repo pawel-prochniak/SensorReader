@@ -19,8 +19,8 @@ import java.util.Set;
  * Created by Henny on 2017-07-23.
  */
 
-public class PlotController {
-    private static final String TAG = "PlotController";
+public class SignalProcessor {
+    private static final String TAG = "SignalProcessor";
 
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({X, Y, Z})
@@ -45,7 +45,7 @@ public class PlotController {
 
     private List<CharacteristicController> activePlotControllers = new ArrayList<>();
 
-    public PlotController(GraphsFragment fragment) {
+    public SignalProcessor(GraphsFragment fragment) {
         timeSeriesPlotController = new TimeSeriesPlotController(fragment.graphView);
         rmsPlotController = new RmsPlotController(fragment.xSingleBarGraph, fragment.ySingleBarGraph, fragment.zSingleBarGraph);
         speedController = new ReceivingSpeedController(fragment.getContext(), fragment.receivingSpeedView);
@@ -73,13 +73,13 @@ public class PlotController {
         String axis;
 
         if (extras.containsKey(Constants.EXTRA_ACC_X_VALUE)) {
-            axis = PlotController.X;
+            axis = SignalProcessor.X;
             receivedValue = extras.getFloat(Constants.EXTRA_ACC_X_VALUE);
         } else if (extras.containsKey(Constants.EXTRA_ACC_Y_VALUE)) {
-            axis = PlotController.Y;
+            axis = SignalProcessor.Y;
             receivedValue = extras.getFloat(Constants.EXTRA_ACC_Y_VALUE);
         } else if (extras.containsKey(Constants.EXTRA_ACC_Z_VALUE)) {
-            axis = PlotController.Z;
+            axis = SignalProcessor.Z;
             receivedValue = extras.getFloat(Constants.EXTRA_ACC_Z_VALUE);
         } else {
             Log.e(TAG, "receiveValueAndAppendPoint: unknown axis");

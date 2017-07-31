@@ -33,7 +33,7 @@ public class LoggingController implements CharacteristicController {
     }
 
     @Override
-    public void addValue(String deviceAddress, float val, @PlotController.AXIS String axis) {
+    public void addValue(String deviceAddress, float val, @SignalProcessor.AXIS String axis) {
         addValueToAxisData(deviceAddress, axis, val);
     }
 
@@ -65,7 +65,7 @@ public class LoggingController implements CharacteristicController {
         return logBuilder.toString();
     }
 
-    private void addValueToAxisData(String deviceAddress, @PlotController.AXIS String axis, float val) {
+    private void addValueToAxisData(String deviceAddress, @SignalProcessor.AXIS String axis, float val) {
         HashMap<String, List<Float>> deviceAxisData = deviceToAxisDataMap.get(deviceAddress);
         if (deviceAxisData == null) {
             Log.e(TAG, "addValueToAxisData: device not added to controller");
@@ -77,9 +77,9 @@ public class LoggingController implements CharacteristicController {
     private void createAxisDataListsForDevice(String deviceAddress) {
         HashMap<String, List<Float>> axisToDataMap = new HashMap<>();
 
-        axisToDataMap.put(PlotController.X, new ArrayList<>());
-        axisToDataMap.put(PlotController.Y, new ArrayList<>());
-        axisToDataMap.put(PlotController.Z, new ArrayList<>());
+        axisToDataMap.put(SignalProcessor.X, new ArrayList<>());
+        axisToDataMap.put(SignalProcessor.Y, new ArrayList<>());
+        axisToDataMap.put(SignalProcessor.Z, new ArrayList<>());
 
         deviceToAxisDataMap.put(deviceAddress, axisToDataMap);
     }

@@ -11,7 +11,7 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-import static com.example.pprochniak.sensorreader.services.PlotController.*;
+import static com.example.pprochniak.sensorreader.services.SignalProcessor.*;
 
 /**
  * Created by Henny on 2017-07-22.
@@ -52,7 +52,7 @@ public class RmsPlotController implements CharacteristicController {
     }
 
     @Override
-    public void addValue(String deviceAddress, float val, @PlotController.AXIS String axis) {
+    public void addValue(String deviceAddress, float val, @SignalProcessor.AXIS String axis) {
         HashMap<String, RootMeanSquare> axisToRmsMap;
         RootMeanSquare rms;
         if (deviceRmsMap.containsKey(deviceAddress)) axisToRmsMap = deviceRmsMap.get(deviceAddress);

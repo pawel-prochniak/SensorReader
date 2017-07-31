@@ -46,13 +46,13 @@ public class PeakAmplitudeView extends LinearLayout {
 
 
     private void setUpAxisToViewMap() {
-        axisToViewMap.put(PlotController.X, xTextView);
-        axisToViewMap.put(PlotController.Y, yTextView);
-        axisToViewMap.put(PlotController.Z, zTextView);
+        axisToViewMap.put(SignalProcessor.X, xTextView);
+        axisToViewMap.put(SignalProcessor.Y, yTextView);
+        axisToViewMap.put(SignalProcessor.Z, zTextView);
 
     }
 
-    public void setValue(String stringVal, @PlotController.AXIS String axis) {
+    public void setValue(String stringVal, @SignalProcessor.AXIS String axis) {
         axisToViewMap.get(axis).setText(stringVal);
     }
 }
