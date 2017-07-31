@@ -3,6 +3,7 @@ package com.example.pprochniak.sensorreader.services;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.StringBuilderPrinter;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -67,7 +68,8 @@ public class SingleBarGraph extends LinearLayout {
     }
 
     public void setValue(Float value) {
-        this.valueView.setText(String.valueOf(value));
+        String valStr = String.format("%.3f", value);
+        this.valueView.setText(valStr);
         series.appendData(new DataPoint(BAR_POSITION, value), false, 1);
     }
 

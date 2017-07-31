@@ -2,15 +2,18 @@ package com.example.pprochniak.sensorreader.services;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.StringDef;
 import android.util.Log;
 
+import com.example.pprochniak.sensorreader.ble.BluetoothLeService;
 import com.example.pprochniak.sensorreader.utils.Constants;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Henny on 2017-07-23.
@@ -28,6 +31,8 @@ public class PlotController {
     public static final String Y = "Y";
     public static final String Z = "Z";
 
+    private static final long CONNECTION_DELAY_PERIOD = 500;
+
     private int baseColors[] = {Color.GREEN, Color.BLUE, Color.RED, Color.CYAN, Color.MAGENTA};
 
     private List<String> devices = new ArrayList<>();
@@ -35,27 +40,32 @@ public class PlotController {
     private TimeSeriesPlotController timeSeriesPlotController;
     private RmsPlotController rmsPlotController;
     private ReceivingSpeedController speedController;
-    private PeakToPeakController peakToPeakController;
+    private PeakAmplitudeController peakAmplitudeController;
     private LoggingController loggingController;
 
     private List<CharacteristicController> activePlotControllers = new ArrayList<>();
 
-    private GraphsFragment fragment;
-
     public PlotController(GraphsFragment fragment) {
-        this.fragment = fragment;
         timeSeriesPlotController = new TimeSeriesPlotController(fragment.graphView);
         rmsPlotController = new RmsPlotController(fragment.xSingleBarGraph, fragment.ySingleBarGraph, fragment.zSingleBarGraph);
         speedController = new ReceivingSpeedController(fragment.getContext(), fragment.receivingSpeedView);
-        peakToPeakController = new PeakToPeakController(fragment.peakToPeakLayout);
+        peakAmplitudeController = new PeakAmplitudeController(fragment.peakToPeakLayout);
         loggingController = new LoggingController(fragment.getContext().getApplicationContext());
         activePlotControllers.add(timeSeriesPlotController);
         activePlotControllers.add(rmsPlotController);
         activePlotControllers.add(speedController);
-        activePlotControllers.add(peakToPeakController);
+        activePlotControllers.add(peakAmplitudeController);
         activePlotControllers.add(loggingController);
     }
 
+    public void connectToAllServices() {
+        if (!checkIfAllServicesAllDiscovered()) {
+            Log.d(TAG, "Not all devices' services are discovered");
+            Handler delayHandler = new Handler();
+            delayHandler.postDelayed(BluetoothLeService::discoverAllServices,
+                    CONNECTION_DELAY_PERIOD);
+        }
+    }
 
     public void receiveValueAndAppendPoint(Bundle extras) {
         float receivedValue;
@@ -97,6 +107,14 @@ public class PlotController {
         for (CharacteristicController controller : activePlotControllers) {
             controller.addValue(deviceAddress, val, axis);
         }
+    }
+
+    private boolean checkIfAllServicesAllDiscovered() {
+        Set<String> bleServiceConnectedDevices = BluetoothLeService.getConnectedGattServices().keySet();
+        for (String address : bleServiceConnectedDevices) {
+            if (!devices.contains(address)) return false;
+        }
+        return true;
     }
 
     private int[] getAnalogousColors(int baseColor) {

@@ -11,15 +11,15 @@ import java.util.HashMap;
  * Created by Henny on 2017-07-24.
  */
 
-public class PeakToPeakController implements CharacteristicController {
-    private static final String TAG = "PeakToPeakController";
+public class PeakAmplitudeController implements CharacteristicController {
+    private static final String TAG = "PeakAmplitudeController";
 
     private HashMap<String, HashMap<String, PeakAmplitude>> deviceToPeakValues = new HashMap<>();
     private HashMap<String, PeakAmplitudeView> deviceToViewMap = new HashMap<>();
 
     private LinearLayout viewToPopulate;
 
-    public PeakToPeakController(LinearLayout viewToPopulate) {
+    public PeakAmplitudeController(LinearLayout viewToPopulate) {
         this.viewToPopulate = viewToPopulate;
     }
 
@@ -39,7 +39,7 @@ public class PeakToPeakController implements CharacteristicController {
         PeakAmplitude pk2pk = axisToPeakToPeak.get(axis);
         if (pk2pk.putNewValueAndCheckIfChanged(val)) {
             float newVal = pk2pk.getPkAmplitude();
-            String newValText = String.valueOf(newVal);
+            String newValText = String.format("%.3f", newVal);
             PeakAmplitudeView view = deviceToViewMap.get(deviceAddress);
             view.setValue(newValText, axis);
         }

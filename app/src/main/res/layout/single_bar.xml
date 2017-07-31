@@ -9,21 +9,25 @@
         android:id="@+id/bar_graph"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:paddingTop="12dp"/>
+        android:paddingTop="12dp"
+        android:paddingBottom="4dp"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:layout_gravity="center_vertical"
+        android:gravity="center_horizontal">
         <TextView
             android:id="@+id/bar_value"
             style="@style/BlackSubheaderText"
-            android:paddingTop="8dp"/>
+            android:layout_width="wrap_content"
+            android:paddingTop="4dp"/>
         <TextView
+            style="@style/BlackSubheaderText"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="m/s"
+            android:text=" m/s"
             android:textColor="@android:color/black"/>
     </LinearLayout>
 

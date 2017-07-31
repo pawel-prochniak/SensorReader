@@ -6,13 +6,29 @@
         android:layout_weight="1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
         android:orientation="vertical">
         <TextView
             android:text="X peak amplitude:"
             style="@style/BlackSubheaderText"/>
-        <TextView
-            android:id="@+id/x_pk2pk"
-            style="@style/BlackSubheaderText"/>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/x_pk2pk"
+                style="@style/BlackSubheaderText"
+                android:layout_width="wrap_content"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                style="@style/BlackSubheaderText"
+                android:text=" m/s"
+                android:textColor="@android:color/black"/>
+
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
@@ -24,9 +40,24 @@
         <TextView
             android:text="Y peak amplitude:"
             style="@style/BlackSubheaderText"/>
-        <TextView
-            android:id="@+id/y_pk2pk"
-            style="@style/BlackSubheaderText"/>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/y_pk2pk"
+                style="@style/BlackSubheaderText"
+                android:layout_width="wrap_content"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                style="@style/BlackSubheaderText"
+                android:text=" m/s"
+                android:textColor="@android:color/black"/>
+
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
@@ -38,9 +69,25 @@
         <TextView
             android:text="Z peak amplitude:"
             style="@style/BlackSubheaderText"/>
-        <TextView
-            android:id="@+id/z_pk2pk"
-            style="@style/BlackSubheaderText"/>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/z_pk2pk"
+                style="@style/BlackSubheaderText"
+                android:layout_width="wrap_content"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                style="@style/BlackSubheaderText"
+                android:text=" m/s"
+                android:textColor="@android:color/black"/>
+
+        </LinearLayout>
+
     </LinearLayout>
 
 </merge >

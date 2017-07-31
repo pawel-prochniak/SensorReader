@@ -35,8 +35,6 @@ public class GraphsFragment extends Fragment {
 
     public static boolean isInFragment = false;
 
-    private static final long DELAY_PERIOD = 500;
-
     // Plot settings
     private PlotController plotController;
 
@@ -69,7 +67,7 @@ public class GraphsFragment extends Fragment {
     };
 
     private void initializePlotController() {
-        plotController = new PlotController(this);
+        if (plotController == null) plotController = new PlotController(this);
     }
 
 
@@ -80,11 +78,7 @@ public class GraphsFragment extends Fragment {
         Log.d(TAG, "Registering mServiceDiscovery");
         initializePlotController();
         subscribeToGattUpdates();
-        Handler delayHandler = new Handler();
-        delayHandler.postDelayed(() -> {
-            Log.d(TAG, "Discover service called");
-            BluetoothLeService.discoverAllServices();
-        }, DELAY_PERIOD);
+        plotController.connectToAllServices();
         isInFragment = true;
     }
 

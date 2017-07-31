@@ -88,7 +88,7 @@ public class TimeSeriesPlotController implements CharacteristicController {
 
     void setGraphProperties() {
         graphView.getGridLabelRenderer().setLabelVerticalWidth(120);
-        graphView.getLegendRenderer().setWidth(360);
+        graphView.getLegendRenderer().setWidth(240);
         graphView.getViewport().setXAxisBoundsManual(true);
         graphView.getViewport().setMinX(0);
         graphView.getViewport().setMaxX(SERIES_LENGTH);
