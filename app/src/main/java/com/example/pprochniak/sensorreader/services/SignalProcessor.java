@@ -67,6 +67,7 @@ public class SignalProcessor {
         }
     }
 
+
     public void receiveValueAndAppendPoint(Bundle extras) {
         float receivedValue;
         String deviceAddress = extras.getString(Constants.DEVICE_ADDRESS);

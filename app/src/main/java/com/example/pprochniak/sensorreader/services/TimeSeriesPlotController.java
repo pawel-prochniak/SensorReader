@@ -28,6 +28,7 @@ public class TimeSeriesPlotController implements CharacteristicController {
     private int SERIES_LENGTH; // how many data points will be collected for each axis
     private boolean realTimePlotting;
     private boolean continuousPlotting;
+    private boolean disabledPlotting;
 
     private GraphView graphView;
 
@@ -52,6 +53,15 @@ public class TimeSeriesPlotController implements CharacteristicController {
         } else {
             Log.d(TAG, "addDevice: series for device already added");
         }
+    }
+
+
+    public void enablePlot() {
+        disabledPlotting = false;
+    }
+
+    public void disablePlot() {
+        disabledPlotting = true;
     }
 
 
@@ -98,6 +108,7 @@ public class TimeSeriesPlotController implements CharacteristicController {
 
     @Override
     public void addValue(String deviceAddress, float val, @AXIS String axis) {
+        if (disabledPlotting) return;
         double counter;
         HashMap<String, LineGraphSeries<DataPoint>> deviceSeriesMap = mapOfSeries.get(deviceAddress);
         if (deviceSeriesMap == null) {

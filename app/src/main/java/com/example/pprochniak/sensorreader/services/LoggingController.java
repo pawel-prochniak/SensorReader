@@ -53,14 +53,19 @@ public class LoggingController implements CharacteristicController {
             Log.e(TAG, "getLogMessage: no logs for device found");
             return null;
         }
-        for (String key : axisLogs.keySet()) {
-            logBuilder.append(key);
-            logBuilder.append("  ");
-            List<Float> floatList = axisLogs.get(key);
-            for (Float val : floatList) {
-                logBuilder.append(String.valueOf(val));
-                logBuilder.append("  ");
-            }
+        List<Float> xList = axisLogs.get("X");
+        List<Float> yList = axisLogs.get("Y");
+        List<Float> zList = axisLogs.get("Z");
+        logBuilder.append("X,Y,Z\r\n");
+        int readingCount = Math.min(xList.size(), yList.size());
+        readingCount = Math.min(readingCount, zList.size());
+        for (int i = 0; i < readingCount; i++) {
+            logBuilder.append(String.valueOf(xList.get(i)));
+            logBuilder.append(",");
+            logBuilder.append(String.valueOf(yList.get(i)));
+            logBuilder.append(",");
+            logBuilder.append(String.valueOf(zList.get(i)));
+            if (i + 1 != readingCount) logBuilder.append("\r\n");
         }
         return logBuilder.toString();
     }

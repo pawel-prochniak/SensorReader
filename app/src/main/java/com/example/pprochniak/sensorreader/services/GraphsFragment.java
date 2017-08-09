@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,6 +21,7 @@ import com.example.pprochniak.sensorreader.utils.Utils;
 
 import com.jjoe64.graphview.GraphView;
 
+import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.ViewById;
 
@@ -64,17 +66,15 @@ public class GraphsFragment extends Fragment {
         }
     };
 
-    private void initializePlotController() {
+    private void initializeSignalProcessor() {
         if (signalProcessor == null) signalProcessor = new SignalProcessor(this);
     }
-
-
 
     @Override
     public void onResume() {
         super.onResume();
         Log.d(TAG, "Registering mServiceDiscovery");
-        initializePlotController();
+        initializeSignalProcessor();
         subscribeToGattUpdates();
         signalProcessor.connectToAllServices();
         isInFragment = true;
