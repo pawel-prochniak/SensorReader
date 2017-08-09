@@ -21,14 +21,6 @@
             android:layout_height="wrap_content"
             android:text="@string/alert_message_service_undiscovered"/>
 
-        <Button
-            android:id="@+id/filter_button"
-            android:layout_width="200dp"
-            android:layout_height="30dp"
-            android:layout_gravity="center"
-            android:text="Filter"
-            android:padding="12dp"/>
-
         <com.jjoe64.graphview.GraphView
             android:layout_width="match_parent"
             android:layout_height="250dp"

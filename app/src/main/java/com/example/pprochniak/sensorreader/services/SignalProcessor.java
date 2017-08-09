@@ -9,6 +9,8 @@ import android.util.Log;
 import com.example.pprochniak.sensorreader.ble.BluetoothLeService;
 import com.example.pprochniak.sensorreader.utils.Constants;
 
+import org.androidannotations.annotations.EBean;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
@@ -19,6 +21,7 @@ import java.util.Set;
  * Created by Henny on 2017-07-23.
  */
 
+@EBean(scope = EBean.Scope.Singleton)
 public class SignalProcessor {
     private static final String TAG = "SignalProcessor";
 
@@ -31,7 +34,7 @@ public class SignalProcessor {
     public static final String Y = "Y";
     public static final String Z = "Z";
 
-    private static final long CONNECTION_DELAY_PERIOD = 500;
+    private static final long CONNECTION_DELAY_PERIOD = 100;
 
     private int baseColors[] = {Color.GREEN, Color.BLUE, Color.RED, Color.CYAN, Color.MAGENTA};
 
@@ -45,7 +48,8 @@ public class SignalProcessor {
 
     private List<CharacteristicController> activePlotControllers = new ArrayList<>();
 
-    public SignalProcessor(GraphsFragment fragment) {
+    public void attachGraphsFragment(GraphsFragment fragment) {
+        Log.d(TAG, "attachGraphsFragment");
         timeSeriesPlotController = new TimeSeriesPlotController(fragment.graphView);
         rmsPlotController = new RmsPlotController(fragment.xSingleBarGraph, fragment.ySingleBarGraph, fragment.zSingleBarGraph);
         speedController = new ReceivingSpeedController(fragment.getContext(), fragment.receivingSpeedView);
@@ -56,10 +60,15 @@ public class SignalProcessor {
         activePlotControllers.add(speedController);
         activePlotControllers.add(peakAmplitudeController);
         activePlotControllers.add(loggingController);
+        initPlotsForDevices();
+    }
+
+    public void clearControllers() {
+        activePlotControllers.clear();
     }
 
     public void connectToAllServices() {
-        if (!checkIfAllServicesAllDiscovered()) {
+        if (!checkIfAllServicesAreDiscovered()) {
             Log.d(TAG, "Not all devices' services are discovered");
             Handler delayHandler = new Handler();
             delayHandler.postDelayed(BluetoothLeService::discoverAllServices,
@@ -90,12 +99,16 @@ public class SignalProcessor {
         addValueToAllActivePlots(deviceAddress, receivedValue, axis);
     }
 
-
     public void addDevice(String deviceAddress) {
         devices.add(deviceAddress);
-        int baseColor = baseColors[devices.size() % baseColors.length];
-        int[] graphColors = getAnalogousColors(baseColor);
-        addDeviceToAllActivePlots(deviceAddress, graphColors);
+    }
+
+    private void initPlotsForDevices() {
+        for (String address : devices) {
+            int baseColor = baseColors[devices.size() % baseColors.length];
+            int[] graphColors = getAnalogousColors(baseColor);
+            addDeviceToAllActivePlots(address, graphColors);
+        }
     }
 
     private void addDeviceToAllActivePlots(String deviceAddress, int[] graphColors) {
@@ -110,7 +123,7 @@ public class SignalProcessor {
         }
     }
 
-    private boolean checkIfAllServicesAllDiscovered() {
+    private boolean checkIfAllServicesAreDiscovered() {
         Set<String> bleServiceConnectedDevices = BluetoothLeService.getConnectedGattServices().keySet();
         for (String address : bleServiceConnectedDevices) {
             if (!devices.contains(address)) return false;

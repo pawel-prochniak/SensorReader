@@ -4,33 +4,31 @@ import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.pprochniak.sensorreader.ble.BluetoothLeService;
 import com.example.pprochniak.sensorreader.deviceDiscovery.DevicesFragment;
-import com.example.pprochniak.sensorreader.deviceDiscovery.DevicesFragment_;
+import com.example.pprochniak.sensorreader.services.SignalProcessor;
+import com.example.pprochniak.sensorreader.utils.Constants;
 import com.example.pprochniak.sensorreader.utils.DrawerController;
-import com.example.pprochniak.sensorreader.utils.Logger;
+import com.example.pprochniak.sensorreader.utils.Utils;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 @EActivity(R.layout.activity_main)
 public class MainActivity extends AppCompatActivity {
@@ -45,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     @ViewById(R.id.drawer_layout) DrawerLayout drawerLayout;
     @ViewById(R.id.drawer) ListView drawerList;
     @Bean DrawerController drawerController;
+    @Bean SignalProcessor signalProcessor;
 
     @AfterViews
     public void afterViews() {
@@ -59,25 +58,14 @@ public class MainActivity extends AppCompatActivity {
         drawerController.setFragment(DrawerController.DEVICES_FRAGMENT);
 
         checkPermissions();
-
     }
 
-    @Override
-    public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter) {
-        return super.registerReceiver(receiver, filter);
-    }
 
     @Override
     protected void onResume() {
-        isAppInBackground = false;
-
-        final IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
-        intentFilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
-        intentFilter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
-        intentFilter.addAction(BluetoothLeService.ACTION_PAIR_REQUEST);
-
         super.onResume();
+        isAppInBackground = false;
+        subscribeToGattUpdates();
     }
 
     @Override
@@ -91,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
                     BluetoothLeService.class);
             stopService(gattServiceIntent);
         }
+        unsubscribeFromGattUpdates();
         isAppInBackground = true;
         super.onPause();
     }
@@ -137,52 +126,76 @@ public class MainActivity extends AppCompatActivity {
         drawerController.setupDrawer(drawerLayout, drawerList);
     }
 
+    private final BroadcastReceiver mGattUpdateListener = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+            Bundle extras = intent.getExtras();
 
-    /*
-    Checks whether a file exists in the folder specified
-     */
-    public boolean fileExists(String name, File file) {
-        File[] list = file.listFiles();
-        if (list != null)
-            for (File fil : list) {
-                if (fil.isDirectory()) {
-                    fileExists(name, fil);
-                } else if (name.equalsIgnoreCase(fil.getName())) {
-                    Log.e(TAG, "File>>" + fil.getName());
-                    return true;
-                }
+            // GATT Data available
+            if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
+                signalProcessor.receiveValueAndAppendPoint(extras);
+            } else if (BluetoothLeService.ACTION_GATT_CONNECTED.equals(action)) {
+                processDeviceConnection(extras);
+            } else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
+                processServiceDiscovery(extras);
+            } else if (BluetoothLeService.ACTION_GATT_SERVICE_DISCOVERY_UNSUCCESSFUL.equals(action)) {
+                processUnsuccessfulConnection(extras);
+            } else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
+                displayDisconnectToast(extras);
             }
-        return false;
+
+        }
+    };
+
+    private void displayDisconnectToast(Bundle extras) {
+        Resources res = getResources();
+        String deviceAddress = extras.getString(Constants.DEVICE_ADDRESS);
+        String formattedDisconnectMsg = res.getString(R.string.device_disconnected, deviceAddress);
+        Toast.makeText(this, formattedDisconnectMsg, Toast.LENGTH_LONG).show();
     }
 
-    // If targetLocation does not exist, it will be created.
-    public void copyDirectory(File sourceLocation, File targetLocation)
-            throws IOException {
-        if (sourceLocation.isDirectory()) {
-            if (!targetLocation.exists()) {
-                targetLocation.mkdir();
-            }
+    private void processDeviceConnection(Bundle extras) {
+        String deviceAddress = extras.getString(Constants.DEVICE_ADDRESS);
+        Log.d(TAG, "processDeviceConnection: device: "+deviceAddress);
+        if (deviceAddress == null) {
+            processUnsuccessfulConnection(extras);
+            return;
+        }
+        signalProcessor.connectToAllServices();
+    }
 
-            String[] children = sourceLocation.list();
-            for (int i = 0; i < children.length; i++) {
-                copyDirectory(new File(sourceLocation, children[i]),
-                        new File(targetLocation, children[i]));
-            }
-        } else {
+    private void processServiceDiscovery(Bundle extras) {
+        String deviceAddress = extras.getString(Constants.DEVICE_ADDRESS);
+        Log.d(TAG, "Service discovered from device " + deviceAddress);
+        if (deviceAddress == null) {
+            processUnsuccessfulConnection(extras);
+            return;
+        }
+        signalProcessor.addDevice(deviceAddress);
+        BluetoothLeService.subscribeToSensorNotifications(deviceAddress);
 
-            InputStream in = new FileInputStream(sourceLocation.getAbsolutePath());
-            OutputStream out = new FileOutputStream(targetLocation.getAbsolutePath());
-
-            // Copy the bits from instream to outstream
-            byte[] buf = new byte[1024];
-            int len;
-            while ((len = in.read(buf)) > 0) {
-                out.write(buf, 0, len);
-            }
-            in.close();
-            out.close();
-            getIntent().setData(null);
+        /*
+        / Changes the MTU size to 512 in case LOLLIPOP and above devices
+        */
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            BluetoothLeService.exchangeGattMtu(deviceAddress, 512);
         }
     }
+
+    private void processUnsuccessfulConnection(Bundle extras) {
+        Log.d(TAG, "processUnsuccessfulConnection: ");
+        String deviceAddress = extras.getString(Constants.DEVICE_ADDRESS);
+        BluetoothLeService.disconnect(deviceAddress);
+    }
+
+    private void subscribeToGattUpdates() {
+        registerReceiver(mGattUpdateListener, Utils.makeGattUpdateIntentFilter());
+    }
+
+    private void unsubscribeFromGattUpdates() {
+        unregisterReceiver(mGattUpdateListener);
+    }
+
 
 }

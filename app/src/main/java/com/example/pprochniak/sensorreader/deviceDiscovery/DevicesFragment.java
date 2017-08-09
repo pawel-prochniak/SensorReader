@@ -31,6 +31,7 @@ import com.example.pprochniak.sensorreader.services.GraphsFragment;
 import com.example.pprochniak.sensorreader.services.GraphsFragment_;
 import com.example.pprochniak.sensorreader.R;
 import com.example.pprochniak.sensorreader.ble.BluetoothLeService;
+import com.example.pprochniak.sensorreader.services.SignalProcessor;
 import com.example.pprochniak.sensorreader.utils.Constants;
 import com.example.pprochniak.sensorreader.utils.Logger;
 import com.example.pprochniak.sensorreader.utils.Utils;
@@ -96,6 +97,7 @@ public class DevicesFragment extends Fragment {
     private ProgressDialog progressDialog;
 
     @Bean GattController gattController;
+    @Bean SignalProcessor signalProcessor;
 
     @ViewById(R.id.discover_device_scan_button) Button scanButton;
     @ViewById(R.id.discover_device_recycler_view) RecyclerView deviceListView;
@@ -408,12 +410,6 @@ public class DevicesFragment extends Fragment {
                     }
             );
         }
-    }
-
-    private void setServiceFragment() {
-        FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction().remove(this).commit();
-        fragmentManager.beginTransaction().replace(R.id.main_container, graphsFragment).commit();
     }
 
     @Override
