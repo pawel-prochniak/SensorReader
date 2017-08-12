@@ -69,6 +69,11 @@ public class SignalProcessor {
         initPlotsForDevices();
     }
 
+    public void clearGraph() {
+        if (timeSeriesPlotController!=null) {
+            timeSeriesPlotController.clearGraph();
+        }
+    }
 
     public void clearControllers() {
         activePlotControllers.clear();

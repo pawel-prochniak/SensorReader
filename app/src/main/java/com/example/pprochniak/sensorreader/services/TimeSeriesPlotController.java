@@ -11,6 +11,7 @@ import com.jjoe64.graphview.series.LineGraphSeries;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import static com.example.pprochniak.sensorreader.services.SignalProcessor.*;
 
@@ -22,7 +23,8 @@ import static com.example.pprochniak.sensorreader.services.SignalProcessor.*;
 public class TimeSeriesPlotController implements CharacteristicController {
     private static final String TAG = "TimeSeriesPlotControlle";
 
-    HashMap<String, HashMap<String, LineGraphSeries<DataPoint>>> mapOfSeries = new HashMap<>();
+    private HashMap<String, HashMap<String, LineGraphSeries<DataPoint>>> mapOfSeries = new HashMap<>();
+    private HashMap<String, int[]> colorMap = new HashMap<>();
     private HashMap<String, List<String>> completedSeries = new HashMap<>();
 
     private int SERIES_LENGTH; // how many data points will be collected for each axis
@@ -49,12 +51,21 @@ public class TimeSeriesPlotController implements CharacteristicController {
     @Override
     public void addDevice(String deviceAddress, int[] graphColors) {
         if (!mapOfSeries.containsKey(deviceAddress)) {
-            mapOfSeries.put(deviceAddress, addXYZSeriesForDevice(deviceAddress, graphColors));
+            putNewSeriesIntoMap(deviceAddress, graphColors);
         } else {
             Log.d(TAG, "addDevice: series for device already added");
         }
     }
 
+    public void clearGraph() {
+        disablePlot();
+        graphView.removeAllSeries();
+        Set<String> devices = mapOfSeries.keySet();
+        for (String deviceAddress : devices) {
+            putNewSeriesIntoMap(deviceAddress, colorMap.get(deviceAddress));
+        }
+        enablePlot();
+    }
 
     public void enablePlot() {
         disabledPlotting = false;
@@ -64,6 +75,9 @@ public class TimeSeriesPlotController implements CharacteristicController {
         disabledPlotting = true;
     }
 
+    private void putNewSeriesIntoMap(String deviceAddress, int[] graphColors) {
+        mapOfSeries.put(deviceAddress, addXYZSeriesForDevice(deviceAddress, graphColors));
+    }
 
     private HashMap<String, LineGraphSeries<DataPoint>> addXYZSeriesForDevice(String deviceAddress, int[] graphColors) {
         Log.d(TAG, "addXYZSeriesForDevice: "+deviceAddress);
@@ -71,6 +85,8 @@ public class TimeSeriesPlotController implements CharacteristicController {
         seriesMap.put(X, new LineGraphSeries<>());
         seriesMap.put(Y, new LineGraphSeries<>());
         seriesMap.put(Z, new LineGraphSeries<>());
+
+        colorMap.put(deviceAddress, graphColors);
 
         LineGraphSeries<DataPoint> xSeries = seriesMap.get(X);
         LineGraphSeries<DataPoint> ySeries = seriesMap.get(Y);

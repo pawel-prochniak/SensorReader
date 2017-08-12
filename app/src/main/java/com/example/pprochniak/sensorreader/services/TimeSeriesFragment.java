@@ -1,23 +1,11 @@
 package com.example.pprochniak.sensorreader.services;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.res.Resources;
-import android.os.Build;
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.pprochniak.sensorreader.R;
-import com.example.pprochniak.sensorreader.ble.BluetoothLeService;
-import com.example.pprochniak.sensorreader.utils.Constants;
-import com.example.pprochniak.sensorreader.utils.Utils;
 
 import com.jjoe64.graphview.GraphView;
 
@@ -30,7 +18,7 @@ import org.androidannotations.annotations.ViewById;
  * Created by Henny on 2017-03-29.
  */
 
-@EFragment(R.layout.graphs_fragment)
+@EFragment(R.layout.time_series_fragment)
 public class TimeSeriesFragment extends Fragment {
     private static final String TAG = "TimeSeriesFragment";
 
@@ -44,11 +32,13 @@ public class TimeSeriesFragment extends Fragment {
     @ViewById(R.id.graph) GraphView graphView;
     @ViewById(R.id.receiving_speed) TextView receivingSpeedView;
     @ViewById(R.id.save_log_button) Button saveLogsButton;
+    @ViewById(R.id.clear_graph_button) Button clearGraphButton;
 
 
     @AfterViews
     void afterViews() {
         saveLogsButton.setOnClickListener((v) -> signalProcessor.saveLogs());
+        clearGraphButton.setOnClickListener((v) -> signalProcessor.clearGraph());
     }
 
     @Override

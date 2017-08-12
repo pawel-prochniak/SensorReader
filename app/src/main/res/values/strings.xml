@@ -94,5 +94,6 @@
     <string name="rms_settings">RMS settings</string>
     <string name="rms_sample_size">Samples to calculate: </string>
     <string name="save_session">Save session</string>
+    <string name="clear_graph">Clear graph</string>
 
 </resources>
