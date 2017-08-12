@@ -48,20 +48,27 @@ public class SignalProcessor {
 
     private List<CharacteristicController> activePlotControllers = new ArrayList<>();
 
-    public void attachGraphsFragment(GraphsFragment fragment) {
+    public void attachGraphsFragment(TimeSeriesFragment fragment) {
         Log.d(TAG, "attachGraphsFragment");
         timeSeriesPlotController = new TimeSeriesPlotController(fragment.graphView);
-        rmsPlotController = new RmsPlotController(fragment.xSingleBarGraph, fragment.ySingleBarGraph, fragment.zSingleBarGraph);
         speedController = new ReceivingSpeedController(fragment.getContext(), fragment.receivingSpeedView);
-        peakAmplitudeController = new PeakAmplitudeController(fragment.peakToPeakLayout);
         loggingController = new LoggingController(fragment.getContext().getApplicationContext());
         activePlotControllers.add(timeSeriesPlotController);
-        activePlotControllers.add(rmsPlotController);
         activePlotControllers.add(speedController);
+        activePlotControllers.add(loggingController);
+        initPlotsForDevices();
+    }
+
+    public void attachRmsFragment(RmsFragment fragment) {
+        rmsPlotController = new RmsPlotController(fragment.xSingleBarGraph, fragment.ySingleBarGraph, fragment.zSingleBarGraph);
+        peakAmplitudeController = new PeakAmplitudeController(fragment.peakToPeakLayout);
+        loggingController = new LoggingController(fragment.getContext().getApplicationContext());
+        activePlotControllers.add(rmsPlotController);
         activePlotControllers.add(peakAmplitudeController);
         activePlotControllers.add(loggingController);
         initPlotsForDevices();
     }
+
 
     public void clearControllers() {
         activePlotControllers.clear();

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <com.example.pprochniak.sensorreader.services.SingleBarGraph
+            android:id="@+id/x_bar_graph"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="160dp"
+            android:orientation="vertical"/>
+
+        <com.example.pprochniak.sensorreader.services.SingleBarGraph
+            android:id="@+id/y_bar_graph"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="160dp"
+            android:orientation="vertical"/>
+
+        <com.example.pprochniak.sensorreader.services.SingleBarGraph
+            android:id="@+id/z_bar_graph"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="160dp"
+            android:orientation="vertical"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:paddingTop="16dp"
+        android:id="@+id/peak_to_peak_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/save_log_button"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="200dp"
+        android:layout_height="40dp"
+        android:text="@string/save_session"/>
+
+</LinearLayout>

@@ -6,6 +6,7 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.example.pprochniak.sensorreader.R;
+import com.example.pprochniak.sensorreader.calculation.PeakAmplitude;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -67,14 +68,15 @@ public class Logger {
 
             file = new File(directory.getAbsoluteFile() + File.separator
                     + filename + context.getResources().getString(R.string.dl_file_extension));
-            if (!file.exists()) {
-                boolean isFileFound = file.createNewFile();
-                Log.d(TAG, "creating new file, is success: "+isFileFound);
-                file.setReadable(true);
-                file.setWritable(true);
-
-//                MediaScannerConnection.scanFile(context, new String[] {file.toString()}, null, null);
+            int file_suffix = 1;
+            // File overriding check
+            while (file.exists()) {
+                String suffixedFilename = filename + "_" + String.valueOf(file_suffix++);
+                file = new File(directory.getAbsoluteFile() + File.separator
+                        + suffixedFilename + context.getResources().getString(R.string.dl_file_extension));
             }
+            boolean isFileFound = file.createNewFile();
+            Log.d(TAG, "creating new file, is success: "+isFileFound);
         } catch (IOException ioExc) {
             Log.e(TAG, "createSignalLogFile: ", ioExc);
         }

@@ -43,7 +43,9 @@ public class LoggingController implements CharacteristicController {
             File file = deviceToFileMap.get(deviceAddress);
             String log = getLogMessage(deviceAddress);
             Logger.saveMessageToFile(context, file, log);
+            createFileMapForDevice(deviceAddress);
         }
+
     }
 
     private String getLogMessage(String deviceAddress) {

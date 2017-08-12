@@ -19,7 +19,6 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -27,13 +26,12 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.pprochniak.sensorreader.GATT.GattController;
-import com.example.pprochniak.sensorreader.services.GraphsFragment;
-import com.example.pprochniak.sensorreader.services.GraphsFragment_;
+import com.example.pprochniak.sensorreader.services.TimeSeriesFragment;
+import com.example.pprochniak.sensorreader.services.TimeSeriesFragment_;
 import com.example.pprochniak.sensorreader.R;
 import com.example.pprochniak.sensorreader.ble.BluetoothLeService;
 import com.example.pprochniak.sensorreader.services.SignalProcessor;
 import com.example.pprochniak.sensorreader.utils.Constants;
-import com.example.pprochniak.sensorreader.utils.Logger;
 import com.example.pprochniak.sensorreader.utils.Utils;
 
 import org.androidannotations.annotations.AfterInject;
@@ -60,7 +58,7 @@ public class DevicesFragment extends Fragment {
 
     public static boolean isInFragment = false;
 
-    GraphsFragment graphsFragment;
+    TimeSeriesFragment timeSeriesFragment;
 
     //
     // Scanning properties
@@ -106,7 +104,7 @@ public class DevicesFragment extends Fragment {
 
     @AfterInject
     public void afterInject() {
-        graphsFragment = new GraphsFragment_();
+        timeSeriesFragment = new TimeSeriesFragment_();
     }
 
     @AfterViews

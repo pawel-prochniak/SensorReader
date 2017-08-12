@@ -93,5 +93,6 @@
     <string name="signal_plot_settings">Signal plot settings</string>
     <string name="rms_settings">RMS settings</string>
     <string name="rms_sample_size">Samples to calculate: </string>
+    <string name="save_session">Save session</string>
 
 </resources>
