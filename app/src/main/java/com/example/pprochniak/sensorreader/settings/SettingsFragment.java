@@ -4,10 +4,12 @@ import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 
 import com.example.pprochniak.sensorreader.R;
+import com.example.pprochniak.sensorreader.signalProcessing.SignalProcessor;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EFragment;
@@ -28,25 +30,23 @@ public class SettingsFragment extends Fragment {
     @ViewById(R.id.continuous_plotting_check_box) CheckBox continuousPlottingCheckBox;
     @ViewById(R.id.continuous_plotting_layout) View continuousPlottingLayout;
     @ViewById(R.id.rms_sample_size) EditText rmsSampleSizeEditText;
+    @ViewById(R.id.time_series_filtering_check_box) CheckBox timeSeriesFilteringCheckBox;
+    @ViewById(R.id.rms_filtering_check_box) CheckBox rmsFilteringCheckBox;
+    @ViewById(R.id.filter_weights_x) Button xFilterWeights;
+    @ViewById(R.id.filter_weights_y) Button yFilterWeights;
+    @ViewById(R.id.filter_weights_z) Button zFilterWeights;
 
     @AfterViews
     void afterViews() {
         sharedPreferencesController = new SharedPreferencesController(getContext());
 
-        setSampleSizeState();
-        setRealTimePlottingState();
-        setContinuousPlottingState();
-        setRmsSampleSizeState();
-
+        setViewStates();
         setRealTimePlottingOnClick();
     }
 
     @Override
     public void onPause() {
-        saveSampleSizeSetting();
-        saveRealTimePlottingSetting();
-        saveContinuousPlottingSetting();
-        saveRmsSampleSizeSetting();
+        saveSettings();
 
         super.onPause();
     }
@@ -56,6 +56,25 @@ public class SettingsFragment extends Fragment {
             boolean checked = ((CheckBox) v).isChecked();
             enableContinuousPlottingCheckBox(checked);
         });
+    }
+
+    private void setViewStates() {
+        setSampleSizeState();
+        setRealTimePlottingState();
+        setContinuousPlottingState();
+        setRmsSampleSizeState();
+        setTimeSeriesFilteringCheckBox();
+        setRmsFilteringCheckBox();
+        setFilteringButtons();
+    }
+
+    private void saveSettings() {
+        saveSampleSizeSetting();
+        saveRealTimePlottingSetting();
+        saveContinuousPlottingSetting();
+        saveRmsSampleSizeSetting();
+        saveRmsFilteringSetting();
+        saveTimeSeriesFilteringSetting();
     }
 
     private void enableContinuousPlottingCheckBox(boolean isEnabled) {
@@ -78,6 +97,22 @@ public class SettingsFragment extends Fragment {
 
     private void setRmsSampleSizeState() {
         rmsSampleSizeEditText.setText(String.valueOf(sharedPreferencesController.getRmsSampleSize()));
+    }
+
+    private void setRmsFilteringCheckBox() {
+        rmsFilteringCheckBox.setChecked(sharedPreferencesController.getRmsFilteringFlag());
+    }
+
+    private void setTimeSeriesFilteringCheckBox() {
+        timeSeriesFilteringCheckBox.setChecked(sharedPreferencesController.getTimeSeriesFilteringFlag());
+    }
+
+    private void saveRmsFilteringSetting() {
+        sharedPreferencesController.saveRmsFilteringFlag(rmsFilteringCheckBox.isChecked());
+    }
+
+    private void saveTimeSeriesFilteringSetting() {
+        sharedPreferencesController.saveTimeSeriesFilteringFlag(timeSeriesFilteringCheckBox.isChecked());
     }
 
     private void saveSampleSizeSetting() {
@@ -105,5 +140,11 @@ public class SettingsFragment extends Fragment {
             String editTextValue = editTextEditable.toString();
             sharedPreferencesController.saveRmsSampleSize(Integer.valueOf(editTextValue));
         }
+    }
+
+    private void setFilteringButtons() {
+        xFilterWeights.setOnClickListener((v) -> new FilterWeightsDialog(getContext(), SignalProcessor.X).show());
+        yFilterWeights.setOnClickListener((v) -> new FilterWeightsDialog(getContext(), SignalProcessor.Y).show());
+        zFilterWeights.setOnClickListener((v) -> new FilterWeightsDialog(getContext(), SignalProcessor.Z).show());
     }
 }

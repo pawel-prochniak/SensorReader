@@ -52,7 +52,8 @@ public class FileIO {
         try {
             String line;
             while ((line = br.readLine()) != null) {
-                doublesRead.add(Double.valueOf(line));
+                if (line.isEmpty()) break;
+                doublesRead.add(Double.valueOf(line.replaceAll(",", " ")));
             }
             br.close();
         } catch (IOException e) {
@@ -63,6 +64,23 @@ public class FileIO {
         Double[] weights = new Double[doublesRead.size()];
         doublesRead.toArray(weights);
         return castDoubleObjectsToPrimitives(weights);
+    }
+
+    public static void saveWeightsToFile(Context context, @SignalProcessor.AXIS String axis, String message) {
+        File weightsFile = getWeightsFile(context, axis);
+
+        try {
+            if (weightsFile != null && weightsFile.exists()) {
+                boolean isDeleted = weightsFile.delete();
+                if (!isDeleted) return;
+            }
+            boolean isCreated = weightsFile.createNewFile();
+            if (!isCreated) return;
+        } catch (IOException e) {
+            Log.e(TAG, "saveWeightsToFile: ", e);
+        }
+
+        saveMessageToFile(context, weightsFile, message);
     }
 
     public static File createSignalLogFile(Context context, String deviceAddress) {

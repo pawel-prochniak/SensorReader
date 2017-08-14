@@ -81,6 +81,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/continuous_plotting_explanation"/>
+
         </LinearLayout>
 
         <!--RMS-->
@@ -107,5 +108,73 @@
 
         </LinearLayout>
 
+
+        <TextView
+            style="@style/SettingsSectionTitle"
+            android:paddingTop="16dp"
+            android:text="@string/filtering_settings"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/rms_filtering"/>
+
+            <CheckBox
+                android:id="@+id/rms_filtering_check_box"
+                android:layout_width="24dp"
+                android:layout_height="24dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/time_series_filtering"/>
+
+            <CheckBox
+                android:id="@+id/time_series_filtering_check_box"
+                android:layout_width="24dp"
+                android:layout_height="24dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="16dp">
+            <Button
+                android:id="@+id/filter_weights_x"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/x_weights"/>
+
+            <Button
+                android:id="@+id/filter_weights_y"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/y_weights"/>
+
+            <Button
+                android:id="@+id/filter_weights_z"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/z_weights"/>
+
+        </LinearLayout>
+
     </LinearLayout>
+
+
 </ScrollView>

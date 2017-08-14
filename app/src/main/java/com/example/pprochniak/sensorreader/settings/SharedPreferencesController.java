@@ -16,6 +16,8 @@ public class SharedPreferencesController {
     private static final String REAL_TIME_PLOTTING = "REAL_TIME_PLOTTING";
     private static final String CONTINUOUS_PLOTTING = "CONTINUOUS_PLOTTING";
     private static final String RMS_SAMPLE_SIZE = "RMS_SAMPLE_SIZE";
+    private static final String RMS_FILTERING = "RMS_FILTERING";
+    private static final String TIME_SERIES_FILTERING = "TIME_SERIES_FILTERING";
 
     public SharedPreferencesController(Context context) {
         this.context = context;
@@ -53,6 +55,22 @@ public class SharedPreferencesController {
         editor().putInt(RMS_SAMPLE_SIZE, sampleSize).apply();
     }
 
+    public boolean getRmsFilteringFlag() {
+        return getSharedPrefs().getBoolean(RMS_FILTERING, false);
+    }
+
+    public void saveRmsFilteringFlag(boolean enable) {
+        editor().putBoolean(RMS_FILTERING, enable).apply();
+    }
+
+    public boolean getTimeSeriesFilteringFlag() {
+        return getSharedPrefs().getBoolean(TIME_SERIES_FILTERING, false);
+    }
+
+    public void saveTimeSeriesFilteringFlag(boolean enable) {
+        editor().putBoolean(TIME_SERIES_FILTERING, enable).apply();
+    }
+
     private SharedPreferences.Editor editor() {
         return getSharedPrefs().edit();
     }
@@ -60,5 +78,6 @@ public class SharedPreferencesController {
     private SharedPreferences getSharedPrefs() {
         return context.getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE);
     }
+
 
 }

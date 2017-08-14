@@ -81,16 +81,31 @@
     <string name="dl_status_success">" - Success"</string>
     <string name="dl_status_failure">" - Failed with error code : "</string>
 
+    <!---->
     <!--Settings-->
+    <!---->
+    <!--Time series-->
+    <string name="signal_plot_settings">Time series settings</string>
     <string name="collected_samples_size">Plot limit [samples]:</string>
     <string name="real_time_plotting">Real time plotting:</string>
     <string name="real_time_plotting_explanation">(No real time plotting means collecting sample size of plot limit and plotting all at once after acquisition)</string>
     <string name="continuous_plotting">Continuous plotting:</string>
     <string name="continuous_plotting_explanation">(Requires real time plotting enabled. No continuous plotting means discarding oldest sample after reaching plot limit to plot new sample)</string>
-    <string name="signal_plot_settings">Signal plot settings</string>
+
+    <!--RMS-->
     <string name="rms_settings">RMS settings</string>
     <string name="rms_sample_size">Samples to calculate: </string>
     <string name="save_session">Save session</string>
+
+    <!--Filtering-->
+    <string name="filtering_settings">Filtering settings</string>
+    <string name="rms_filtering">Enable RMS filtering:</string>
+    <string name="time_series_filtering">Enable time series filtering:</string>
+    <string name="x_weights">X weights</string>
+    <string name="y_weights">Y weights</string>
+    <string name="z_weights">Z weights</string>
+
+
     <string name="clear_graph">Clear graph</string>
 
 </resources>

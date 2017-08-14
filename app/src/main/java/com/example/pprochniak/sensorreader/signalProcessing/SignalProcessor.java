@@ -8,6 +8,7 @@ import android.support.annotation.StringDef;
 import android.util.Log;
 
 import com.example.pprochniak.sensorreader.ble.BluetoothLeService;
+import com.example.pprochniak.sensorreader.settings.SharedPreferencesController;
 import com.example.pprochniak.sensorreader.signalProcessing.controllers.CharacteristicController;
 import com.example.pprochniak.sensorreader.signalProcessing.controllers.FilterController;
 import com.example.pprochniak.sensorreader.signalProcessing.controllers.LoggingController;
@@ -17,7 +18,9 @@ import com.example.pprochniak.sensorreader.signalProcessing.controllers.RmsPlotC
 import com.example.pprochniak.sensorreader.signalProcessing.controllers.TimeSeriesPlotController;
 import com.example.pprochniak.sensorreader.utils.Constants;
 
+import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.EBean;
+import org.androidannotations.annotations.RootContext;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -31,6 +34,7 @@ import java.util.Set;
 
 @EBean(scope = EBean.Scope.Singleton)
 public class SignalProcessor implements FilterController.FilterReceiver {
+    @RootContext Context context;
     private static final String TAG = "SignalProcessor";
 
     @Retention(RetentionPolicy.SOURCE)
@@ -47,6 +51,7 @@ public class SignalProcessor implements FilterController.FilterReceiver {
     private int baseColors[] = {Color.GREEN, Color.BLUE, Color.RED, Color.CYAN, Color.MAGENTA};
 
     private List<String> devices = new ArrayList<>();
+    private SharedPreferencesController sharedPreferencesController;
 
     private TimeSeriesPlotController timeSeriesPlotController;
     private RmsPlotController rmsPlotController;
@@ -57,6 +62,11 @@ public class SignalProcessor implements FilterController.FilterReceiver {
 
     private List<CharacteristicController> activePlotControllers = new ArrayList<>();
 
+    @AfterInject
+    public void afterInject() {
+        sharedPreferencesController = new SharedPreferencesController(context);
+    }
+
     public void attachGraphsFragment(TimeSeriesFragment fragment) {
         Log.d(TAG, "attachGraphsFragment");
         timeSeriesPlotController = new TimeSeriesPlotController(fragment.graphView);
@@ -65,6 +75,7 @@ public class SignalProcessor implements FilterController.FilterReceiver {
         activePlotControllers.add(timeSeriesPlotController);
         activePlotControllers.add(speedController);
         activePlotControllers.add(loggingController);
+        if (sharedPreferencesController.getTimeSeriesFilteringFlag()) initializeFilter(context);
         initPlotsForDevices();
     }
 
@@ -75,7 +86,7 @@ public class SignalProcessor implements FilterController.FilterReceiver {
         activePlotControllers.add(rmsPlotController);
         activePlotControllers.add(peakAmplitudeController);
         activePlotControllers.add(loggingController);
-        initializeFilter(fragment.getContext());
+        if (sharedPreferencesController.getRmsFilteringFlag()) initializeFilter(fragment.getContext());
         initPlotsForDevices();
     }
 
