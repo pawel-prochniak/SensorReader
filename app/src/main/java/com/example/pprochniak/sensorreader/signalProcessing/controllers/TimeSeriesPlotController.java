@@ -1,4 +1,4 @@
-package com.example.pprochniak.sensorreader.services;
+package com.example.pprochniak.sensorreader.signalProcessing.controllers;
 
 import android.util.Log;
 
@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import static com.example.pprochniak.sensorreader.services.SignalProcessor.*;
+import static com.example.pprochniak.sensorreader.signalProcessing.SignalProcessor.*;
 
 
 /**

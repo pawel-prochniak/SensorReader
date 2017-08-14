@@ -57,7 +57,6 @@ import com.example.pprochniak.sensorreader.profileParsers.DescriptorParser;
 import com.example.pprochniak.sensorreader.profileParsers.SensorHubParser;
 import com.example.pprochniak.sensorreader.utils.Constants;
 import com.example.pprochniak.sensorreader.utils.GattAttributes;
-import com.example.pprochniak.sensorreader.utils.Logger;
 import com.example.pprochniak.sensorreader.utils.UUIDDatabase;
 import com.example.pprochniak.sensorreader.utils.Utils;
 
@@ -68,8 +67,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.Timer;
 import java.util.UUID;
-
-import static com.example.pprochniak.sensorreader.utils.Constants.DEVICE_ADDRESS;
 
 /**
  * Service for managing connection and data communication with a GATT server

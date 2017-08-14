@@ -1,4 +1,6 @@
-package com.example.pprochniak.sensorreader.services;
+package com.example.pprochniak.sensorreader.signalProcessing.controllers;
+
+import com.example.pprochniak.sensorreader.signalProcessing.SignalProcessor;
 
 /**
  * Created by Henny on 2017-07-23.

@@ -26,11 +26,11 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.pprochniak.sensorreader.GATT.GattController;
-import com.example.pprochniak.sensorreader.services.TimeSeriesFragment;
-import com.example.pprochniak.sensorreader.services.TimeSeriesFragment_;
+import com.example.pprochniak.sensorreader.signalProcessing.TimeSeriesFragment;
+import com.example.pprochniak.sensorreader.signalProcessing.TimeSeriesFragment_;
 import com.example.pprochniak.sensorreader.R;
 import com.example.pprochniak.sensorreader.ble.BluetoothLeService;
-import com.example.pprochniak.sensorreader.services.SignalProcessor;
+import com.example.pprochniak.sensorreader.signalProcessing.SignalProcessor;
 import com.example.pprochniak.sensorreader.utils.Constants;
 import com.example.pprochniak.sensorreader.utils.Utils;
 

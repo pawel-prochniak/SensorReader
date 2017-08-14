@@ -1,9 +1,11 @@
-package com.example.pprochniak.sensorreader.services;
+package com.example.pprochniak.sensorreader.signalProcessing.controllers;
 
 import android.util.Log;
 import android.widget.LinearLayout;
 
 import com.example.pprochniak.sensorreader.calculation.PeakAmplitude;
+import com.example.pprochniak.sensorreader.signalProcessing.PeakAmplitudeView;
+import com.example.pprochniak.sensorreader.signalProcessing.SignalProcessor;
 
 import java.util.HashMap;
 

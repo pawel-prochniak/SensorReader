@@ -1,12 +1,9 @@
 package com.example.pprochniak.sensorreader;
 
 import android.Manifest;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.os.Build;
@@ -20,7 +17,8 @@ import android.widget.Toast;
 
 import com.example.pprochniak.sensorreader.ble.BluetoothLeService;
 import com.example.pprochniak.sensorreader.deviceDiscovery.DevicesFragment;
-import com.example.pprochniak.sensorreader.services.SignalProcessor;
+import com.example.pprochniak.sensorreader.calculation.FRF;
+import com.example.pprochniak.sensorreader.signalProcessing.SignalProcessor;
 import com.example.pprochniak.sensorreader.utils.Constants;
 import com.example.pprochniak.sensorreader.utils.DrawerController;
 import com.example.pprochniak.sensorreader.utils.Utils;
@@ -59,7 +57,6 @@ public class MainActivity extends AppCompatActivity {
 
         checkPermissions();
     }
-
 
     @Override
     protected void onResume() {

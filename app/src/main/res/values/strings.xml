@@ -54,14 +54,11 @@
     <string name="exchange_mtu_request">"[%1$s] %2$s request, MTU: %3$d, Status: %4$d"</string>
     <string name="exchange_mtu_rsp">"[%1$s] %2$s request completed, MTU: %3$d, Status: %4$d"</string>
 
-    <!---->
-    <!--Logger-->
-    <!---->
-
     <!--Data Logger file-->
     <string name="dl_directory">SensorReader</string>
     <string name="dl_file_extension">.txt</string>
     <string name="dl_commaseparator">" , "</string>
+    <string name="weights_filename">weights</string>
 
     <!--Connection logs-->
     <string name="dl_connection_request"> Connection request sent </string>

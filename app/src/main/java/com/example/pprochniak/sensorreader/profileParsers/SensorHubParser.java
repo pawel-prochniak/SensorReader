@@ -32,9 +32,6 @@
 package com.example.pprochniak.sensorreader.profileParsers;
 
 import android.bluetooth.BluetoothGattCharacteristic;
-import android.util.Log;
-
-import com.example.pprochniak.sensorreader.utils.Logger;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

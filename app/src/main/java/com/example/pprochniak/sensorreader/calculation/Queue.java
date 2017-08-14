@@ -36,11 +36,11 @@ public class Queue {
     public void insert(float c) {
         if (isFull()) {
             delete();
-        } else {
-            qs++;
-            rp = (rp + 1)%qMaxSize;
-            q[rp] = c;
         }
+        qs++;
+        rp = (rp + 1) % qMaxSize;
+        q[rp] = c;
+
     }
 
     public boolean isEmpty() {
@@ -53,5 +53,15 @@ public class Queue {
 
     public float[] getAll() {
         return Arrays.copyOf(q, qs);
+    }
+
+    public float[] getAllSorted() {
+        float[] output = new float[qs];
+        for (int i = 0; i < qs; i++) {
+            int qId = fp - i;
+            if (qId < 0) qId = qMaxSize + qId;
+            output[i] = q[qId];
+        }
+        return output;
     }
 }

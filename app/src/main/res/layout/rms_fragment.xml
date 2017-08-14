@@ -9,21 +9,21 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <com.example.pprochniak.sensorreader.services.SingleBarGraph
+        <com.example.pprochniak.sensorreader.signalProcessing.SingleBarGraph
             android:id="@+id/x_bar_graph"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="160dp"
             android:orientation="vertical"/>
 
-        <com.example.pprochniak.sensorreader.services.SingleBarGraph
+        <com.example.pprochniak.sensorreader.signalProcessing.SingleBarGraph
             android:id="@+id/y_bar_graph"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="160dp"
             android:orientation="vertical"/>
 
-        <com.example.pprochniak.sensorreader.services.SingleBarGraph
+        <com.example.pprochniak.sensorreader.signalProcessing.SingleBarGraph
             android:id="@+id/z_bar_graph"
             android:layout_weight="1"
             android:layout_width="0dp"

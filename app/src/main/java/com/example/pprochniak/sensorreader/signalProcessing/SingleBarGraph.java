@@ -1,9 +1,8 @@
-package com.example.pprochniak.sensorreader.services;
+package com.example.pprochniak.sensorreader.signalProcessing;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.StringBuilderPrinter;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 import android.widget.TextView;

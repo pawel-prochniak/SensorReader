@@ -3,60 +3,73 @@ package com.example.pprochniak.sensorreader.utils;
 import android.content.Context;
 import android.media.MediaScannerConnection;
 import android.os.Environment;
+import android.support.v4.content.res.TypedArrayUtils;
 import android.util.Log;
+import android.util.StringBuilderPrinter;
 
 import com.example.pprochniak.sensorreader.R;
-import com.example.pprochniak.sensorreader.calculation.PeakAmplitude;
+import com.example.pprochniak.sensorreader.signalProcessing.SignalProcessor;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Observable;
 
 /**
  * Created by Henny on 2017-03-27.
  */
 
-/**
- * This is a custom log class that will manage logs in the project. Using the
- * <b>disableLog()</b> all the logs can be disabled in the project during the
- * production stage <b> enableLog()</b> will allow to enable the logs , by
- * default the logs will be visible.<br>
- * *
- */
-public class Logger {
-    private static final String TAG = "Logger";
-    private static boolean mLogflag = true;
+public class FileIO {
+    private static final String TAG = "FileIO";
     private static File mDataLoggerDirectory;
     private static File mDataLoggerFile;
     private static File mDataLoggerOldFile;
-    private static Context mContext;
 
-    public static void datalog(String message) {
-        // show(Log.INFO, mLogTag, message);
-        // saveLogData(message);
+    private static String baseDirectory = Environment.getExternalStorageDirectory()
+            + File.separator;
 
-    }
+    public static double[] getWeightsFromFile(Context context, @SignalProcessor.AXIS String axis) throws FileNotFoundException, ClassCastException {
+        File weightsFile = getWeightsFile(context, axis);
 
-    public static boolean enableLog() {
-        mLogflag = true;
-        return mLogflag;
-    }
+        if (weightsFile == null || !weightsFile.exists()) {
+            Log.d(TAG, "getWeightsFromFile: no weighs file exists");
+            throw new FileNotFoundException();
+        }
 
-    public static boolean disableLog() {
-        mLogflag = false;
-        return mLogflag;
+        InputStreamReader reader = new InputStreamReader(new FileInputStream(weightsFile));
+        BufferedReader br = new BufferedReader(reader);
+        ArrayList<Double> doublesRead = new ArrayList<>();
+        try {
+            String line;
+            while ((line = br.readLine()) != null) {
+                doublesRead.add(Double.valueOf(line));
+            }
+            br.close();
+        } catch (IOException e) {
+            Log.e(TAG, "getWeightsFromFile: ", e);
+            return null;
+        }
+        Log.d(TAG, "getWeightsFromFile: found weights for axis: "+axis);
+        Double[] weights = new Double[doublesRead.size()];
+        doublesRead.toArray(weights);
+        return castDoubleObjectsToPrimitives(weights);
     }
 
     public static File createSignalLogFile(Context context, String deviceAddress) {
-        mContext = context;
         File file = null;
         File directory;
         try {
-            directory = new File(Environment.getExternalStorageDirectory()
-                    + File.separator
-                    + context.getResources().getString(R.string.dl_directory));
+            directory = new File(getAppDirectory(context));
 
             if (!directory.exists()) {
                 if (!directory.mkdirs()) {
@@ -64,7 +77,7 @@ public class Logger {
                 }
             }
 
-            String filename = getFilename(deviceAddress);
+            String filename = getSignalLogFilename(deviceAddress);
 
             file = new File(directory.getAbsoluteFile() + File.separator
                     + filename + context.getResources().getString(R.string.dl_file_extension));
@@ -83,7 +96,7 @@ public class Logger {
         return file;
     }
 
-    public static String getFilename(String deviceAddress) {
+    public static String getSignalLogFilename(String deviceAddress) {
         String formattedDeviceAddress = deviceAddress.replace(":","-");
         String timestamp = Utils.GetDate();
         StringBuilder filenameBuilder = new StringBuilder();
@@ -91,6 +104,21 @@ public class Logger {
         filenameBuilder.append("_");
         filenameBuilder.append(formattedDeviceAddress);
         return filenameBuilder.toString();
+    }
+
+    public static File getWeightsFile(Context context, @SignalProcessor.AXIS String axis) {
+        File directory = new File(getAppDirectory(context));
+        if (!directory.exists()) {
+            if (!directory.mkdirs()) {
+                Log.e(TAG, "createDataLoggerFile: failed mkdirs");
+                return null;
+            }
+        }
+        File weightsFile = new File(directory.getAbsolutePath() + File.separator
+                + context.getResources().getString(R.string.weights_filename)
+                + axis
+                + context.getResources().getString(R.string.dl_file_extension));
+        return weightsFile;
     }
 
     public static void saveMessageToFile (Context context, File file, String message) {
@@ -112,15 +140,25 @@ public class Logger {
         }
     }
 
+    private static double[] castDoubleObjectsToPrimitives(Double[] doubleObjects) throws ClassCastException {
+        double[] primitives = new double[doubleObjects.length];
+        Double obj;
+        for (int i = 0; i < doubleObjects.length; i++) {
+            obj = doubleObjects[i];
+            if (obj == null) throw new ClassCastException();
+            else {
+                primitives[i] = obj;
+            }
+        }
+        return primitives;
+    }
+
     public static void createDataLoggerFile(Context context) {
-        mContext = context;
         try {
             /**
              * Directory
              */
-            mDataLoggerDirectory = new File(Environment.getExternalStorageDirectory() +
-                    File.separator
-                    + context.getResources().getString(R.string.dl_directory));
+            mDataLoggerDirectory = new File(getAppDirectory(context));
             if (!mDataLoggerDirectory.exists()) {
                 if (!mDataLoggerDirectory.mkdirs()) {
                     Log.e(TAG, "createDataLoggerFile: failed");
@@ -142,7 +180,7 @@ public class Logger {
 
     }
 
-    public static void deleteOLDFiles() {
+    public static void deleteOLDFiles(Context context) {
         /**
          * Delete old file
          */
@@ -159,16 +197,16 @@ public class Logger {
         }
         mDataLoggerOldFile = new File(mDataLoggerDirectory.getAbsoluteFile() + File.separator
                 + Utils.GetDateSevenDaysBack() +
-                mContext.getResources().getString(R.string.dl_file_extension));
+                context.getResources().getString(R.string.dl_file_extension));
         if (mDataLoggerOldFile.exists()) {
             mDataLoggerOldFile.delete();
         }
 
     }
 
-    private static void saveLogData(String message) {
+    private static void saveLogData(Context context, String message) {
         mDataLoggerFile = new File(mDataLoggerDirectory.getAbsoluteFile() + File.separator
-                + Utils.GetDate() + mContext.getResources().getString(R.string.dl_file_extension));
+                + Utils.GetDate() + context.getResources().getString(R.string.dl_file_extension));
         if (!mDataLoggerFile.exists()) {
             try {
                 mDataLoggerFile.createNewFile();
@@ -193,5 +231,9 @@ public class Logger {
             e.printStackTrace();
         }
 
+    }
+
+    private static String getAppDirectory(Context context) {
+        return baseDirectory + context.getResources().getString(R.string.dl_directory);
     }
 }

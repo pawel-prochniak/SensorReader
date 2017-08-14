@@ -9,11 +9,11 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.example.pprochniak.sensorreader.services.TimeSeriesFragment_;
+import com.example.pprochniak.sensorreader.signalProcessing.TimeSeriesFragment_;
 import com.example.pprochniak.sensorreader.MainActivity;
 import com.example.pprochniak.sensorreader.R;
 import com.example.pprochniak.sensorreader.deviceDiscovery.DevicesFragment_;
-import com.example.pprochniak.sensorreader.services.RmsFragment_;
+import com.example.pprochniak.sensorreader.signalProcessing.RmsFragment_;
 import com.example.pprochniak.sensorreader.settings.SettingsFragment_;
 
 import org.androidannotations.annotations.EBean;

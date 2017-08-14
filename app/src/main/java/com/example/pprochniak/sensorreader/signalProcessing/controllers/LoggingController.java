@@ -1,9 +1,10 @@
-package com.example.pprochniak.sensorreader.services;
+package com.example.pprochniak.sensorreader.signalProcessing.controllers;
 
 import android.content.Context;
 import android.util.Log;
 
-import com.example.pprochniak.sensorreader.utils.Logger;
+import com.example.pprochniak.sensorreader.signalProcessing.SignalProcessor;
+import com.example.pprochniak.sensorreader.utils.FileIO;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -42,7 +43,7 @@ public class LoggingController implements CharacteristicController {
         for (String deviceAddress : devices) {
             File file = deviceToFileMap.get(deviceAddress);
             String log = getLogMessage(deviceAddress);
-            Logger.saveMessageToFile(context, file, log);
+            FileIO.saveMessageToFile(context, file, log);
             createFileMapForDevice(deviceAddress);
         }
 
@@ -92,7 +93,7 @@ public class LoggingController implements CharacteristicController {
     }
 
     private void createFileMapForDevice(String deviceAddress) {
-        File deviceLogFile = Logger.createSignalLogFile(context, deviceAddress);
+        File deviceLogFile = FileIO.createSignalLogFile(context, deviceAddress);
         deviceToFileMap.put(deviceAddress, deviceLogFile);
     }
 }

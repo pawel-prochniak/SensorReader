@@ -1,11 +1,12 @@
-package com.example.pprochniak.sensorreader.services;
+package com.example.pprochniak.sensorreader.signalProcessing.controllers;
 
 import android.content.Context;
 import android.widget.TextView;
 
 import com.example.pprochniak.sensorreader.settings.SharedPreferencesController;
+import com.example.pprochniak.sensorreader.signalProcessing.SignalProcessor;
 
-import static com.example.pprochniak.sensorreader.services.SignalProcessor.X;
+import static com.example.pprochniak.sensorreader.signalProcessing.SignalProcessor.X;
 
 /**
  * Created by Henny on 2017-07-23.

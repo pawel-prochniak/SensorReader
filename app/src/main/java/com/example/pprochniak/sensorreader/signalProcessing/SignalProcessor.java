@@ -1,5 +1,6 @@
-package com.example.pprochniak.sensorreader.services;
+package com.example.pprochniak.sensorreader.signalProcessing;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -7,6 +8,13 @@ import android.support.annotation.StringDef;
 import android.util.Log;
 
 import com.example.pprochniak.sensorreader.ble.BluetoothLeService;
+import com.example.pprochniak.sensorreader.signalProcessing.controllers.CharacteristicController;
+import com.example.pprochniak.sensorreader.signalProcessing.controllers.FilterController;
+import com.example.pprochniak.sensorreader.signalProcessing.controllers.LoggingController;
+import com.example.pprochniak.sensorreader.signalProcessing.controllers.PeakAmplitudeController;
+import com.example.pprochniak.sensorreader.signalProcessing.controllers.ReceivingSpeedController;
+import com.example.pprochniak.sensorreader.signalProcessing.controllers.RmsPlotController;
+import com.example.pprochniak.sensorreader.signalProcessing.controllers.TimeSeriesPlotController;
 import com.example.pprochniak.sensorreader.utils.Constants;
 
 import org.androidannotations.annotations.EBean;
@@ -22,17 +30,17 @@ import java.util.Set;
  */
 
 @EBean(scope = EBean.Scope.Singleton)
-public class SignalProcessor {
+public class SignalProcessor implements FilterController.FilterReceiver {
     private static final String TAG = "SignalProcessor";
 
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({X, Y, Z})
-    public @interface AXIS {
-    }
-
+    public @interface AXIS {}
     public static final String X = "X";
     public static final String Y = "Y";
     public static final String Z = "Z";
+
+    private boolean filteringOn;
 
     private static final long CONNECTION_DELAY_PERIOD = 100;
 
@@ -45,6 +53,7 @@ public class SignalProcessor {
     private ReceivingSpeedController speedController;
     private PeakAmplitudeController peakAmplitudeController;
     private LoggingController loggingController;
+    private FilterController filterController;
 
     private List<CharacteristicController> activePlotControllers = new ArrayList<>();
 
@@ -66,6 +75,7 @@ public class SignalProcessor {
         activePlotControllers.add(rmsPlotController);
         activePlotControllers.add(peakAmplitudeController);
         activePlotControllers.add(loggingController);
+        initializeFilter(fragment.getContext());
         initPlotsForDevices();
     }
 
@@ -88,7 +98,6 @@ public class SignalProcessor {
         }
     }
 
-
     public void receiveValueAndAppendPoint(Bundle extras) {
         float receivedValue;
         String deviceAddress = extras.getString(Constants.DEVICE_ADDRESS);
@@ -108,22 +117,37 @@ public class SignalProcessor {
             return;
         }
 
-        addValueToAllActivePlots(deviceAddress, receivedValue, axis);
+        if (filteringOn) {
+            filterController.addValue(deviceAddress, receivedValue, axis);
+        } else {
+            addValueToAllActivePlots(deviceAddress, receivedValue, axis);
+        }
+    }
+
+    @Override
+    public void receiveFilterValue(String deviceAddress, float val, @AXIS String axis) {
+        addValueToAllActivePlots(deviceAddress, val, axis);
     }
 
     public void addDevice(String deviceAddress) {
         devices.add(deviceAddress);
     }
 
+    private void initializeFilter(Context context) {
+        filterController = new FilterController(context, this);
+        filteringOn = true;
+    }
+
     private void initPlotsForDevices() {
         for (String address : devices) {
             int baseColor = baseColors[devices.size() % baseColors.length];
             int[] graphColors = getAnalogousColors(baseColor);
-            addDeviceToAllActivePlots(address, graphColors);
+            addDeviceToControllers(address, graphColors);
         }
     }
 
-    private void addDeviceToAllActivePlots(String deviceAddress, int[] graphColors) {
+    private void addDeviceToControllers(String deviceAddress, int[] graphColors) {
+        if (filteringOn) filterController.addDevice(deviceAddress, graphColors);
         for (CharacteristicController controller : activePlotControllers) {
             controller.addDevice(deviceAddress, graphColors);
         }

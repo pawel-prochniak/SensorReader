@@ -1,9 +1,10 @@
-package com.example.pprochniak.sensorreader.services;
+package com.example.pprochniak.sensorreader.signalProcessing.controllers;
 
 import android.util.Log;
 
 import com.example.pprochniak.sensorreader.calculation.RootMeanSquare;
 import com.example.pprochniak.sensorreader.settings.SharedPreferencesController;
+import com.example.pprochniak.sensorreader.signalProcessing.SingleBarGraph;
 
 import java.util.HashMap;
 
@@ -11,7 +12,7 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-import static com.example.pprochniak.sensorreader.services.SignalProcessor.*;
+import static com.example.pprochniak.sensorreader.signalProcessing.SignalProcessor.*;
 
 /**
  * Created by Henny on 2017-07-22.
@@ -52,7 +53,7 @@ public class RmsPlotController implements CharacteristicController {
     }
 
     @Override
-    public void addValue(String deviceAddress, float val, @SignalProcessor.AXIS String axis) {
+    public void addValue(String deviceAddress, float val, @AXIS String axis) {
         HashMap<String, RootMeanSquare> axisToRmsMap;
         RootMeanSquare rms;
         if (deviceRmsMap.containsKey(deviceAddress)) axisToRmsMap = deviceRmsMap.get(deviceAddress);

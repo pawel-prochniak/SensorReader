@@ -1,4 +1,4 @@
-package com.example.pprochniak.sensorreader.services;
+package com.example.pprochniak.sensorreader.signalProcessing;
 
 import android.content.Context;
 import android.support.annotation.Nullable;

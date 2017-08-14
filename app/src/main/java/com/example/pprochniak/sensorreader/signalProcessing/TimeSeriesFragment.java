@@ -1,4 +1,4 @@
-package com.example.pprochniak.sensorreader.services;
+package com.example.pprochniak.sensorreader.signalProcessing;
 
 import android.support.v4.app.Fragment;
 import android.util.Log;
