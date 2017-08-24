@@ -17,7 +17,6 @@ import android.widget.Toast;
 
 import com.example.pprochniak.sensorreader.ble.BluetoothLeService;
 import com.example.pprochniak.sensorreader.deviceDiscovery.DevicesFragment;
-import com.example.pprochniak.sensorreader.calculation.FRF;
 import com.example.pprochniak.sensorreader.signalProcessing.SignalProcessor;
 import com.example.pprochniak.sensorreader.utils.Constants;
 import com.example.pprochniak.sensorreader.utils.DrawerController;

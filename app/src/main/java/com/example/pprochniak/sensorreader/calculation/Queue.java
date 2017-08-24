@@ -52,10 +52,6 @@ public class Queue {
     }
 
     public float[] getAll() {
-        return Arrays.copyOf(q, qs);
-    }
-
-    public float[] getAllSorted() {
         float[] output = new float[qs];
         for (int i = 0; i < qs; i++) {
             int qId = fp - i;

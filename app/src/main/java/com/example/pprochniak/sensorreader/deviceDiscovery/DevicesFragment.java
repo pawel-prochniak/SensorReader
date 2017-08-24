@@ -64,7 +64,7 @@ public class DevicesFragment extends Fragment {
     // Scanning properties
     //
 
-    private static final long SCAN_PERIOD_TIMEOUT = 5000;
+    private static final long SCAN_PERIOD_TIMEOUT = 10000;
     private Timer mScanTimer;
     private boolean mScanning;
 
@@ -401,7 +401,7 @@ public class DevicesFragment extends Fragment {
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
-                            if (deviceListAdapter.deviceList.size() == 1) {
+                            if (deviceListAdapter.deviceList.size() > 0) {
                                 startScanTimer();
                             }
                         }

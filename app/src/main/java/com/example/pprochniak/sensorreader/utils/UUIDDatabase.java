@@ -71,58 +71,6 @@ public class UUIDDatabase {
     public static final UUID UUID_IEEE = UUID
             .fromString(GattAttributes.IEEE);
 
-    /**
-     * Battery Level related uuid
-     */
-    public final static UUID UUID_BATTERY_SERVICE = UUID
-            .fromString(GattAttributes.BATTERY_SERVICE);
-    public final static UUID UUID_BATTERY_LEVEL = UUID
-            .fromString(GattAttributes.BATTERY_LEVEL);
-
-    /**
-     * Find me related uuid
-     */
-    public final static UUID UUID_IMMEDIATE_ALERT_SERVICE = UUID
-            .fromString(GattAttributes.IMMEDIATE_ALERT_SERVICE);
-    public final static UUID UUID_TRANSMISSION_POWER_SERVICE = UUID
-            .fromString(GattAttributes.TRANSMISSION_POWER_SERVICE);
-    public final static UUID UUID_ALERT_LEVEL = UUID
-            .fromString(GattAttributes.ALERT_LEVEL);
-    public final static UUID UUID_TRANSMISSION_POWER_LEVEL = UUID
-            .fromString(GattAttributes.TRANSMISSION_POWER_LEVEL);
-    public final static UUID UUID_LINK_LOSS_SERVICE = UUID
-            .fromString(GattAttributes.LINK_LOSS_SERVICE);
-
-    /**
-     * CapSense related uuid
-     */
-    public final static UUID UUID_CAPSENSE_SERVICE = UUID
-            .fromString(GattAttributes.CAPSENSE_SERVICE);
-    public final static UUID UUID_CAPSENSE_SERVICE_CUSTOM = UUID
-            .fromString(GattAttributes.CAPSENSE_SERVICE_CUSTOM);
-    public final static UUID UUID_CAPSENSE_PROXIMITY = UUID
-            .fromString(GattAttributes.CAPSENSE_PROXIMITY);
-    public final static UUID UUID_CAPSENSE_SLIDER = UUID
-            .fromString(GattAttributes.CAPSENSE_SLIDER);
-    public final static UUID UUID_CAPSENSE_BUTTONS = UUID
-            .fromString(GattAttributes.CAPSENSE_BUTTONS);
-    public final static UUID UUID_CAPSENSE_PROXIMITY_CUSTOM = UUID
-            .fromString(GattAttributes.CAPSENSE_PROXIMITY_CUSTOM);
-    public final static UUID UUID_CAPSENSE_SLIDER_CUSTOM = UUID
-            .fromString(GattAttributes.CAPSENSE_SLIDER_CUSTOM);
-    public final static UUID UUID_CAPSENSE_BUTTONS_CUSTOM = UUID
-            .fromString(GattAttributes.CAPSENSE_BUTTONS_CUSTOM);
-    /**
-     * RGB LED related uuid
-     */
-    public final static UUID UUID_RGB_LED_SERVICE = UUID
-            .fromString(GattAttributes.RGB_LED_SERVICE);
-    public final static UUID UUID_RGB_LED = UUID
-            .fromString(GattAttributes.RGB_LED);
-    public final static UUID UUID_RGB_LED_SERVICE_CUSTOM = UUID
-            .fromString(GattAttributes.RGB_LED_SERVICE_CUSTOM);
-    public final static UUID UUID_RGB_LED_CUSTOM = UUID
-            .fromString(GattAttributes.RGB_LED_CUSTOM);
 
     /**
      * Accelerometer related uuid
@@ -135,33 +83,6 @@ public class UUIDDatabase {
             .fromString(GattAttributes.ACCELEROMETER_DATA_ACCUMULATION);
     public final static UUID UUID_ACCELEROMETER_SENSOR_SCAN_INTERVAL = UUID
             .fromString(GattAttributes.ACCELEROMETER_SENSOR_SCAN_INTERVAL);
-    /**
-     * Analog temperature  related uuid
-     */
-    public final static UUID UUID_ANALOG_TEMPERATURE_SERVICE = UUID
-            .fromString(GattAttributes.ANALOG_TEMPERATURE_SERVICE);
-    public final static UUID UUID_TEMPERATURE_ANALOG_SENSOR = UUID
-            .fromString(GattAttributes.TEMPERATURE_ANALOG_SENSOR);
-    public final static UUID UUID_TEMPERATURE_READING = UUID
-            .fromString(GattAttributes.TEMPERATURE_READING);
-    public final static UUID UUID_TEMPERATURE_SENSOR_SCAN_INTERVAL = UUID
-            .fromString(GattAttributes.TEMPERATURE_SENSOR_SCAN_INTERVAL);
-
-    /**
-     * Descriptor UUID
-     */
-    public final static UUID UUID_CLIENT_CHARACTERISTIC_CONFIG = UUID
-            .fromString(GattAttributes.CLIENT_CHARACTERISTIC_CONFIG);
-    public final static UUID UUID_CHARACTERISTIC_EXTENDED_PROPERTIES = UUID
-            .fromString(GattAttributes.CHARACTERISTIC_EXTENDED_PROPERTIES);
-    public final static UUID UUID_CHARACTERISTIC_USER_DESCRIPTION = UUID
-            .fromString(GattAttributes.CHARACTERISTIC_USER_DESCRIPTION);
-    public final static UUID UUID_SERVER_CHARACTERISTIC_CONFIGURATION = UUID
-            .fromString(GattAttributes.SERVER_CHARACTERISTIC_CONFIGURATION);
-    public final static UUID UUID_REPORT_REFERENCE = UUID
-            .fromString(GattAttributes.REPORT_REFERENCE);
-    public final static UUID UUID_CHARACTERISTIC_PRESENTATION_FORMAT = UUID
-            .fromString(GattAttributes.CHARACTERISTIC_PRESENTATION_FORMAT);
 
     /**
      * GATT related UUID
@@ -171,19 +92,5 @@ public class UUIDDatabase {
     public final static UUID UUID_GENERIC_ATTRIBUTE_SERVICE = UUID
             .fromString(GattAttributes.GENERIC_ATTRIBUTE_SERVICE);
 
-
-    // Descriptors UUID's
-    public final static UUID UUID_CHARACTERISTIC_AGGREGATE_FORMAT = UUID
-            .fromString(GattAttributes.CHARACTERISTIC_AGGREGATE_FORMAT);
-    public final static UUID UUID_VALID_RANGE = UUID
-            .fromString(GattAttributes.VALID_RANGE);
-    public final static UUID UUID_EXTERNAL_REPORT_REFERENCE = UUID
-            .fromString(GattAttributes.EXTERNAL_REPORT_REFERENCE);
-    public final static UUID UUID_ENVIRONMENTAL_SENSING_CONFIGURATION = UUID
-            .fromString(GattAttributes.ENVIRONMENTAL_SENSING_CONFIGURATION);
-    public final static UUID UUID_ENVIRONMENTAL_SENSING_MEASUREMENT = UUID
-            .fromString(GattAttributes.ENVIRONMENTAL_SENSING_MEASUREMENT);
-    public final static UUID UUID_ENVIRONMENTAL_SENSING_TRIGGER_SETTING = UUID
-            .fromString(GattAttributes.ENVIRONMENTAL_SENSING_TRIGGER_SETTING);
 
 }

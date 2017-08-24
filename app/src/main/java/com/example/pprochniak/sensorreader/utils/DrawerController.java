@@ -13,7 +13,7 @@ import com.example.pprochniak.sensorreader.signalProcessing.TimeSeriesFragment_;
 import com.example.pprochniak.sensorreader.MainActivity;
 import com.example.pprochniak.sensorreader.R;
 import com.example.pprochniak.sensorreader.deviceDiscovery.DevicesFragment_;
-import com.example.pprochniak.sensorreader.signalProcessing.RmsFragment_;
+import com.example.pprochniak.sensorreader.signalProcessing.StatisticsFragment_;
 import com.example.pprochniak.sensorreader.settings.SettingsFragment_;
 
 import org.androidannotations.annotations.EBean;
@@ -93,7 +93,7 @@ public class DrawerController implements ListView.OnItemClickListener {
                 fragment = new SettingsFragment_();
                 break;
             case CHARACTERISTICS_FRAGMENT:
-                fragment = new RmsFragment_();
+                fragment = new StatisticsFragment_();
                 break;
             case DEVICES_FRAGMENT:
             default:

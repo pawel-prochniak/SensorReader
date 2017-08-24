@@ -79,7 +79,7 @@ public class SignalProcessor implements FilterController.FilterReceiver {
         initPlotsForDevices();
     }
 
-    public void attachRmsFragment(RmsFragment fragment) {
+    public void attachRmsFragment(StatisticsFragment fragment) {
         rmsPlotController = new RmsPlotController(fragment.xSingleBarGraph, fragment.ySingleBarGraph, fragment.zSingleBarGraph);
         peakAmplitudeController = new PeakAmplitudeController(fragment.peakToPeakLayout);
         loggingController = new LoggingController(fragment.getContext().getApplicationContext());

@@ -3,7 +3,7 @@ package com.example.pprochniak.sensorreader.signalProcessing.controllers;
 import android.content.Context;
 import android.util.Log;
 
-import com.example.pprochniak.sensorreader.calculation.FRF;
+import com.example.pprochniak.sensorreader.calculation.FIR;
 import com.example.pprochniak.sensorreader.signalProcessing.SignalProcessor;
 import com.example.pprochniak.sensorreader.utils.FileIO;
 
@@ -16,7 +16,7 @@ import java.util.HashMap;
 
 public class FilterController implements CharacteristicController {
     private static final String TAG = "FilterController";
-    private HashMap<String, HashMap<String, FRF>> deviceMap = new HashMap<>();
+    private HashMap<String, HashMap<String, FIR>> deviceMap = new HashMap<>();
 
     private FilterReceiver receiver;
     private double[] weights_x, weights_y, weights_z;
@@ -35,14 +35,14 @@ public class FilterController implements CharacteristicController {
 
     @Override
     public void addValue(String deviceAddress, float val, @SignalProcessor.AXIS String axis) {
-        HashMap<String, FRF> axisToFilter = deviceMap.get(deviceAddress);
+        HashMap<String, FIR> axisToFilter = deviceMap.get(deviceAddress);
 
         if (axisToFilter == null) {
             Log.e(TAG, "addValue: no axis to filter map found");
             return;
         }
 
-        FRF filter = axisToFilter.get(axis);
+        FIR filter = axisToFilter.get(axis);
         if (filter == null) {
             Log.e(TAG, "addValue: no filter for axis found");
             return;
@@ -50,11 +50,11 @@ public class FilterController implements CharacteristicController {
         receiver.receiveFilterValue(deviceAddress, filter.putAndCalculate(val), axis);
     }
 
-    private HashMap<String, FRF> getAxisToFRFMap() {
-        HashMap<String, FRF> axisToFRF = new HashMap<>();
-        axisToFRF.put(SignalProcessor.X, new FRF(weights_x));
-        axisToFRF.put(SignalProcessor.Y, new FRF(weights_y));
-        axisToFRF.put(SignalProcessor.Z, new FRF(weights_z));
+    private HashMap<String, FIR> getAxisToFRFMap() {
+        HashMap<String, FIR> axisToFRF = new HashMap<>();
+        axisToFRF.put(SignalProcessor.X, new FIR(weights_x));
+        axisToFRF.put(SignalProcessor.Y, new FIR(weights_y));
+        axisToFRF.put(SignalProcessor.Z, new FIR(weights_z));
         return axisToFRF;
     }
 

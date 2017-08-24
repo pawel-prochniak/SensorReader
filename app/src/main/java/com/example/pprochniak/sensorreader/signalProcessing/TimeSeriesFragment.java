@@ -1,7 +1,12 @@
 package com.example.pprochniak.sensorreader.signalProcessing;
 
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -11,6 +16,7 @@ import com.jjoe64.graphview.GraphView;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
+import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.ViewById;
 
@@ -31,14 +37,15 @@ public class TimeSeriesFragment extends Fragment {
     @ViewById(R.id.services_not_found) TextView servicesNotFound;
     @ViewById(R.id.graph) GraphView graphView;
     @ViewById(R.id.receiving_speed) TextView receivingSpeedView;
-    @ViewById(R.id.save_log_button) Button saveLogsButton;
-    @ViewById(R.id.clear_graph_button) Button clearGraphButton;
 
+    @Click(R.id.save_log_button)
+    void saveLogClicked() {
+        signalProcessor.saveLogs();
+    }
 
-    @AfterViews
-    void afterViews() {
-        saveLogsButton.setOnClickListener((v) -> signalProcessor.saveLogs());
-        clearGraphButton.setOnClickListener((v) -> signalProcessor.clearGraph());
+    @Click(R.id.clear_graph_button)
+    void clearGraphClicked() {
+        signalProcessor.clearGraph();
     }
 
     @Override

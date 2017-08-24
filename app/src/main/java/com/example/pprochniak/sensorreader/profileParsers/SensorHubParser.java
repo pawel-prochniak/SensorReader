@@ -42,8 +42,6 @@ import java.nio.ByteOrder;
 public class SensorHubParser {
     private static final String TAG = "SensorHubParser";
 
-    private static int counter = 0;
-
     public static float getAcceleroMeterXYZReading(
             BluetoothGattCharacteristic characteristic) {
 
@@ -53,41 +51,4 @@ public class SensorHubParser {
         return value;
     }
 
-    public static float getThermometerReading(
-            BluetoothGattCharacteristic characteristic) {
-
-        float mTemp = characteristic.getFloatValue(
-                BluetoothGattCharacteristic.FORMAT_SFLOAT, 0);
-        return mTemp;
-    }
-
-    public static int getSensorScanIntervalReading(
-            BluetoothGattCharacteristic characteristic) {
-
-        int mScaninterval = characteristic.getIntValue(
-                BluetoothGattCharacteristic.FORMAT_UINT8, 0);
-        return mScaninterval;
-    }
-
-    public static int getSensorTypeReading(
-            BluetoothGattCharacteristic characteristic) {
-
-        int mSensorType = characteristic.getIntValue(
-                BluetoothGattCharacteristic.FORMAT_UINT8, 0);
-        return mSensorType;
-    }
-
-    public static int getFilterConfiguration(
-            BluetoothGattCharacteristic characteristic) {
-        int mFilterConfiguration = characteristic.getIntValue(
-                BluetoothGattCharacteristic.FORMAT_UINT8, 0);
-        return mFilterConfiguration;
-    }
-
-    public static int getThresholdValue(
-            BluetoothGattCharacteristic characteristic) {
-        int mThreshold = characteristic.getIntValue(
-                BluetoothGattCharacteristic.FORMAT_UINT16, 0);
-        return mThreshold;
-    }
 }

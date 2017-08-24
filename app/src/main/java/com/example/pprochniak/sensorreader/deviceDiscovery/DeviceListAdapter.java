@@ -85,14 +85,14 @@ public class DeviceListAdapter extends RecyclerView.Adapter<DeviceListAdapter.De
         String deviceAddress = device.getAddress();
         holder.bind(device);
         if (rssiList.containsKey(deviceAddress)) holder.setRssi(rssiList.get(deviceAddress));
-        holder.itemView.setOnClickListener((view) -> {
-                    if (!connectedDevices.contains(deviceAddress)) {
-                        fragment.scanLeDevice(false);
-                        fragment.connectDevice(deviceAddress, true);
-                    } else {
-                        fragment.disconnectDevice(deviceAddress);
-                    }
-                }
+        holder.itemView.setOnClickListener(view -> {
+            if (!connectedDevices.contains(deviceAddress)) {
+                fragment.scanLeDevice(false);
+                fragment.connectDevice(deviceAddress, true);
+            } else {
+                fragment.disconnectDevice(deviceAddress);
+            }
+        }
         );
         if (isConnected) {
             holder.itemView.setBackgroundResource(R.color.connected_device_bg);

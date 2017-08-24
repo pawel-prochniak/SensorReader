@@ -48,12 +48,10 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Binder;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
 import com.example.pprochniak.sensorreader.R;
-import com.example.pprochniak.sensorreader.profileParsers.DescriptorParser;
 import com.example.pprochniak.sensorreader.profileParsers.SensorHubParser;
 import com.example.pprochniak.sensorreader.utils.Constants;
 import com.example.pprochniak.sensorreader.utils.GattAttributes;
@@ -103,9 +101,7 @@ public class BluetoothLeService extends Service {
 
     private final static String ACTION_GATT_DISCONNECTING =
             "com.example.bluetooth.le.ACTION_GATT_DISCONNECTING";
-    private final static String ACTION_PAIRING_REQUEST =
-            "com.example.bluetooth.le.PAIRING_REQUEST";
-    private static final int STATE_BONDED = 5;
+
      /**
      * BluetoothAdapter for handling connections
      */
@@ -118,8 +114,6 @@ public class BluetoothLeService extends Service {
             new HashMap<>();
 
     public static boolean mDisableNotificationFlag = false;
-
-    private static int readingCharacteristicCount = 0;
 
     /**
      * Map of device address to Gatt
@@ -187,17 +181,6 @@ public class BluetoothLeService extends Service {
         @Override
         public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor,
                                       int status) {
-            String serviceUUID = descriptor.getCharacteristic().getService().getUuid().toString();
-            String serviceName = GattAttributes.lookupUUID(descriptor.getCharacteristic().
-                    getService().getUuid(), serviceUUID);
-
-            String characteristicUUID = descriptor.getCharacteristic().getUuid().toString();
-            String characteristicName = GattAttributes.lookupUUID(descriptor.getCharacteristic().
-                    getUuid(), characteristicUUID);
-
-            String descriptorUUID = descriptor.getUuid().toString();
-            String descriptorName = GattAttributes.lookupUUID(descriptor.getUuid(), descriptorUUID);
-
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 Intent intent = new Intent(ACTION_WRITE_SUCCESS);
                 mContext.sendBroadcast(intent);
@@ -222,19 +205,7 @@ public class BluetoothLeService extends Service {
         @Override
         public void onDescriptorRead(BluetoothGatt gatt, BluetoothGattDescriptor descriptor,
                                      int status) {
-            String serviceUUID = descriptor.getCharacteristic().getService().getUuid().toString();
-            String serviceName = GattAttributes.lookupUUID(descriptor.getCharacteristic().getService().getUuid(), serviceUUID);
-            int serviceInstance = descriptor.getCharacteristic().getService().getInstanceId();
-
-            String characteristicUUID = descriptor.getCharacteristic().getUuid().toString();
-            String characteristicName = GattAttributes.lookupUUID(descriptor.getCharacteristic().getUuid(), characteristicUUID);
-
-            String descriptorUUIDText = descriptor.getUuid().toString();
-            String descriptorName = GattAttributes.lookupUUID(descriptor.getUuid(), descriptorUUIDText);
-
-            String descriptorValue = " " + Utils.ByteArraytoHex(descriptor.getValue()) + " ";
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                UUID descriptorUUID = descriptor.getUuid();
                 final Intent intent = new Intent(ACTION_DATA_AVAILABLE);
                 Bundle mBundle = new Bundle();
                 // Putting the byte value read for GATT Db
@@ -246,43 +217,6 @@ public class BluetoothLeService extends Service {
                         descriptor.getUuid().toString());
                 mBundle.putString(Constants.EXTRA_DESCRIPTOR_BYTE_VALUE_CHARACTERISTIC_UUID,
                         descriptor.getCharacteristic().getUuid().toString());
-                if (descriptorUUID.equals(UUIDDatabase.UUID_CLIENT_CHARACTERISTIC_CONFIG)) {
-                    String valueReceived = DescriptorParser
-                            .getClientCharacteristicConfiguration(descriptor, mContext);
-                    mBundle.putString(Constants.EXTRA_DESCRIPTOR_VALUE, valueReceived);
-                } else if (descriptorUUID.equals(UUIDDatabase.UUID_CHARACTERISTIC_EXTENDED_PROPERTIES)) {
-                    HashMap<String, String> receivedValuesMap = DescriptorParser
-                            .getCharacteristicExtendedProperties(descriptor, mContext);
-                    String reliableWriteStatus = receivedValuesMap.get(Constants.FIRST_BIT_KEY_VALUE);
-                    String writeAuxillaryStatus = receivedValuesMap.get(Constants.SECOND_BIT_KEY_VALUE);
-                    mBundle.putString(Constants.EXTRA_DESCRIPTOR_VALUE, reliableWriteStatus + "\n"
-                            + writeAuxillaryStatus);
-                } else if (descriptorUUID.equals(UUIDDatabase.UUID_CHARACTERISTIC_USER_DESCRIPTION)) {
-                    String description = DescriptorParser
-                            .getCharacteristicUserDescription(descriptor);
-                    mBundle.putString(Constants.EXTRA_DESCRIPTOR_VALUE, description);
-                } else if (descriptorUUID.equals(UUIDDatabase.UUID_SERVER_CHARACTERISTIC_CONFIGURATION)) {
-                    String broadcastStatus = DescriptorParser.
-                            getServerCharacteristicConfiguration(descriptor, mContext);
-                    mBundle.putString(Constants.EXTRA_DESCRIPTOR_VALUE, broadcastStatus);
-                } else if (descriptorUUID.equals(UUIDDatabase.UUID_REPORT_REFERENCE)) {
-                    ArrayList<String> reportReferencealues = DescriptorParser.getReportReference(descriptor);
-                    String reportReference;
-                    String reportReferenceType;
-                    if (reportReferencealues.size() == 2) {
-                        reportReference = reportReferencealues.get(0);
-                        reportReferenceType = reportReferencealues.get(1);
-                        mBundle.putString(Constants.EXTRA_DESCRIPTOR_REPORT_REFERENCE_ID, reportReference);
-                        mBundle.putString(Constants.EXTRA_DESCRIPTOR_REPORT_REFERENCE_TYPE, reportReferenceType);
-                        mBundle.putString(Constants.EXTRA_DESCRIPTOR_VALUE, reportReference + "\n" +
-                                reportReferenceType);
-                    }
-
-                } else if (descriptorUUID.equals(UUIDDatabase.UUID_CHARACTERISTIC_PRESENTATION_FORMAT)) {
-                    String value = DescriptorParser.getCharacteristicPresentationFormat(descriptor, mContext);
-                    mBundle.putString(Constants.EXTRA_DESCRIPTOR_VALUE,
-                            value);
-                }
                 intent.putExtras(mBundle);
                 /**
                  * Sending the broad cast so that it can be received on
@@ -333,7 +267,6 @@ public class BluetoothLeService extends Service {
         @Override
         public void onCharacteristicRead(BluetoothGatt gatt,
                                          BluetoothGattCharacteristic characteristic, int status) {
-            readingCharacteristicCount--;
             String deviceAddress = gatt.getDevice().getAddress();
             String serviceUUID = characteristic.getService().getUuid().toString();
             String serviceName = GattAttributes.lookupUUID(characteristic.getService().getUuid(), serviceUUID);
@@ -369,14 +302,6 @@ public class BluetoothLeService extends Service {
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt,
                                             BluetoothGattCharacteristic characteristic) {
-            String serviceUUID = characteristic.getService().getUuid().toString();
-            String serviceName = GattAttributes.lookupUUID(characteristic.getService().getUuid(), serviceUUID);
-
-            String characteristicUUID = characteristic.getUuid().toString();
-            String characteristicName = GattAttributes.lookupUUID(characteristic.getUuid(), characteristicUUID);
-
-            String characteristicValue = Utils.ByteArraytoHex(characteristic.getValue());
-
             broadcastNotifyUpdate(characteristic, gatt.getDevice().getAddress());
         }
 
@@ -434,11 +359,6 @@ public class BluetoothLeService extends Service {
         Log.i(TAG, "action :" + action);
         final Intent intent = new Intent(action);
         intent.putExtra(Constants.DEVICE_ADDRESS, deviceAddress);
-        mContext.sendBroadcast(intent);
-    }
-
-    private static void broadcastWriteStatusUpdate(final String action) {
-        final Intent intent = new Intent((action));
         mContext.sendBroadcast(intent);
     }
 
@@ -510,53 +430,6 @@ public class BluetoothLeService extends Service {
 
         String dataLog = mContext.getResources().getString(R.string.dl_commaseparator)
                 + "[" + address + "] " +
-                mContext.getResources().getString(R.string.dl_connection_request);
-        Log.d(TAG, dataLog);
-    }
-
-    /**
-     * Reconnect method to connect to already connected device
-     */
-    public static void reconnect(String deviceAddress) {
-        Log.e(TAG, "<--Reconnecting device-->");
-        BluetoothDevice device = mBluetoothAdapter
-                .getRemoteDevice(deviceAddress);
-        if (device == null) {
-            return;
-        }
-        device.connectGatt(mContext, false, mGattCallback);
-        /**
-         * Adding data to the data logger
-         */
-        String dataLog = mContext.getResources().getString(R.string.dl_commaseparator)
-                + "[" + deviceAddress + "] " +
-                mContext.getResources().getString(R.string.dl_connection_request);
-        Log.d(TAG, dataLog);
-    }
-
-    /**
-     * Reconnect method to connect to already connected device
-     */
-    public static void reDiscoverServices(String deviceAddress) {
-        Log.e(TAG, "<--Rediscovering services-->");
-        BluetoothDevice device = mBluetoothAdapter
-                .getRemoteDevice(deviceAddress);
-        if (device == null) {
-            return;
-        }
-        /**
-         * Disconnecting the device
-         */
-        BluetoothGatt gatt = mGattDevices.get(deviceAddress);
-        if (gatt != null)
-            gatt.disconnect();
-
-        device.connectGatt(mContext, false, mGattCallback);
-        /**
-         * Adding data to the data logger
-         */
-        String dataLog = mContext.getResources().getString(R.string.dl_commaseparator)
-                + "[" + deviceAddress + "] " +
                 mContext.getResources().getString(R.string.dl_connection_request);
         Log.d(TAG, dataLog);
     }
@@ -652,157 +525,6 @@ public class BluetoothLeService extends Service {
         }
     }
 
-    /**
-     * Request a read on a given {@code BluetoothGattCharacteristic}. The read
-     * result is reported asynchronously through the
-     * {@code BluetoothGattCallback#onCharacteristicRead(android.bluetooth.BluetoothGatt, android.bluetooth.BluetoothGattCharacteristic, int)}
-     * callback.
-     *
-     * @param characteristic The characteristic to read from.
-     */
-    public static void readCharacteristic(String deviceAddress,
-            BluetoothGattCharacteristic characteristic) {
-        BluetoothGatt gatt = mGattDevices.get(deviceAddress);
-        String serviceUUID = characteristic.getService().getUuid().toString();
-        String serviceName = GattAttributes.lookupUUID(characteristic.getService().getUuid(), serviceUUID);
-
-        String characteristicUUID = characteristic.getUuid().toString();
-        String characteristicName = GattAttributes.lookupUUID(characteristic.getUuid(), characteristicUUID);
-        if (mBluetoothAdapter == null || gatt == null) {
-            return;
-        }
-        if (readingCharacteristicCount > 0) {
-            new Handler().postDelayed((() -> gatt.readCharacteristic(characteristic)), 200) ;
-        } else {
-            gatt.readCharacteristic(characteristic);
-        }
-        readingCharacteristicCount++;
-        String dataLog = mContext.getResources().getString(R.string.dl_commaseparator) +
-                "[" + serviceName + "|" + characteristicName + "] " +
-                mContext.getResources().getString(R.string.dl_characteristic_read_request);
-        Log.d(TAG, dataLog);
-    }
-
-    /**
-     * Request a read on a given {@code BluetoothGattDescriptor }.
-     *
-     * @param descriptor The descriptor to read from.
-     */
-    public static void readDescriptor(String deviceAddress,
-            BluetoothGattDescriptor descriptor) {
-        BluetoothGatt gatt = mGattDevices.get(deviceAddress);
-        String serviceUUID = descriptor.getCharacteristic().getService().getUuid().toString();
-        String serviceName = GattAttributes.lookupUUID(descriptor.getCharacteristic().getService().getUuid(), serviceUUID);
-
-        String characteristicUUID = descriptor.getCharacteristic().getUuid().toString();
-        String characteristicName = GattAttributes.lookupUUID(descriptor.getCharacteristic().getUuid(), characteristicUUID);
-        if (mBluetoothAdapter == null || gatt == null) {
-            return;
-        }
-        //Log.d(TAG, mContext.getResources().getString(R.string.dl_descriptor_read_request));
-        gatt.readDescriptor(descriptor);
-        String dataLog = mContext.getResources().getString(R.string.dl_commaseparator) +
-                "[" + serviceName + "|" + characteristicName + "] " +
-                mContext.getResources().getString(R.string.dl_characteristic_read_request);
-        Log.d(TAG, dataLog);
-    }
-
-    /**
-     * Request a write with no response on a given
-     * {@code BluetoothGattCharacteristic}.
-     *
-     * @param characteristic
-     * @param byteArray      to write
-     */
-    public static void writeCharacteristicNoresponse(String deviceAddress,
-            BluetoothGattCharacteristic characteristic, byte[] byteArray) {
-        BluetoothGatt gatt = mGattDevices.get(deviceAddress);
-        String serviceUUID = characteristic.getService().getUuid().toString();
-        String serviceName = GattAttributes.lookupUUID(characteristic.getService().getUuid(), serviceUUID);
-
-        String characteristicUUID = characteristic.getUuid().toString();
-        String characteristicName = GattAttributes.lookupUUID(characteristic.getUuid(), characteristicUUID);
-
-        String characteristicValue = Utils.ByteArraytoHex(byteArray);
-        if (mBluetoothAdapter == null || gatt == null) {
-            return;
-        } else {
-            byte[] valueByte = byteArray;
-            characteristic.setValue(valueByte);
-            gatt.writeCharacteristic(characteristic);
-            String dataLog = mContext.getResources().getString(R.string.dl_commaseparator) +
-                    "[" + serviceName + "|" + characteristicName + "] " +
-                    mContext.getResources().getString(R.string.dl_characteristic_write_request) +
-                    mContext.getResources().getString(R.string.dl_commaseparator) +
-                    "[ " + characteristicValue + " ]";
-            Log.d(TAG, dataLog);
-
-        }
-    }
-
-
-    private static String getHexValue(byte[] array) {
-        StringBuffer sb = new StringBuffer();
-        for (byte byteChar : array) {
-            sb.append(String.format("%02x", byteChar));
-        }
-        return sb.toString();
-    }
-
-    /**
-     * Request a write on a given {@code BluetoothGattCharacteristic}.
-     *
-     * @param characteristic
-     * @param byteArray
-     */
-
-    public static void writeCharacteristicGattDb(String deviceAddress,
-            BluetoothGattCharacteristic characteristic, byte[] byteArray) {
-        BluetoothGatt gatt = mGattDevices.get(deviceAddress);
-        String serviceUUID = characteristic.getService().getUuid().toString();
-        String serviceName = GattAttributes.lookupUUID(characteristic.getService().getUuid(), serviceUUID);
-
-        String characteristicUUID = characteristic.getUuid().toString();
-        String characteristicName = GattAttributes.lookupUUID(characteristic.getUuid(), characteristicUUID);
-
-        String characteristicValue = Utils.ByteArraytoHex(byteArray);
-        if (mBluetoothAdapter == null || gatt == null) {
-            return;
-        } else {
-            byte[] valueByte = byteArray;
-            characteristic.setValue(valueByte);
-            gatt.writeCharacteristic(characteristic);
-            String dataLog = mContext.getResources().getString(R.string.dl_commaseparator) +
-                    "[" + serviceName + "|" + characteristicName + "] " +
-                    mContext.getResources().getString(R.string.dl_characteristic_write_request) +
-                    mContext.getResources().getString(R.string.dl_commaseparator) +
-                    "[ " + characteristicValue + " ]";
-            Log.d(TAG, dataLog);
-        }
-
-    }
-
-    /**
-     * Writes the characteristic value to the given characteristic.
-     *
-     * @param characteristic the characteristic to write to
-     * @return true if request has been sent
-     */
-    public static final boolean writeCharacteristic(String deviceAddress,
-                                                    final BluetoothGattCharacteristic characteristic) {
-        final BluetoothGatt gatt = mGattDevices.get(deviceAddress);
-        if (gatt == null || characteristic == null)
-            return false;
-
-        // Check characteristic property
-        final int properties = characteristic.getProperties();
-        if ((properties & (BluetoothGattCharacteristic.PROPERTY_WRITE | BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE)) == 0)
-            return false;
-
-        Log.d(TAG, "Writing characteristic " + characteristic.getUuid());
-        Log.d(TAG, "gatt.writeCharacteristic(" + characteristic.getUuid() + ")");
-        return gatt.writeCharacteristic(characteristic);
-    }
 
 
     /**
@@ -818,12 +540,6 @@ public class BluetoothLeService extends Service {
         String serviceUUID = characteristic.getService().getUuid().toString();
         String serviceName = GattAttributes.lookupUUID(characteristic.getService().getUuid(), serviceUUID);
 
-        String characteristicUUID = characteristic.getUuid().toString();
-        String characteristicName = GattAttributes.lookupUUID(characteristic.getUuid(), characteristicUUID);
-
-        String descriptorUUID = GattAttributes.CLIENT_CHARACTERISTIC_CONFIG;
-        String descriptorName = GattAttributes.lookupUUID(UUIDDatabase.
-                UUID_CLIENT_CHARACTERISTIC_CONFIG, descriptorUUID);
         if (mBluetoothAdapter == null || gatt == null) {
             return;
         }
@@ -856,50 +572,6 @@ public class BluetoothLeService extends Service {
 
     }
 
-    /**
-     * Enables or disables indications on a give characteristic.
-     *
-     * @param characteristic Characteristic to act on.
-     * @param enabled        If true, enable indications. False otherwise.
-     */
-    public static void setCharacteristicIndication(String deviceAddress,
-            BluetoothGattCharacteristic characteristic, boolean enabled) {
-        BluetoothGatt gatt = mGattDevices.get(deviceAddress);
-        String serviceUUID = characteristic.getService().getUuid().toString();
-        String serviceName = GattAttributes.lookupUUID(characteristic.getService().getUuid(),
-                serviceUUID);
-
-        String characteristicUUID = characteristic.getUuid().toString();
-        String characteristicName = GattAttributes.lookupUUID(characteristic.getUuid(),
-                characteristicUUID);
-
-        String descriptorUUID = GattAttributes.CLIENT_CHARACTERISTIC_CONFIG;
-        String descriptorName = GattAttributes.lookupUUID(UUIDDatabase.
-                UUID_CLIENT_CHARACTERISTIC_CONFIG, descriptorUUID);
-        if (mBluetoothAdapter == null || gatt == null) {
-            return;
-        }
-
-        if (characteristic.getDescriptor(UUID
-                .fromString(GattAttributes.CLIENT_CHARACTERISTIC_CONFIG)) != null) {
-            if (enabled == true) {
-                BluetoothGattDescriptor descriptor = characteristic
-                        .getDescriptor(UUID
-                                .fromString(GattAttributes.CLIENT_CHARACTERISTIC_CONFIG));
-                descriptor
-                        .setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
-                gatt.writeDescriptor(descriptor);
-            } else {
-                BluetoothGattDescriptor descriptor = characteristic
-                        .getDescriptor(UUID
-                                .fromString(GattAttributes.CLIENT_CHARACTERISTIC_CONFIG));
-                descriptor
-                        .setValue(BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE);
-                gatt.writeDescriptor(descriptor);
-            }
-        }
-        gatt.setCharacteristicNotification(characteristic, enabled);
-    }
 
     /**
      * Retrieves a list of supported GATT services on the connected device. This
